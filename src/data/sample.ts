@@ -1,6 +1,6 @@
-import type { TrainingPeaksWorkout } from '../types/workout';
+import type { Workout } from '../types/workout';
 
-export const sampleWorkout: TrainingPeaksWorkout = {
+export const sampleWorkout: Workout = {
     "id": 7183973,
     "type": "LIBRARY_EXERCISE",
     "attributes": {
@@ -96,4 +96,4 @@ export const sampleWorkout: TrainingPeaksWorkout = {
     "itemName": "anaerobic capacity - SPIN1 - 8 x 10'' SRT 20km/h",
     "caloriesPlanned": null,
     "workoutDay": { "value": "", "units": "" }
-} as unknown as TrainingPeaksWorkout;
+} as unknown as Workout;

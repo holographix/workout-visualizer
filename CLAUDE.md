@@ -13,7 +13,7 @@ npm run preview  # Preview production build locally
 
 ## Project Goal
 
-Build a premium, interactive visualization for TrainingPeaks workout files. Transform raw JSON data into a beautiful, intuitive workout profile that helps athletes understand their training session at a glance.
+Build a premium, interactive visualization for structured workout files. Transform raw JSON data into a beautiful, intuitive workout profile that helps athletes understand their training session at a glance.
 
 ## Architecture
 
@@ -21,13 +21,13 @@ React + TypeScript + Vite app using visx (Airbnb's D3 wrapper for React) for cha
 
 ### Data Flow
 
-1. **TrainingPeaks JSON** → Raw workout data with nested structure (steps, repetitions)
+1. **Workout JSON** → Raw workout data with nested structure (steps, repetitions)
 2. **Parser** (`src/utils/parser.ts`) → Recursively flattens nested structure into `FlatSegment[]` timeline with absolute start/end times
 3. **WorkoutChart** (`src/components/WorkoutChart.tsx`) → Renders segments as colored bars using visx
 
 ### Key Types (`src/types/workout.ts`)
 
-- `TrainingPeaksWorkout`: Raw API format with nested `structure.structure[]` containing steps and repetitions
+- `Workout`: Raw format with nested `structure.structure[]` containing steps and repetitions
 - `FlatSegment`: Parsed segment with `startTime`, `endTime`, `targetMin/Max`, and intensity `type`
 - `ParsedWorkout`: Final format with flattened `segments[]` array and metadata
 
@@ -85,7 +85,7 @@ React + TypeScript + Vite app using visx (Airbnb's D3 wrapper for React) for cha
 - [ ] Overlay/comparison functionality
 - [ ] Interval editing (stretch goal)
 
-## TrainingPeaks JSON Structure
+## Workout JSON Structure
 
 The raw data has nested repetition structures that must be flattened:
 

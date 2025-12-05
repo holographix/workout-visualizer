@@ -45,7 +45,7 @@ export interface WorkoutStructure {
   structure: WorkoutStructureItem[];
 }
 
-export interface TrainingPeaksWorkoutAttributes {
+export interface WorkoutAttributes {
   structure: WorkoutStructure;
   tssPlanned: number;
   ifPlanned: number;
@@ -53,11 +53,11 @@ export interface TrainingPeaksWorkoutAttributes {
   workoutTypeName: string;
 }
 
-export interface TrainingPeaksWorkout {
+export interface Workout {
   id: number;
   title: string;
   description: string;
-  attributes: TrainingPeaksWorkoutAttributes;
+  attributes: WorkoutAttributes;
 }
 
 // --- Flattened Internal Format ---

@@ -1,5 +1,5 @@
 import type {
-    TrainingPeaksWorkout,
+    Workout,
     WorkoutStepData,
     WorkoutRepetition,
     WorkoutStructureItem,
@@ -7,7 +7,7 @@ import type {
     ParsedWorkout
 } from '../types/workout';
 
-export const parseWorkout = (data: TrainingPeaksWorkout): ParsedWorkout => {
+export const parseWorkout = (data: Workout): ParsedWorkout => {
     const segments: FlatSegment[] = [];
     let currentTime = 0;
 

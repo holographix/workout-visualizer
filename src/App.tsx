@@ -3,8 +3,9 @@ import { ParentSize } from '@visx/responsive';
 import { parseWorkout } from './utils/parser';
 import { sampleWorkout } from './data/sample';
 import { WorkoutChart } from './components/WorkoutChart';
-import { Clock, Zap, TrendingUp, Activity, Upload, X, AlertCircle, Check } from 'lucide-react';
-import type { TrainingPeaksWorkout } from './types/workout';
+import { WorkoutLibrary } from './components/WorkoutLibrary';
+import { Clock, Zap, TrendingUp, Activity, Upload, X, AlertCircle, Check, FolderOpen } from 'lucide-react';
+import type { Workout } from './types/workout';
 import './App.css';
 
 // Format duration from seconds to readable string
@@ -55,10 +56,11 @@ const LegendItem = ({ color, label }: { color: string; label: string }) => (
 );
 
 function App() {
-  const [workoutData, setWorkoutData] = useState<TrainingPeaksWorkout>(sampleWorkout);
+  const [workoutData, setWorkoutData] = useState<Workout>(sampleWorkout);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showJsonInput, setShowJsonInput] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [jsonSuccess, setJsonSuccess] = useState(false);
@@ -67,17 +69,66 @@ function App() {
 
   const handleJsonSubmit = useCallback(() => {
     try {
-      const parsed = JSON.parse(jsonInput);
-
-      // Validate basic structure
-      if (!parsed.attributes?.structure?.structure) {
-        throw new Error('Invalid workout structure. Missing attributes.structure.structure');
-      }
-      if (!parsed.title) {
-        throw new Error('Invalid workout: missing title');
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonInput);
+      } catch (parseErr) {
+        throw new Error(`JSON parse error: ${parseErr instanceof Error ? parseErr.message : 'Invalid syntax'}`);
       }
 
-      setWorkoutData(parsed as TrainingPeaksWorkout);
+      // Debug: log parsing info
+      console.log('JSON input length:', jsonInput.length);
+      console.log('Parsed JSON root keys:', Object.keys(parsed));
+      console.log('title value:', parsed.title);
+      console.log('itemName value:', parsed.itemName);
+
+      // Validate structure exists
+      if (!parsed.attributes) {
+        throw new Error('Missing "attributes" field in JSON');
+      }
+      if (!parsed.attributes.structure) {
+        throw new Error('Missing "attributes.structure" field in JSON');
+      }
+      if (!parsed.attributes.structure.structure) {
+        throw new Error('Missing "attributes.structure.structure" array in JSON');
+      }
+      if (!Array.isArray(parsed.attributes.structure.structure)) {
+        throw new Error('"attributes.structure.structure" must be an array');
+      }
+
+      // Title can come from multiple places - try all fallbacks
+      const title = parsed.title
+        || parsed.itemName
+        || parsed.attributes?.title
+        || parsed.attributes?.itemName
+        || parsed.attributes?.allKeyStats?.title?.value;
+
+      if (!title) {
+        throw new Error('Missing "title" field in JSON. Available root keys: ' + Object.keys(parsed).join(', '));
+      }
+      parsed.title = title;
+
+      // Description can come from multiple places
+      parsed.description = parsed.description
+        || parsed.attributes?.description
+        || parsed.coachComments
+        || parsed.attributes?.coachComments
+        || '';
+
+      // Ensure required attributes exist
+      if (parsed.attributes.tssPlanned === undefined) {
+        parsed.attributes.tssPlanned = parsed.attributes?.allKeyStats?.tss?.value
+          ? parseFloat(parsed.attributes.allKeyStats.tss.value)
+          : 0;
+      }
+      if (parsed.attributes.ifPlanned === undefined) {
+        parsed.attributes.ifPlanned = 0;
+      }
+      if (!parsed.attributes.workoutTypeName) {
+        parsed.attributes.workoutTypeName = 'Workout';
+      }
+
+      setWorkoutData(parsed as Workout);
       setJsonError(null);
       setJsonSuccess(true);
       setHoveredIndex(null);
@@ -90,6 +141,7 @@ function App() {
         setJsonInput('');
       }, 1000);
     } catch (err) {
+      console.error('JSON validation error:', err);
       setJsonError(err instanceof Error ? err.message : 'Invalid JSON');
       setJsonSuccess(false);
     }
@@ -101,6 +153,12 @@ function App() {
 
   const handleSegmentClick = useCallback((index: number | null) => {
     setSelectedIndex(index);
+  }, []);
+
+  const handleLibrarySelect = useCallback((workout: Workout) => {
+    setWorkoutData(workout);
+    setHoveredIndex(null);
+    setSelectedIndex(null);
   }, []);
 
   const getSegmentColor = (type: string) => {
@@ -125,18 +183,27 @@ function App() {
               </div>
               <div>
                 <h1 className="text-lg font-semibold text-white">Workout Visualizer</h1>
-                <p className="text-xs text-gray-500">TrainingPeaks Compatible</p>
+                <p className="text-xs text-gray-500">Structured Workout Visualizer</p>
               </div>
             </div>
 
-            {/* Load JSON Button */}
-            <button
-              onClick={() => setShowJsonInput(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              <Upload className="w-4 h-4" />
-              Load Workout
-            </button>
+            {/* Header Buttons */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowLibrary(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                <FolderOpen className="w-4 h-4" />
+                Library
+              </button>
+              <button
+                onClick={() => setShowJsonInput(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                <Upload className="w-4 h-4" />
+                Paste JSON
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -289,7 +356,7 @@ function App() {
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
               <div>
                 <h3 className="text-lg font-semibold text-white">Load Workout JSON</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Paste TrainingPeaks workout data</p>
+                <p className="text-xs text-gray-500 mt-0.5">Paste structured workout JSON</p>
               </div>
               <button
                 onClick={() => {
@@ -357,11 +424,18 @@ function App() {
         </div>
       )}
 
+      {/* Workout Library Modal */}
+      <WorkoutLibrary
+        isOpen={showLibrary}
+        onClose={() => setShowLibrary(false)}
+        onSelectWorkout={handleLibrarySelect}
+      />
+
       {/* Footer */}
       <footer className="border-t border-gray-800 mt-12">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <p className="text-xs text-gray-600 text-center">
-            Workout data visualization for TrainingPeaks structured workouts
+            Structured workout data visualization
           </p>
         </div>
       </footer>
