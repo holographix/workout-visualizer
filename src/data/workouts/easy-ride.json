@@ -1,0 +1,367 @@
+{
+  "id": "easy-ride",
+  "name": "Easy Ride",
+  "description": "Low-intensity recovery and endurance rides",
+  "workouts": [
+    {
+      "id": "easy-ride-easy-ride-1h",
+      "name": "Easy Ride 1h",
+      "workout": {
+        "id": 11139791,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 0, 1000 0, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "1:00:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "42",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.65,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 42.3,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 11139791,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 1,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Active",
+                    "length": {
+                      "value": 3600,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 80
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 3600
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "easy ride 1h",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": 943.02,
+          "activityTime": "",
+          "description": "non forzare, percorso pianeggiante\nconcentrati sull'agilità per favorire il ritorno venoso",
+          "activityDate": "",
+          "exerciseLibraryId": 2898880,
+          "itemName": "easy ride 1h",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "easy-ride-easy-ride-1h30",
+      "name": "Easy Ride 1h30",
+      "workout": {
+        "id": 11139787,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 0, 1000 0, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "1:30:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "63",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.65,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 63.4,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 11139787,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 1.5,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Active",
+                    "length": {
+                      "value": 5400,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 80
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 5400
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "easy ride 1h30'",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": 1414.53,
+          "activityTime": "",
+          "description": "non forzare, percorso pianeggiante",
+          "activityDate": "",
+          "exerciseLibraryId": 2898880,
+          "itemName": "easy ride 1h30'",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "easy-ride-easy-ride-2h",
+      "name": "Easy Ride 2h",
+      "workout": {
+        "id": 11501295,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 0, 1000 0, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "2:00:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "85",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.65,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 84.5,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 11501295,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 2,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Active",
+                    "length": {
+                      "value": 7200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 80
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 7200
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "easy ride 2h",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": 898.56,
+          "activityTime": "",
+          "description": "non forzare, percorso pianeggiante",
+          "activityDate": "",
+          "exerciseLibraryId": 2898880,
+          "itemName": "easy ride 2h",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    }
+  ]
+}

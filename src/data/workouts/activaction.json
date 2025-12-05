@@ -1,0 +1,813 @@
+{
+  "id": "activaction",
+  "name": "Activaction",
+  "description": "Pre-race activation and opener workouts",
+  "workouts": [
+    {
+      "id": "activaction-prerace--sgl2x3--z5-2x1",
+      "name": "Prerace- sgl2x3 + z5 2x1",
+      "workout": {
+        "id": 10567210,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 565, 333 565, 333 1000, 333 130, 389 130, 389 1000, 389 478, 417 478, 417 1000, 417 130, 472 130, 472 1000, 472 478, 500 478, 500 1000, 500 478, 722 478, 722 1000, 722 0, 733 0, 733 1000, 733 478, 739 478, 739 1000, 739 0, 750 0, 750 1000, 750 478, 756 478, 756 1000, 756 478, 1000 478, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "1:30:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "64",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.65,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": null,
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 64.3,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 10567210,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 1.5,
+          "structure": {
+            "fromLegacy": false,
+            "legacyExercises": [],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.435
+              ],
+              [
+                0.333,
+                0.435
+              ],
+              [
+                0.333,
+                0
+              ],
+              [
+                0.333,
+                0.87
+              ],
+              [
+                0.389,
+                0.87
+              ],
+              [
+                0.389,
+                0
+              ],
+              [
+                0.389,
+                0.522
+              ],
+              [
+                0.417,
+                0.522
+              ],
+              [
+                0.417,
+                0
+              ],
+              [
+                0.417,
+                0.87
+              ],
+              [
+                0.472,
+                0.87
+              ],
+              [
+                0.472,
+                0
+              ],
+              [
+                0.472,
+                0.522
+              ],
+              [
+                0.5,
+                0.522
+              ],
+              [
+                0.5,
+                0
+              ],
+              [
+                0.5,
+                0.522
+              ],
+              [
+                0.722,
+                0.522
+              ],
+              [
+                0.722,
+                0
+              ],
+              [
+                0.722,
+                1
+              ],
+              [
+                0.733,
+                1
+              ],
+              [
+                0.733,
+                0
+              ],
+              [
+                0.733,
+                0.522
+              ],
+              [
+                0.739,
+                0.522
+              ],
+              [
+                0.739,
+                0
+              ],
+              [
+                0.739,
+                1
+              ],
+              [
+                0.75,
+                1
+              ],
+              [
+                0.75,
+                0
+              ],
+              [
+                0.75,
+                0.522
+              ],
+              [
+                0.756,
+                0.522
+              ],
+              [
+                0.756,
+                0
+              ],
+              [
+                0.756,
+                0.522
+              ],
+              [
+                1,
+                0.522
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryLengthMetric": "duration",
+            "structure": [
+              {
+                "length": {
+                  "unit": "repetition",
+                  "value": 1
+                },
+                "steps": [
+                  {
+                    "intensityClass": "warmUp",
+                    "length": {
+                      "unit": "second",
+                      "value": 1800
+                    },
+                    "name": "Warm up",
+                    "openDuration": true,
+                    "targets": [
+                      {
+                        "maxValue": 50,
+                        "minValue": 40
+                      }
+                    ]
+                  }
+                ],
+                "type": "step",
+                "begin": 0,
+                "end": 1800
+              },
+              {
+                "length": {
+                  "unit": "repetition",
+                  "value": 2
+                },
+                "steps": [
+                  {
+                    "intensityClass": "active",
+                    "length": {
+                      "unit": "second",
+                      "value": 300
+                    },
+                    "name": "Hard",
+                    "openDuration": false,
+                    "targets": [
+                      {
+                        "maxValue": 100,
+                        "minValue": 91
+                      }
+                    ]
+                  },
+                  {
+                    "intensityClass": "rest",
+                    "length": {
+                      "unit": "second",
+                      "value": 150
+                    },
+                    "name": "Easy",
+                    "openDuration": false,
+                    "targets": [
+                      {
+                        "maxValue": 60,
+                        "minValue": 50
+                      }
+                    ]
+                  }
+                ],
+                "type": "repetition",
+                "begin": 1800,
+                "end": 2700
+              },
+              {
+                "length": {
+                  "unit": "repetition",
+                  "value": 1
+                },
+                "steps": [
+                  {
+                    "intensityClass": "rest",
+                    "length": {
+                      "unit": "second",
+                      "value": 1200
+                    },
+                    "name": "Recovery",
+                    "openDuration": true,
+                    "targets": [
+                      {
+                        "maxValue": 60,
+                        "minValue": 50
+                      }
+                    ]
+                  }
+                ],
+                "type": "step",
+                "begin": 2700,
+                "end": 3900
+              },
+              {
+                "length": {
+                  "unit": "repetition",
+                  "value": 2
+                },
+                "steps": [
+                  {
+                    "intensityClass": "active",
+                    "length": {
+                      "unit": "second",
+                      "value": 60
+                    },
+                    "name": "Hard",
+                    "openDuration": false,
+                    "targets": [
+                      {
+                        "maxValue": 115,
+                        "minValue": 106
+                      }
+                    ]
+                  },
+                  {
+                    "intensityClass": "rest",
+                    "length": {
+                      "unit": "second",
+                      "value": 30
+                    },
+                    "name": "Easy",
+                    "openDuration": false,
+                    "targets": [
+                      {
+                        "maxValue": 60,
+                        "minValue": 50
+                      }
+                    ]
+                  }
+                ],
+                "type": "repetition",
+                "begin": 3900,
+                "end": 4080
+              },
+              {
+                "length": {
+                  "unit": "repetition",
+                  "value": 1
+                },
+                "steps": [
+                  {
+                    "intensityClass": "rest",
+                    "length": {
+                      "unit": "second",
+                      "value": 1320
+                    },
+                    "name": "Recovery",
+                    "openDuration": true,
+                    "targets": [
+                      {
+                        "maxValue": 60,
+                        "minValue": 50
+                      }
+                    ]
+                  }
+                ],
+                "type": "step",
+                "begin": 4080,
+                "end": 5400
+              }
+            ]
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "activaction prerace - sgl2x3 + z5 2x1",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": null,
+          "activityTime": "",
+          "description": "30' Warm up\n\nin salita\n2 x 5' @Z4low - rec 2'30''\n\nin salita\n2 x 1' @Z5Low - rec 30''",
+          "activityDate": "",
+          "exerciseLibraryId": 2860451,
+          "itemName": "activaction prerace - sgl2x3 + z5 2x1",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "activaction--prerace-3-x-6",
+      "name": "\" PreRace 3 x 6'",
+      "workout": {
+        "id": 11017029,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 519, 200 519, 200 1000, 200 0, 207 0, 207 1000, 207 192, 240 192, 240 1000, 240 471, 373 471, 373 1000, 373 0, 380 0, 380 1000, 380 192, 413 192, 413 1000, 413 471, 547 471, 547 1000, 547 0, 553 0, 553 1000, 553 192, 587 192, 587 1000, 587 519, 1000 519, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "2:30:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "85",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.58,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": null,
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 85.4,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 11017029,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 2.5,
+          "structure": {
+            "fromLegacy": false,
+            "legacyExercises": [],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.481
+              ],
+              [
+                0.2,
+                0.481
+              ],
+              [
+                0.2,
+                0
+              ],
+              [
+                0.2,
+                1
+              ],
+              [
+                0.207,
+                1
+              ],
+              [
+                0.207,
+                0
+              ],
+              [
+                0.207,
+                0.808
+              ],
+              [
+                0.24,
+                0.808
+              ],
+              [
+                0.24,
+                0
+              ],
+              [
+                0.24,
+                0.529
+              ],
+              [
+                0.373,
+                0.529
+              ],
+              [
+                0.373,
+                0
+              ],
+              [
+                0.373,
+                1
+              ],
+              [
+                0.38,
+                1
+              ],
+              [
+                0.38,
+                0
+              ],
+              [
+                0.38,
+                0.808
+              ],
+              [
+                0.413,
+                0.808
+              ],
+              [
+                0.413,
+                0
+              ],
+              [
+                0.413,
+                0.529
+              ],
+              [
+                0.547,
+                0.529
+              ],
+              [
+                0.547,
+                0
+              ],
+              [
+                0.547,
+                1
+              ],
+              [
+                0.553,
+                1
+              ],
+              [
+                0.553,
+                0
+              ],
+              [
+                0.553,
+                0.808
+              ],
+              [
+                0.587,
+                0.808
+              ],
+              [
+                0.587,
+                0
+              ],
+              [
+                0.587,
+                0.481
+              ],
+              [
+                1,
+                0.481
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryLengthMetric": "duration",
+            "structure": [
+              {
+                "length": {
+                  "unit": "repetition",
+                  "value": 1
+                },
+                "steps": [
+                  {
+                    "intensityClass": "warmUp",
+                    "length": {
+                      "unit": "second",
+                      "value": 1800
+                    },
+                    "name": "Warm up",
+                    "openDuration": false,
+                    "targets": [
+                      {
+                        "maxValue": 50,
+                        "minValue": 40
+                      }
+                    ]
+                  }
+                ],
+                "type": "step",
+                "begin": 0,
+                "end": 1800
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 60
+                    },
+                    "targets": [
+                      {
+                        "minValue": 94,
+                        "maxValue": 104
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 300
+                    },
+                    "targets": [
+                      {
+                        "minValue": 84
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1800,
+                "end": 2160
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 55
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 2160,
+                "end": 3360
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 60
+                    },
+                    "targets": [
+                      {
+                        "minValue": 94,
+                        "maxValue": 104
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 300
+                    },
+                    "targets": [
+                      {
+                        "minValue": 84
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 3360,
+                "end": 3720
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 55
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 3720,
+                "end": 4920
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 60
+                    },
+                    "targets": [
+                      {
+                        "minValue": 94,
+                        "maxValue": 104
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 300
+                    },
+                    "targets": [
+                      {
+                        "minValue": 84
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 4920,
+                "end": 5280
+              },
+              {
+                "length": {
+                  "unit": "repetition",
+                  "value": 1
+                },
+                "steps": [
+                  {
+                    "intensityClass": "coolDown",
+                    "length": {
+                      "unit": "second",
+                      "value": 3720
+                    },
+                    "name": "Cool Down",
+                    "openDuration": true,
+                    "targets": [
+                      {
+                        "maxValue": 50,
+                        "minValue": 40
+                      }
+                    ]
+                  }
+                ],
+                "type": "step",
+                "begin": 5280,
+                "end": 9000
+              }
+            ]
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "activaction 2prerace - 3 x 6' 1z4/5z3",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": 1468.842,
+          "activityTime": "",
+          "description": "30' warm up\n\n- 3 x 6' climb (1' Z4 + 5' Z3)",
+          "activityDate": "",
+          "exerciseLibraryId": 2860454,
+          "itemName": "activaction 2prerace - 3 x 6' 1z4/5z3",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    }
+  ]
+}

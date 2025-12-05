@@ -1,0 +1,93 @@
+[
+  {
+    "id": "anaerobic-capacity",
+    "name": "Anaerobic Capacity",
+    "description": "High-intensity sprint intervals for neuromuscular power",
+    "workoutCount": 6,
+    "file": "anaerobic-capacity.json"
+  },
+  {
+    "id": "easy-ride",
+    "name": "Easy Ride",
+    "description": "Low-intensity recovery and endurance rides",
+    "workoutCount": 3,
+    "file": "easy-ride.json"
+  },
+  {
+    "id": "fatmax",
+    "name": "FatMax",
+    "description": "Fat oxidation training in the optimal aerobic zone",
+    "workoutCount": 4,
+    "file": "fatmax.json"
+  },
+  {
+    "id": "general-ride",
+    "name": "General Ride",
+    "description": "Mixed intensity rides for overall fitness",
+    "workoutCount": 2,
+    "file": "general-ride.json"
+  },
+  {
+    "id": "muscolar-elasticity",
+    "name": "Muscolar Elasticity",
+    "description": "Neuromuscular coordination and pedaling efficiency",
+    "workoutCount": 16,
+    "file": "muscolar-elasticity.json"
+  },
+  {
+    "id": "racepace",
+    "name": "RacePace",
+    "description": "Race simulation and pacing practice",
+    "workoutCount": 9,
+    "file": "racepace.json"
+  },
+  {
+    "id": "resistence",
+    "name": "Resistence",
+    "description": "Muscular endurance and strength endurance work",
+    "workoutCount": 12,
+    "file": "resistence.json"
+  },
+  {
+    "id": "strength",
+    "name": "Strength",
+    "description": "Low cadence, high force pedaling for leg strength",
+    "workoutCount": 14,
+    "file": "strength.json"
+  },
+  {
+    "id": "vo2max",
+    "name": "Vo2Max",
+    "description": "High-intensity intervals to improve maximum oxygen uptake",
+    "workoutCount": 9,
+    "file": "vo2max.json"
+  },
+  {
+    "id": "test",
+    "name": "Test",
+    "description": "Assessment and testing protocols",
+    "workoutCount": 5,
+    "file": "test.json"
+  },
+  {
+    "id": "activaction",
+    "name": "Activaction",
+    "description": "Pre-race activation and opener workouts",
+    "workoutCount": 2,
+    "file": "activaction.json"
+  },
+  {
+    "id": "warmup",
+    "name": "WarmUp",
+    "description": "Structured warm-up protocols",
+    "workoutCount": 1,
+    "file": "warmup.json"
+  },
+  {
+    "id": "riposo",
+    "name": "Riposo",
+    "description": "Rest and recovery days",
+    "workoutCount": 0,
+    "file": "riposo.json"
+  }
+]

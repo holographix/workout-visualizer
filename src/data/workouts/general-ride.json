@@ -1,0 +1,652 @@
+{
+  "id": "general-ride",
+  "name": "General Ride",
+  "description": "Mixed intensity rides for overall fitness",
+  "workouts": [
+    {
+      "id": "general-ride-general--spin-agility",
+      "name": "General  + Spin Agility",
+      "workout": {
+        "id": 11118631,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 600, 158 600, 158 1000, 158 0, 161 0, 161 1000, 161 600, 322 600, 322 1000, 322 0, 325 0, 325 1000, 325 600, 492 600, 492 1000, 492 0, 494 0, 494 1000, 494 600, 661 600, 661 1000, 661 0, 664 0, 664 1000, 664 600, 831 600, 831 1000, 831 0, 833 0, 833 1000, 833 600, 1000 600, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "2:00:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "66",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.57,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "il resto dell'allenamento Z1/Z2",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 65.8,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 11118631,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 2,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1140,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 1140
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "progressione in agilità",
+                    "length": {
+                      "value": 20,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 100,
+                        "maxValue": 150
+                      },
+                      {
+                        "minValue": 70,
+                        "maxValue": 120,
+                        "unit": "roundOrStridePerMinute"
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1140,
+                "end": 1160
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1160,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 1160,
+                "end": 2320
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "progressione in agilità",
+                    "length": {
+                      "value": 20,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 100,
+                        "maxValue": 150
+                      },
+                      {
+                        "minValue": 70,
+                        "maxValue": 120,
+                        "unit": "roundOrStridePerMinute"
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2320,
+                "end": 2340
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 2340,
+                "end": 3540
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "progressione in agilità",
+                    "length": {
+                      "value": 20,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 100,
+                        "maxValue": 150
+                      },
+                      {
+                        "minValue": 70,
+                        "maxValue": 120,
+                        "unit": "roundOrStridePerMinute"
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 3540,
+                "end": 3560
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 3560,
+                "end": 4760
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "progressione in agilità",
+                    "length": {
+                      "value": 20,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 100,
+                        "maxValue": 150
+                      },
+                      {
+                        "minValue": 70,
+                        "maxValue": 120,
+                        "unit": "roundOrStridePerMinute"
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 4760,
+                "end": 4780
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 4780,
+                "end": 5980
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "progressione in agilità",
+                    "length": {
+                      "value": 20,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 100,
+                        "maxValue": 150
+                      },
+                      {
+                        "minValue": 70,
+                        "maxValue": 120,
+                        "unit": "roundOrStridePerMinute"
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 5980,
+                "end": 6000
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 6000,
+                "end": 7200
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.4
+              ],
+              [
+                0.158,
+                0.4
+              ],
+              [
+                0.158,
+                0
+              ],
+              [
+                0.158,
+                1
+              ],
+              [
+                0.161,
+                1
+              ],
+              [
+                0.161,
+                0
+              ],
+              [
+                0.161,
+                0.4
+              ],
+              [
+                0.322,
+                0.4
+              ],
+              [
+                0.322,
+                0
+              ],
+              [
+                0.322,
+                1
+              ],
+              [
+                0.325,
+                1
+              ],
+              [
+                0.325,
+                0
+              ],
+              [
+                0.325,
+                0.4
+              ],
+              [
+                0.492,
+                0.4
+              ],
+              [
+                0.492,
+                0
+              ],
+              [
+                0.492,
+                1
+              ],
+              [
+                0.494,
+                1
+              ],
+              [
+                0.494,
+                0
+              ],
+              [
+                0.494,
+                0.4
+              ],
+              [
+                0.661,
+                0.4
+              ],
+              [
+                0.661,
+                0
+              ],
+              [
+                0.661,
+                1
+              ],
+              [
+                0.664,
+                1
+              ],
+              [
+                0.664,
+                0
+              ],
+              [
+                0.664,
+                0.4
+              ],
+              [
+                0.831,
+                0.4
+              ],
+              [
+                0.831,
+                0
+              ],
+              [
+                0.831,
+                1
+              ],
+              [
+                0.833,
+                1
+              ],
+              [
+                0.833,
+                0
+              ],
+              [
+                0.833,
+                0.4
+              ],
+              [
+                1,
+                0.4
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "general + spin agility 5",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": 1724.8400000000001,
+          "activityTime": "",
+          "description": "ogni 20' di allenamento\n\nin pianura/salita\n\n- 20'' Agilizzazione secca arrivando al max n di rpm che riesci a raggiungere (non usare il cambio)\n\ntotale Agilizzazioni. 5",
+          "activityDate": "",
+          "exerciseLibraryId": 2832717,
+          "itemName": "general + spin agility 5",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "general-ride-general-ride",
+      "name": "General Ride",
+      "workout": {
+        "id": 11111470,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 0, 1000 0, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "2:00:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "85",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.65,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "ottima giornata per uscita di gruppo",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 84.5,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 11111470,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 2,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Active",
+                    "length": {
+                      "value": 7200,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 80
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 7200
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "general ride 2h",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": 1778.4,
+          "activityTime": "",
+          "description": "giro libero",
+          "activityDate": "",
+          "exerciseLibraryId": 2832717,
+          "itemName": "general ride 2h",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    }
+  ]
+}

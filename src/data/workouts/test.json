@@ -1,0 +1,1413 @@
+{
+  "id": "test",
+  "name": "Test",
+  "description": "Assessment and testing protocols",
+  "workouts": [
+    {
+      "id": "test-critical-power-1---1-2-5-2days",
+      "name": "Critical Power 1 - 1'-2'-5' (2Days)",
+      "workout": {
+        "id": 10095439,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 783, 250 783, 250 1000, 250 0, 258 0, 258 1000, 258 739, 508 739, 508 1000, 508 435, 525 435, 525 1000, 525 739, 775 739, 775 1000, 775 435, 817 435, 817 1000, 817 739, 1000 739, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "2:00:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "114",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.75,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "preparati al test aumentando dal giorno prima i carboidrati, sfrutta i recuperi tra i test per alimentarti con gel e maltodestrine",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 113.9,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 10095439,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 2,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": {
+                      "value": 1800,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 40,
+                        "maxValue": 50
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 1800
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 60
+                    },
+                    "targets": [
+                      {
+                        "minValue": 190,
+                        "maxValue": 230
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 1800
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 1800,
+                "end": 3660
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 120
+                    },
+                    "targets": [
+                      {
+                        "minValue": 115,
+                        "maxValue": 130
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 1800
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 3660,
+                "end": 5580
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 300
+                    },
+                    "targets": [
+                      {
+                        "minValue": 115,
+                        "maxValue": 130
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 1320
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 5580,
+                "end": 7200
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.217
+              ],
+              [
+                0.25,
+                0.217
+              ],
+              [
+                0.25,
+                0
+              ],
+              [
+                0.25,
+                1
+              ],
+              [
+                0.258,
+                1
+              ],
+              [
+                0.258,
+                0
+              ],
+              [
+                0.258,
+                0.261
+              ],
+              [
+                0.508,
+                0.261
+              ],
+              [
+                0.508,
+                0
+              ],
+              [
+                0.508,
+                0.565
+              ],
+              [
+                0.525,
+                0.565
+              ],
+              [
+                0.525,
+                0
+              ],
+              [
+                0.525,
+                0.261
+              ],
+              [
+                0.775,
+                0.261
+              ],
+              [
+                0.775,
+                0
+              ],
+              [
+                0.775,
+                0.565
+              ],
+              [
+                0.817,
+                0.565
+              ],
+              [
+                0.817,
+                0
+              ],
+              [
+                0.817,
+                0.261
+              ],
+              [
+                1,
+                0.261
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "CriticalPower #1 DAY_1' - 2' - 5' (2 times)",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": null,
+          "activityTime": "",
+          "description": "30' warm up progressive\n- 1' in salita A TUTTA - REC 30'\n- 2' in salita A TUTTA - REC 30'\n- 5' in salita A TUTTA",
+          "activityDate": "",
+          "exerciseLibraryId": 1946161,
+          "itemName": "CriticalPower #1 DAY_1' - 2' - 5' (2 times)",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "test-critical-power-2---5---12-2days",
+      "name": "Critical Power 2 - 5'' - 12' (2Days)",
+      "workout": {
+        "id": 10095444,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 800, 250 800, 250 1000, 250 0, 252 0, 252 1000, 252 760, 299 760, 299 1000, 299 0, 301 0, 301 1000, 301 760, 550 760, 550 1000, 550 480, 650 480, 650 1000, 650 760, 1000 760, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "2:00:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "110",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.74,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 109.5,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 10095444,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 2,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": {
+                      "value": 1800,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 40,
+                        "maxValue": 50
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 1800
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Active",
+                    "length": {
+                      "value": 15,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 200,
+                        "maxValue": 250
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Active",
+                    "length": {
+                      "value": 340,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 1800,
+                "end": 2155
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Active",
+                    "length": {
+                      "value": 15,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 200,
+                        "maxValue": 250
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2155,
+                "end": 2170
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": {
+                      "value": 1790,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 2170,
+                "end": 3960
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 720
+                    },
+                    "targets": [
+                      {
+                        "minValue": 110,
+                        "maxValue": 130
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 2520
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 3960,
+                "end": 7200
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.2
+              ],
+              [
+                0.25,
+                0.2
+              ],
+              [
+                0.25,
+                0
+              ],
+              [
+                0.25,
+                1
+              ],
+              [
+                0.252,
+                1
+              ],
+              [
+                0.252,
+                0
+              ],
+              [
+                0.252,
+                0.24
+              ],
+              [
+                0.299,
+                0.24
+              ],
+              [
+                0.299,
+                0
+              ],
+              [
+                0.299,
+                1
+              ],
+              [
+                0.301,
+                1
+              ],
+              [
+                0.301,
+                0
+              ],
+              [
+                0.301,
+                0.24
+              ],
+              [
+                0.55,
+                0.24
+              ],
+              [
+                0.55,
+                0
+              ],
+              [
+                0.55,
+                0.52
+              ],
+              [
+                0.65,
+                0.52
+              ],
+              [
+                0.65,
+                0
+              ],
+              [
+                0.65,
+                0.24
+              ],
+              [
+                1,
+                0.24
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "CriticalPower #2 DAY_15'' - 12'  (2 times)",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": null,
+          "activityTime": "",
+          "description": "- 2 x 15'' sprint massimale start 15/20km/h - rec almeno 5'\n\n- 12' in salita A TUTTA",
+          "activityDate": "",
+          "exerciseLibraryId": 1946161,
+          "itemName": "CriticalPower #2 DAY_15'' - 12'  (2 times)",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "test-criticalpower-1-day-1---3-3times",
+      "name": "CriticalPower 1 DAY 1' - 3' (3times)",
+      "workout": {
+        "id": 10972321,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 783, 333 783, 333 1000, 333 0, 344 0, 344 1000, 344 739, 744 739, 744 1000, 744 435, 767 435, 767 1000, 767 739, 1000 739, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "1:30:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "80",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.73,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "preparati al test aumentando dal giorno prima i carboidrati, sfrutta i recuperi tra i test per alimentarti con gel e malto",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 79.9,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 10972321,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 1.5,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": {
+                      "value": 1800,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 40,
+                        "maxValue": 50
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 1800
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 60
+                    },
+                    "targets": [
+                      {
+                        "minValue": 190,
+                        "maxValue": 230
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 2160
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 1800,
+                "end": 4020
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 120
+                    },
+                    "targets": [
+                      {
+                        "minValue": 115,
+                        "maxValue": 130
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 1260
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 4020,
+                "end": 5400
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.217
+              ],
+              [
+                0.333,
+                0.217
+              ],
+              [
+                0.333,
+                0
+              ],
+              [
+                0.333,
+                1
+              ],
+              [
+                0.344,
+                1
+              ],
+              [
+                0.344,
+                0
+              ],
+              [
+                0.344,
+                0.261
+              ],
+              [
+                0.744,
+                0.261
+              ],
+              [
+                0.744,
+                0
+              ],
+              [
+                0.744,
+                0.565
+              ],
+              [
+                0.767,
+                0.565
+              ],
+              [
+                0.767,
+                0
+              ],
+              [
+                0.767,
+                0.261
+              ],
+              [
+                1,
+                0.261
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "CriticalPower 1 DAY 1' - 3' (3times)",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": null,
+          "activityTime": "",
+          "description": "- 1' in salita A TUTTA - REC 30'\n- 2' in salita A TUTTA -",
+          "activityDate": "",
+          "exerciseLibraryId": 1946161,
+          "itemName": "CriticalPower 1 DAY 1' - 3' (3times)",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "test-criticalpower-2-day-15---5-3times",
+      "name": "CriticalPower 2 DAY 15'' - 5' (3times)",
+      "workout": {
+        "id": 10972322,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 875, 333 875, 333 1000, 333 0, 336 0, 336 1000, 336 850, 392 850, 392 1000, 392 0, 394 0, 394 1000, 394 850, 450 850, 450 1000, 450 875, 711 875, 711 1000, 711 675, 767 675, 767 1000, 767 850, 1000 850, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "1:30:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "85",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.75,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "preparati al test aumentando dal giorno prima i carboidrati, sfrutta i recuperi tra i test per alimentarti con gel e malto",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 84.8,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 10972322,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 1.5,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": {
+                      "value": 1800,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 40,
+                        "maxValue": 50
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 1800
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 2,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 15
+                    },
+                    "targets": [
+                      {
+                        "minValue": 300,
+                        "maxValue": 400
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 300
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 1800,
+                "end": 2430
+              },
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "recovery",
+                    "length": {
+                      "value": 1410,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 40,
+                        "maxValue": 50
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 2430,
+                "end": 3840
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 300
+                    },
+                    "targets": [
+                      {
+                        "minValue": 115,
+                        "maxValue": 130
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 1260
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 3840,
+                "end": 5400
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.125
+              ],
+              [
+                0.333,
+                0.125
+              ],
+              [
+                0.333,
+                0
+              ],
+              [
+                0.333,
+                1
+              ],
+              [
+                0.336,
+                1
+              ],
+              [
+                0.336,
+                0
+              ],
+              [
+                0.336,
+                0.15
+              ],
+              [
+                0.392,
+                0.15
+              ],
+              [
+                0.392,
+                0
+              ],
+              [
+                0.392,
+                1
+              ],
+              [
+                0.394,
+                1
+              ],
+              [
+                0.394,
+                0
+              ],
+              [
+                0.394,
+                0.15
+              ],
+              [
+                0.45,
+                0.15
+              ],
+              [
+                0.45,
+                0
+              ],
+              [
+                0.45,
+                0.125
+              ],
+              [
+                0.711,
+                0.125
+              ],
+              [
+                0.711,
+                0
+              ],
+              [
+                0.711,
+                0.325
+              ],
+              [
+                0.767,
+                0.325
+              ],
+              [
+                0.767,
+                0
+              ],
+              [
+                0.767,
+                0.15
+              ],
+              [
+                1,
+                0.15
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "CriticalPower 2 DAY 15'' - 5' (3times)",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": 852.6000000000001,
+          "activityTime": "",
+          "description": "- 2 x 10/15'' in pianura sprint massimali rapporto libero\n- 5' in salita A TUTTA -",
+          "activityDate": "",
+          "exerciseLibraryId": 1946161,
+          "itemName": "CriticalPower 2 DAY 15'' - 5' (3times)",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "test-criticalpower-3-day-12-3times",
+      "name": "CriticalPower 3 DAY 12' (3times)",
+      "workout": {
+        "id": 10972323,
+        "type": "LIBRARY_EXERCISE",
+        "attributes": {
+          "polyline": "0 1000, 0 615, 250 615, 250 1000, 250 0, 350 0, 350 1000, 350 538, 1000 538, 1000 1000",
+          "allKeyStats": {
+            "duration": {
+              "value": "2:00:00",
+              "units": "",
+              "key": "totalTimePlanned"
+            },
+            "distance": {
+              "value": "",
+              "units": "km",
+              "key": "distancePlanned"
+            },
+            "tss": {
+              "value": "105",
+              "units": "TSS",
+              "key": "tssPlanned"
+            }
+          },
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.72,
+          "velocityPlanned": null,
+          "elevationGainPlanned": null,
+          "activityType": "WORKOUT",
+          "hasPlannedValues": true,
+          "isFuture": true,
+          "coachComments": "",
+          "distancePlanned": null,
+          "startTime": {
+            "value": "",
+            "units": ""
+          },
+          "tssPlanned": 104.9,
+          "exerciseLibraryItemType": "WorkoutTemplate",
+          "exerciseLibraryItemId": 10972323,
+          "workoutTypeId": 2,
+          "fromLegacy": false,
+          "totalTimePlanned": 2,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": {
+                      "value": 1800,
+                      "unit": "second"
+                    },
+                    "targets": [
+                      {
+                        "minValue": 40,
+                        "maxValue": 50
+                      }
+                    ],
+                    "intensityClass": "warmUp",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 0,
+                "end": 1800
+              },
+              {
+                "type": "repetition",
+                "length": {
+                  "value": 1,
+                  "unit": "repetition"
+                },
+                "steps": [
+                  {
+                    "type": "step",
+                    "name": "Hard",
+                    "length": {
+                      "unit": "second",
+                      "value": 720
+                    },
+                    "targets": [
+                      {
+                        "minValue": 110,
+                        "maxValue": 130
+                      }
+                    ],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  },
+                  {
+                    "type": "step",
+                    "name": "Easy",
+                    "length": {
+                      "unit": "second",
+                      "value": 4680
+                    },
+                    "targets": [
+                      {
+                        "minValue": 50,
+                        "maxValue": 60
+                      }
+                    ],
+                    "intensityClass": "rest",
+                    "openDuration": true
+                  }
+                ],
+                "begin": 1800,
+                "end": 7200
+              }
+            ],
+            "polyline": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0.385
+              ],
+              [
+                0.25,
+                0.385
+              ],
+              [
+                0.25,
+                0
+              ],
+              [
+                0.25,
+                1
+              ],
+              [
+                0.35,
+                1
+              ],
+              [
+                0.35,
+                0
+              ],
+              [
+                0.35,
+                0.462
+              ],
+              [
+                1,
+                0.462
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "primaryLengthMetric": "duration",
+            "primaryIntensityMetric": "percentOfFtp",
+            "primaryIntensityTargetOrRange": "range"
+          },
+          "fileAttachments": null,
+          "startTimePlanned": {
+            "value": "",
+            "units": ""
+          },
+          "workoutTypeValueId": 2,
+          "isToday": false,
+          "title": "CriticalPower 3 DAY 12' (3times)",
+          "hasDeviceData": false,
+          "id": null,
+          "isPast": false,
+          "energyPlanned": 1231.92,
+          "activityTime": "",
+          "description": "- 12' in salita A TUTTA - REC 45'",
+          "activityDate": "",
+          "exerciseLibraryId": 1946161,
+          "itemName": "CriticalPower 3 DAY 12' (3times)",
+          "caloriesPlanned": null,
+          "workoutDay": {
+            "value": "",
+            "units": ""
+          }
+        }
+      }
+    }
+  ]
+}
