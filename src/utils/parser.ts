@@ -78,12 +78,17 @@ export const parseWorkout = (data: Workout): ParsedWorkout => {
         processStructureItem(item);
     });
 
+    // Title and description can be at root level or inside attributes
+    const attrs = data.attributes as unknown as Record<string, unknown>;
+    const title = data.title || attrs.title as string || 'Untitled Workout';
+    const description = data.description || attrs.description as string || '';
+
     return {
         segments,
         totalDuration: currentTime,
         metadata: {
-            title: data.title,
-            description: data.description,
+            title,
+            description,
             tss: data.attributes.tssPlanned,
             if: data.attributes.ifPlanned,
         }
