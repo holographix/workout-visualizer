@@ -12,31 +12,37 @@ export const parseWorkout = (data: TrainingPeaksWorkout): ParsedWorkout => {
     let currentTime = 0;
 
     const processStepData = (step: WorkoutStepData) => {
-        const duration = step.length.unit === 'second'
-            ? step.length.value
-            : step.length.unit === 'minute'
-                ? step.length.value * 60
-                : step.length.value; // repetition unit, use value as-is
+        // Convert duration to seconds - exact from JSON
+        let duration: number;
+        switch (step.length.unit) {
+            case 'second':
+                duration = step.length.value;
+                break;
+            case 'minute':
+                duration = step.length.value * 60;
+                break;
+            default:
+                // For any other unit, use value as-is (in seconds)
+                duration = step.length.value;
+        }
 
-        // Handle Open Duration (indefinite)
-        // For visualization, we assign a fixed "visual" duration (e.g., 5 mins) but mark it
-        const visualDuration = step.openDuration ? 300 : duration;
-
-        const targetMin = step.targets[0]?.minValue || 0;
-        const targetMax = step.targets[0]?.maxValue || 0;
+        // Extract targets exactly as they appear in JSON
+        const target = step.targets[0];
+        const targetMin = target?.minValue ?? 0;
+        const targetMax = target?.maxValue ?? 0;
 
         segments.push({
             startTime: currentTime,
-            endTime: currentTime + visualDuration,
-            duration: visualDuration,
+            endTime: currentTime + duration,
+            duration,
             targetMin,
             targetMax,
             type: step.intensityClass,
-            name: step.name || 'Interval',
+            name: step.name ?? '', // Exact name from JSON, empty if not present
             openDuration: step.openDuration,
         });
 
-        currentTime += visualDuration;
+        currentTime += duration;
     };
 
     const isRepetition = (item: WorkoutStepData | WorkoutRepetition): item is WorkoutRepetition => {
@@ -58,7 +64,7 @@ export const parseWorkout = (data: TrainingPeaksWorkout): ParsedWorkout => {
 
     const processStructureItem = (item: WorkoutStructureItem) => {
         if (item.type === 'step') {
-            // This is a wrapper step with steps array inside
+            // Wrapper step containing actual steps
             item.steps.forEach(stepData => {
                 processStepData(stepData);
             });
@@ -67,7 +73,7 @@ export const parseWorkout = (data: TrainingPeaksWorkout): ParsedWorkout => {
         }
     };
 
-    // Navigate through: data.attributes.structure.structure
+    // Process structure exactly as defined in JSON
     data.attributes.structure.structure.forEach(item => {
         processStructureItem(item);
     });
