@@ -64,6 +64,180 @@ CREATE TABLE scheduled_workouts (
 CREATE INDEX idx_scheduled_workouts_week ON scheduled_workouts(training_week_id, day_index);
 ```
 
+### Workout Library Schema (Database)
+
+Migrate from flat JSON files to Supabase for easier management:
+
+```sql
+-- Workout categories
+CREATE TABLE workout_categories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL, -- 'anaerobic-capacity', 'vo2max', etc.
+  name TEXT NOT NULL,
+  description TEXT,
+  sort_order SMALLINT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Workout library
+CREATE TABLE workouts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  category_id UUID REFERENCES workout_categories(id),
+  slug TEXT UNIQUE NOT NULL, -- 'vo2max-4x4min'
+  name TEXT NOT NULL, -- Display name: 'VO2 Max 4x4min'
+  title TEXT, -- Original title from JSON
+  description TEXT,
+
+  -- Metadata
+  duration_seconds INTEGER NOT NULL, -- Total duration
+  duration_category TEXT CHECK (duration_category IN ('short', 'medium', 'long')), -- <1h, 1-2h, >2h
+  tss_planned DECIMAL(5,1),
+  if_planned DECIMAL(3,2), -- Intensity Factor 0.00-1.50
+  workout_type TEXT DEFAULT 'Bike', -- 'Bike', 'Run', etc.
+
+  -- Tags for filtering
+  environment TEXT CHECK (environment IN ('indoor', 'outdoor', 'any')) DEFAULT 'any',
+  intensity TEXT CHECK (intensity IN ('easy', 'moderate', 'hard', 'very_hard')),
+
+  -- The actual workout structure (JSON blob)
+  structure JSONB NOT NULL, -- The nested structure.structure array
+
+  -- Optional: full original JSON for reference
+  raw_json JSONB,
+
+  -- Ownership (NULL = system/global library)
+  coach_id UUID REFERENCES profiles(id), -- NULL for shared library, coach_id for custom
+  is_public BOOLEAN DEFAULT TRUE, -- Can other coaches see/use this?
+
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for common queries
+CREATE INDEX idx_workouts_category ON workouts(category_id);
+CREATE INDEX idx_workouts_duration ON workouts(duration_category);
+CREATE INDEX idx_workouts_environment ON workouts(environment);
+CREATE INDEX idx_workouts_coach ON workouts(coach_id) WHERE coach_id IS NOT NULL;
+
+-- Full-text search on name and description
+CREATE INDEX idx_workouts_search ON workouts
+  USING GIN (to_tsvector('english', name || ' ' || COALESCE(description, '')));
+
+-- View for easy querying with category info
+CREATE VIEW workouts_with_category AS
+SELECT
+  w.*,
+  c.name as category_name,
+  c.slug as category_slug
+FROM workouts w
+LEFT JOIN workout_categories c ON w.category_id = c.id;
+```
+
+### Workout Library TypeScript Types
+
+```typescript
+interface WorkoutCategory {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  sortOrder: number;
+  workoutCount?: number; // Computed
+}
+
+interface LibraryWorkout {
+  id: string;
+  categoryId: string;
+  slug: string;
+  name: string;
+  title?: string;
+  description?: string;
+
+  // Metadata
+  durationSeconds: number;
+  durationCategory: 'short' | 'medium' | 'long';
+  tssPlanned?: number;
+  ifPlanned?: number;
+  workoutType: string;
+
+  // Tags
+  environment: 'indoor' | 'outdoor' | 'any';
+  intensity?: 'easy' | 'moderate' | 'hard' | 'very_hard';
+
+  // Structure for the visualizer
+  structure: WorkoutStructure;
+
+  // Ownership
+  coachId?: string;
+  isPublic: boolean;
+
+  // Joined data
+  categoryName?: string;
+  categorySlug?: string;
+}
+
+// Query filters
+interface WorkoutFilters {
+  categoryId?: string;
+  durationCategory?: 'short' | 'medium' | 'long';
+  environment?: 'indoor' | 'outdoor' | 'any';
+  intensity?: string;
+  search?: string;
+  coachId?: string; // Include coach's custom workouts
+  includePublic?: boolean;
+}
+```
+
+### Migration Script (JSON → Supabase)
+
+```typescript
+// scripts/migrateLibraryToSupabase.ts
+import { createClient } from '@supabase/supabase-js';
+import workoutCategories from '../src/data/workouts/index.json';
+
+async function migrate() {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+  for (const category of workoutCategories) {
+    // Insert category
+    const { data: cat } = await supabase
+      .from('workout_categories')
+      .upsert({
+        slug: category.id,
+        name: category.name,
+        description: category.description
+      })
+      .select()
+      .single();
+
+    // Load category workouts
+    const categoryData = await import(`../src/data/workouts/${category.file}`);
+
+    for (const item of categoryData.workouts) {
+      const workout = item.workout;
+      const durationHours = workout.attributes.totalTimePlanned;
+
+      await supabase.from('workouts').upsert({
+        slug: item.id,
+        category_id: cat.id,
+        name: item.name,
+        title: workout.attributes.title || workout.title,
+        description: workout.attributes.description || workout.description,
+        duration_seconds: durationHours * 3600,
+        duration_category: durationHours < 1 ? 'short' : durationHours <= 2 ? 'medium' : 'long',
+        tss_planned: workout.attributes.tssPlanned,
+        if_planned: workout.attributes.ifPlanned,
+        workout_type: workout.attributes.workoutTypeName,
+        environment: 'any', // Default, update manually
+        structure: workout.attributes.structure,
+        raw_json: workout,
+        is_public: true
+      });
+    }
+  }
+}
+```
+
 ### TypeScript Types
 
 ```typescript
