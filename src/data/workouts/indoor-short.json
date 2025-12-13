@@ -1,0 +1,529 @@
+{
+  "id": "indoor-short",
+  "name": "Indoor Short (<1h)",
+  "description": "Quick indoor trainer sessions under 1 hour - perfect for busy weekdays",
+  "workouts": [
+    {
+      "id": "indoor-30min-sweetspot",
+      "name": "30min Sweet Spot",
+      "workout": {
+        "id": 100001,
+        "type": "LIBRARY_EXERCISE",
+        "title": "30min Sweet Spot",
+        "description": "Quick sweet spot session for time-crunched athletes. Great for building aerobic capacity in minimal time.",
+        "attributes": {
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.82,
+          "tssPlanned": 41,
+          "totalTimePlanned": 0.5,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": { "value": 300, "unit": "second" },
+                    "targets": [{ "minValue": 45, "maxValue": 55 }],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 300
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Sweet Spot",
+                    "length": { "value": 1200, "unit": "second" },
+                    "targets": [{ "minValue": 88, "maxValue": 93 }],
+                    "intensityClass": "sweetSpot",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 300,
+                "end": 1500
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Cool down",
+                    "length": { "value": 300, "unit": "second" },
+                    "targets": [{ "minValue": 40, "maxValue": 50 }],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1500,
+                "end": 1800
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "indoor-45min-tempo",
+      "name": "45min Tempo Builder",
+      "workout": {
+        "id": 100002,
+        "type": "LIBRARY_EXERCISE",
+        "title": "45min Tempo Builder",
+        "description": "Steady tempo work to build muscular endurance. Perfect for indoor trainers.",
+        "attributes": {
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.78,
+          "tssPlanned": 52,
+          "totalTimePlanned": 0.75,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": { "value": 600, "unit": "second" },
+                    "targets": [{ "minValue": 45, "maxValue": 55 }],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 600
+              },
+              {
+                "type": "repetition",
+                "length": { "value": 3, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Tempo",
+                    "length": { "value": 480, "unit": "second" },
+                    "targets": [{ "minValue": 76, "maxValue": 85 }],
+                    "intensityClass": "tempo",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Recovery",
+                    "length": { "value": 120, "unit": "second" },
+                    "targets": [{ "minValue": 45, "maxValue": 55 }],
+                    "intensityClass": "recovery",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 600,
+                "end": 2400
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Cool down",
+                    "length": { "value": 300, "unit": "second" },
+                    "targets": [{ "minValue": 40, "maxValue": 50 }],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2400,
+                "end": 2700
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "indoor-40min-vo2max-short",
+      "name": "40min VO2max Blitz",
+      "workout": {
+        "id": 100003,
+        "type": "LIBRARY_EXERCISE",
+        "title": "40min VO2max Blitz",
+        "description": "Short but intense VO2max session. 4x3min intervals at 105-115% FTP.",
+        "attributes": {
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.88,
+          "tssPlanned": 55,
+          "totalTimePlanned": 0.67,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": { "value": 600, "unit": "second" },
+                    "targets": [{ "minValue": 50, "maxValue": 60 }],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 600
+              },
+              {
+                "type": "repetition",
+                "length": { "value": 4, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "VO2max",
+                    "length": { "value": 180, "unit": "second" },
+                    "targets": [{ "minValue": 105, "maxValue": 115 }],
+                    "intensityClass": "vo2Max",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Recovery",
+                    "length": { "value": 180, "unit": "second" },
+                    "targets": [{ "minValue": 40, "maxValue": 50 }],
+                    "intensityClass": "recovery",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 600,
+                "end": 2040
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Cool down",
+                    "length": { "value": 360, "unit": "second" },
+                    "targets": [{ "minValue": 40, "maxValue": 50 }],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2040,
+                "end": 2400
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "indoor-30min-tabata",
+      "name": "30min Tabata Power",
+      "workout": {
+        "id": 100004,
+        "type": "LIBRARY_EXERCISE",
+        "title": "30min Tabata Power",
+        "description": "Classic Tabata intervals: 20 seconds max effort / 10 seconds rest, repeated 8 times.",
+        "attributes": {
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.85,
+          "tssPlanned": 38,
+          "totalTimePlanned": 0.5,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": { "value": 600, "unit": "second" },
+                    "targets": [{ "minValue": 50, "maxValue": 60 }],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 600
+              },
+              {
+                "type": "repetition",
+                "length": { "value": 8, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "MAX",
+                    "length": { "value": 20, "unit": "second" },
+                    "targets": [{ "minValue": 150, "maxValue": 200 }],
+                    "intensityClass": "anaerobic",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Rest",
+                    "length": { "value": 10, "unit": "second" },
+                    "targets": [{ "minValue": 0, "maxValue": 30 }],
+                    "intensityClass": "recovery",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 600,
+                "end": 840
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Easy spin",
+                    "length": { "value": 300, "unit": "second" },
+                    "targets": [{ "minValue": 40, "maxValue": 50 }],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 840,
+                "end": 1140
+              },
+              {
+                "type": "repetition",
+                "length": { "value": 8, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "MAX",
+                    "length": { "value": 20, "unit": "second" },
+                    "targets": [{ "minValue": 150, "maxValue": 200 }],
+                    "intensityClass": "anaerobic",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Rest",
+                    "length": { "value": 10, "unit": "second" },
+                    "targets": [{ "minValue": 0, "maxValue": 30 }],
+                    "intensityClass": "recovery",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1140,
+                "end": 1380
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Cool down",
+                    "length": { "value": 420, "unit": "second" },
+                    "targets": [{ "minValue": 40, "maxValue": 50 }],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1380,
+                "end": 1800
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "indoor-50min-threshold",
+      "name": "50min Threshold Builder",
+      "workout": {
+        "id": 100005,
+        "type": "LIBRARY_EXERCISE",
+        "title": "50min Threshold Builder",
+        "description": "Two 12-minute threshold intervals at 95-100% FTP to build race fitness.",
+        "attributes": {
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.85,
+          "tssPlanned": 60,
+          "totalTimePlanned": 0.83,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": { "value": 600, "unit": "second" },
+                    "targets": [{ "minValue": 50, "maxValue": 60 }],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 600
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Threshold 1",
+                    "length": { "value": 720, "unit": "second" },
+                    "targets": [{ "minValue": 95, "maxValue": 100 }],
+                    "intensityClass": "threshold",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 600,
+                "end": 1320
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Recovery",
+                    "length": { "value": 360, "unit": "second" },
+                    "targets": [{ "minValue": 45, "maxValue": 55 }],
+                    "intensityClass": "recovery",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1320,
+                "end": 1680
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Threshold 2",
+                    "length": { "value": 720, "unit": "second" },
+                    "targets": [{ "minValue": 95, "maxValue": 100 }],
+                    "intensityClass": "threshold",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1680,
+                "end": 2400
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Cool down",
+                    "length": { "value": 600, "unit": "second" },
+                    "targets": [{ "minValue": 40, "maxValue": 50 }],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2400,
+                "end": 3000
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "indoor-45min-microbursts",
+      "name": "45min Microbursts",
+      "workout": {
+        "id": 100006,
+        "type": "LIBRARY_EXERCISE",
+        "title": "45min Microbursts",
+        "description": "15/15 microburst intervals - 15 seconds on, 15 seconds off. Great for neuromuscular power.",
+        "attributes": {
+          "workoutTypeName": "Bike",
+          "ifPlanned": 0.82,
+          "tssPlanned": 50,
+          "totalTimePlanned": 0.75,
+          "structure": {
+            "structure": [
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Warm up",
+                    "length": { "value": 600, "unit": "second" },
+                    "targets": [{ "minValue": 50, "maxValue": 60 }],
+                    "intensityClass": "warmUp",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 0,
+                "end": 600
+              },
+              {
+                "type": "repetition",
+                "length": { "value": 20, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Burst",
+                    "length": { "value": 15, "unit": "second" },
+                    "targets": [{ "minValue": 130, "maxValue": 150 }],
+                    "intensityClass": "anaerobic",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Float",
+                    "length": { "value": 15, "unit": "second" },
+                    "targets": [{ "minValue": 60, "maxValue": 70 }],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 600,
+                "end": 1200
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Easy spin",
+                    "length": { "value": 300, "unit": "second" },
+                    "targets": [{ "minValue": 45, "maxValue": 55 }],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1200,
+                "end": 1500
+              },
+              {
+                "type": "repetition",
+                "length": { "value": 20, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Burst",
+                    "length": { "value": 15, "unit": "second" },
+                    "targets": [{ "minValue": 130, "maxValue": 150 }],
+                    "intensityClass": "anaerobic",
+                    "openDuration": false
+                  },
+                  {
+                    "name": "Float",
+                    "length": { "value": 15, "unit": "second" },
+                    "targets": [{ "minValue": 60, "maxValue": 70 }],
+                    "intensityClass": "active",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 1500,
+                "end": 2100
+              },
+              {
+                "type": "step",
+                "length": { "value": 1, "unit": "repetition" },
+                "steps": [
+                  {
+                    "name": "Cool down",
+                    "length": { "value": 600, "unit": "second" },
+                    "targets": [{ "minValue": 40, "maxValue": 50 }],
+                    "intensityClass": "coolDown",
+                    "openDuration": false
+                  }
+                ],
+                "begin": 2100,
+                "end": 2700
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

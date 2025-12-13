@@ -14,6 +14,8 @@ import test from './workouts/test.json';
 import activaction from './workouts/activaction.json';
 import warmup from './workouts/warmup.json';
 import riposo from './workouts/riposo.json';
+import indoorShort from './workouts/indoor-short.json';
+import outdoorLong from './workouts/outdoor-long.json';
 
 export interface WorkoutLibraryItem {
     id: string;
@@ -30,6 +32,8 @@ export interface WorkoutCategory {
 
 // Type assertion for imported JSON (using unknown first for safe casting)
 const categories = [
+    indoorShort,
+    outdoorLong,
     anaerobicCapacity,
     easyRide,
     fatmax,

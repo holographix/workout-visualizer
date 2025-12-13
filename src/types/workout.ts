@@ -45,18 +45,28 @@ export interface WorkoutStructure {
   structure: WorkoutStructureItem[];
 }
 
+export type WorkoutType =
+  | 'outdoorCycling'
+  | 'indoorCycling'
+  | 'gymHome'
+  | 'gymFacility'
+  | 'crossTraining'
+  | 'other';
+
 export interface WorkoutAttributes {
   structure: WorkoutStructure;
   tssPlanned: number;
   ifPlanned: number;
   totalTimePlanned: number;
   workoutTypeName: string;
+  workoutType?: WorkoutType;
 }
 
 export interface Workout {
   id: number;
   title: string;
   description: string;
+  categoryId?: string;
   attributes: WorkoutAttributes;
 }
 

@@ -4,7 +4,7 @@ import { Bar } from '@visx/shape';
 import { scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { LinearGradient } from '@visx/gradient';
-import type { ParsedWorkout, FlatSegment } from '../types/workout';
+import type { ParsedWorkout, FlatSegment } from '../../types/workout';
 
 interface WorkoutChartProps {
     workout: ParsedWorkout;
@@ -58,7 +58,7 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({
     );
 
     const maxIntensity = useMemo(
-        () => Math.max(...workout.segments.map((s) => s.targetMax), 100) * 1.1,
+        () => Math.max(...workout.segments.map((s: FlatSegment) => s.targetMax), 100) * 1.1,
         [workout.segments],
     );
 
@@ -81,7 +81,7 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({
 
     // Calculate bar positions for all segments
     const barPositions = useMemo(() => {
-        return workout.segments.map((segment) => {
+        return workout.segments.map((segment: FlatSegment) => {
             const barWidth = Math.max(xScale(segment.endTime) - xScale(segment.startTime) - 1, 1);
             const barHeight = yMax - yScale(segment.targetMax);
             const x = xScale(segment.startTime);
@@ -205,7 +205,7 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({
                     </text>
 
                     {/* Workout segments */}
-                    {workout.segments.map((segment, i) => {
+                    {workout.segments.map((segment: FlatSegment, i: number) => {
                         const { x, y, barWidth, barHeight } = barPositions[i];
                         const isHovered = hoveredIndex === i;
                         const isSelected = selectedIndex === i;
