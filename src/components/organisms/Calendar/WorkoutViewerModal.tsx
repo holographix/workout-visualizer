@@ -22,7 +22,6 @@ import {
   Box,
   Text,
   Badge,
-  Divider,
   SimpleGrid,
   useColorModeValue,
   Icon,
@@ -61,7 +60,7 @@ import {
   BarChart3,
   FileText,
 } from 'lucide-react';
-import type { ScheduledWorkout, WorkoutResults, WorkoutFeeling } from '../../../types/calendar';
+import type { WorkoutResults, WorkoutFeeling } from '../../../types/calendar';
 import type { Workout } from '../../../types/workout';
 import { WorkoutChart } from '../WorkoutChart';
 import { IntervalList } from '../IntervalList';
@@ -153,7 +152,6 @@ export function WorkoutViewerModal({
   const { t } = useTranslation();
   const bgColor = useColorModeValue('white', 'gray.800');
   const cardBg = useColorModeValue('gray.50', 'gray.700');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
   const mutedColor = useColorModeValue('gray.600', 'gray.400');
 
   // Fetch state

@@ -22,7 +22,6 @@ import {
   StatNumber,
   StatHelpText,
   StatArrow,
-  Progress,
   Spinner,
   useColorModeValue,
   Alert,

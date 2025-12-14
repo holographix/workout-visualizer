@@ -78,7 +78,7 @@ export function CoachDashboardPage() {
   const {
     athletesWithNewAssessment,
     athletesNeedingAssessment,
-    isLoading: isLoadingAssessments,
+    isLoading: _isLoadingAssessments,
   } = useCoachAssessmentStatus(user?.id);
 
   if (isLoading) {
@@ -690,7 +690,7 @@ function NewAssessmentCard({
             </Text>
             <HStack spacing={2} mt={0.5}>
               <Badge colorScheme="green" fontSize="9px">
-                {t('coachDashboard.newTest', 'New Test')}
+                {t('coachDashboard.newTest', { defaultValue: 'New Test' })}
               </Badge>
               {athlete.latestAssessment?.estimatedFTP && (
                 <Text fontSize="xs" color={mutedColor}>
@@ -751,13 +751,13 @@ function OverdueAssessmentCard({
             <HStack spacing={2} mt={0.5}>
               {!athlete.hasAssessment ? (
                 <Badge colorScheme="purple" fontSize="9px">
-                  {t('coachDashboard.noTest', 'No Test')}
+                  {t('coachDashboard.noTest', { defaultValue: 'No Test' })}
                 </Badge>
               ) : (
                 <Badge colorScheme="purple" fontSize="9px">
                   <HStack spacing={1}>
                     <Clock size={10} />
-                    <Text>{athlete.daysSinceTest} {t('coachDashboard.daysAgo', 'days ago')}</Text>
+                    <Text>{athlete.daysSinceTest} {t('coachDashboard.daysAgo', { defaultValue: 'days ago' })}</Text>
                   </HStack>
                 </Badge>
               )}

@@ -20,7 +20,6 @@ import {
   Stat,
   StatLabel,
   StatNumber,
-  StatHelpText,
   Alert,
   AlertIcon,
   AlertTitle,
@@ -37,7 +36,7 @@ import {
   AlertDialogFooter,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { Activity, Zap, Clock, TrendingUp, AlertTriangle, History, Pencil, Trash2 } from 'lucide-react';
+import { Activity, Zap, Clock, AlertTriangle, History, Pencil, Trash2 } from 'lucide-react';
 import { differenceInDays, isToday } from 'date-fns';
 import { useRef } from 'react';
 import { useAssessments } from '../../../hooks/useAssessments';
@@ -63,7 +62,6 @@ export function AssessmentCard({ athleteId }: AssessmentCardProps) {
   const {
     assessments,
     latestAssessment,
-    isLoading,
     isSaving,
     fetchAssessments,
     fetchLatestAssessment,
@@ -117,10 +115,6 @@ export function AssessmentCard({ athleteId }: AssessmentCardProps) {
   const iconColor = useColorModeValue('brand.500', 'brand.300');
   const mutedColor = useColorModeValue('gray.500', 'gray.400');
   const warningBg = useColorModeValue('orange.50', 'orange.900');
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString();
-  };
 
   // Check if assessment is due (no assessment or > 30 days old)
   const assessmentDueInfo = useMemo(() => {

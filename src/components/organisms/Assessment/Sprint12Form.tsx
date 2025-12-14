@@ -9,7 +9,6 @@ import {
   VStack,
   FormControl,
   FormLabel,
-  FormHelperText,
   Input,
   NumberInput,
   NumberInputField,
@@ -24,7 +23,6 @@ import {
   Box,
   Heading,
   Text,
-  Divider,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useState } from 'react';

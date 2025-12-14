@@ -28,6 +28,7 @@ export interface UserProfile {
   fullName: string;
   ftp: number | null;
   createdAt: string;
+  onboardingCompleted?: boolean;
   coachingRelationships: Array<{
     athlete: {
       id: string;

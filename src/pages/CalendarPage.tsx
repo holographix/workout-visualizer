@@ -48,7 +48,7 @@ import {
 import { WeeklyCalendar, MonthlyCalendar, WorkoutViewerModal } from '../components/organisms/Calendar';
 import { Header } from '../components/organisms';
 import { useUser } from '../contexts/UserContext';
-import { useCoachCalendarAPI, useAthleteCalendarAPI, submitWorkoutResults, type CoachScheduledWorkout } from '../hooks/useCalendarAPI';
+import { useCoachCalendarAPI, useAthleteCalendarAPI, submitWorkoutResults } from '../hooks/useCalendarAPI';
 import type { ScheduledWorkout, WorkoutResults } from '../types/calendar';
 import { getAthleteColorScheme, type AthleteColorScheme } from '../utils/athleteColors';
 

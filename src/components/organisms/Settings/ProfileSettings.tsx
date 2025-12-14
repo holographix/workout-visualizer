@@ -19,7 +19,6 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Checkbox,
-  CheckboxGroup,
   Button,
   Heading,
   Text,
@@ -27,7 +26,6 @@ import {
   useToast,
   Spinner,
   Center,
-  Divider,
   Badge,
   Wrap,
   WrapItem,
@@ -45,7 +43,6 @@ import type {
   DisciplineType,
   DisciplineSubType,
   ActivityType,
-  DISCIPLINE_SUBTYPES,
 } from '../../../types/onboarding';
 
 interface ProfileSettingsProps {

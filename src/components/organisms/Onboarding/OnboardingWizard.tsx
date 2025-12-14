@@ -21,13 +21,6 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { useOnboarding } from '../../../hooks/useOnboarding';
 import type {
-  PersonalInfoStepData,
-  PhysicalStepData,
-  CategoryStepData,
-  DisciplineStepData,
-  TerrainStepData,
-  ActivityTypesStepData,
-  EquipmentStepData,
   OnboardingWizardState,
   Sex,
   AthleteCategory,
