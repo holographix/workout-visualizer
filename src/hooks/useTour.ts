@@ -2,7 +2,7 @@
  * useTour - Hook for managing tour state and setup checklist
  *
  * Provides methods to:
- * - Fetch tour state from API
+ * - Fetch tour state from localStorage (with API fallback when available)
  * - Mark tour as completed/dismissed
  * - Complete checklist items
  * - Check if tour should be shown
@@ -10,8 +10,9 @@
  * @module hooks/useTour
  */
 import { useState, useCallback, useEffect } from 'react';
-import { useAuthenticatedApi } from './useAuthenticatedApi';
 import type { TourState, ChecklistItemId } from '../types/tour';
+
+const TOUR_STORAGE_KEY = 'ridepro_tour_state';
 
 interface UseTourOptions {
   /**
@@ -44,9 +45,38 @@ interface UseTourReturn {
   isItemCompleted: (itemId: ChecklistItemId) => boolean;
 }
 
+/**
+ * Load tour state from localStorage
+ */
+function loadTourState(): TourState {
+  try {
+    const stored = localStorage.getItem(TOUR_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return {
+    tourCompleted: false,
+    tourDismissed: false,
+    setupChecklistCompleted: [],
+  };
+}
+
+/**
+ * Save tour state to localStorage
+ */
+function saveTourState(state: TourState): void {
+  try {
+    localStorage.setItem(TOUR_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 export function useTour(options: UseTourOptions = {}): UseTourReturn {
   const { autoFetch = true } = options;
-  const api = useAuthenticatedApi();
 
   const [tourState, setTourState] = useState<TourState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -56,57 +86,71 @@ export function useTour(options: UseTourOptions = {}): UseTourReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const state = await api.get<TourState>('/api/users/me/tour');
+      // Load from localStorage
+      const state = loadTourState();
       setTourState(state);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch tour state'));
     } finally {
       setIsLoading(false);
     }
-  }, [api]);
+  }, []);
 
   const completeTour = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const state = await api.put<TourState>('/api/users/me/tour', {
+      const newState: TourState = {
+        ...(tourState || loadTourState()),
         tourCompleted: true,
-      });
-      setTourState(state);
+      };
+      saveTourState(newState);
+      setTourState(newState);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to complete tour'));
     } finally {
       setIsLoading(false);
     }
-  }, [api]);
+  }, [tourState]);
 
   const dismissTour = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const state = await api.put<TourState>('/api/users/me/tour', {
+      const newState: TourState = {
+        ...(tourState || loadTourState()),
         tourDismissed: true,
-      });
-      setTourState(state);
+      };
+      saveTourState(newState);
+      setTourState(newState);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to dismiss tour'));
     } finally {
       setIsLoading(false);
     }
-  }, [api]);
+  }, [tourState]);
 
   const completeChecklistItem = useCallback(async (itemId: ChecklistItemId) => {
     setIsLoading(true);
     setError(null);
     try {
-      const state = await api.post<TourState>(`/api/users/me/tour/checklist/${itemId}`);
-      setTourState(state);
+      const currentState = tourState || loadTourState();
+      const completedItems = currentState.setupChecklistCompleted || [];
+
+      if (!completedItems.includes(itemId)) {
+        const newState: TourState = {
+          ...currentState,
+          setupChecklistCompleted: [...completedItems, itemId],
+        };
+        saveTourState(newState);
+        setTourState(newState);
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to complete checklist item'));
     } finally {
       setIsLoading(false);
     }
-  }, [api]);
+  }, [tourState]);
 
   const isItemCompleted = useCallback((itemId: ChecklistItemId): boolean => {
     return tourState?.setupChecklistCompleted?.includes(itemId) ?? false;
