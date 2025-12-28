@@ -34,8 +34,8 @@ interface DayColumnProps {
   onRemoveWorkout: (scheduledId: string) => void;
   onEditWorkout?: (scheduled: ScheduledWorkout) => void;
   onDrop: (workoutId: string, dayIndex: number) => void;
-  onMoveWorkout?: (scheduledId: string, targetDayIndex: number) => void;
-  onCopyWorkout?: (scheduledId: string, targetDayIndex: number) => void;
+  onMoveWorkout?: (scheduledId: string) => void; // Parent handles dayIndex calculation
+  onCopyWorkout?: (scheduledId: string) => void; // Parent handles dayIndex calculation
   onWorkoutDragStart?: (scheduled: ScheduledWorkout) => void;
   onWorkoutDragEnd?: () => void;
   onTap?: (dayIndex: number) => void;

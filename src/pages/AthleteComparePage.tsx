@@ -218,6 +218,86 @@ export function AthleteComparePage() {
     }
   };
 
+  const handleMoveWorkout = async (scheduledId: string, targetDayIndex: number, athleteId: string) => {
+    console.log('🔄 handleMoveWorkout called:', { scheduledId, targetDayIndex, athleteId });
+
+    try {
+      // Calculate target week and day from absolute day index
+      const weekOffset = Math.floor(targetDayIndex / 7);
+      const relativeDayIndex = targetDayIndex % 7;
+      const weekStart = athleteId === leftAthleteId
+        ? addWeeks(leftWeekStart, weekOffset)
+        : addWeeks(rightWeekStart, weekOffset);
+      const targetWeekISO = format(weekStart, 'yyyy-MM-dd');
+
+      console.log('📊 Move details:', { weekOffset, relativeDayIndex, targetWeekISO });
+
+      // Get the target athlete's unavailable days
+      const targetUnavailableDays = athleteId === leftAthleteId
+        ? leftUnavailableDays
+        : rightUnavailableDays;
+
+      // Check if target day is unavailable
+      if (targetUnavailableDays.includes(relativeDayIndex)) {
+        console.log('⚠️ Day is unavailable, cannot move');
+        const athleteName = athleteId === leftAthleteId
+          ? leftAthlete?.fullName
+          : rightAthlete?.fullName;
+        const dayNames = [
+          t('days.mon'),
+          t('days.tue'),
+          t('days.wed'),
+          t('days.thu'),
+          t('days.fri'),
+          t('days.sat'),
+          t('days.sun')
+        ];
+
+        toast({
+          title: t('calendar.dayUnavailable'),
+          description: t('athleteComparison.athleteNotAvailableOnDay', {
+            athlete: athleteName,
+            day: dayNames[relativeDayIndex]
+          }),
+          status: 'warning',
+          duration: 3000,
+        });
+        return;
+      }
+
+      // Use the move API endpoint which handles cross-week moves
+      await api.put(`/api/calendar/scheduled/${scheduledId}/move`, {
+        dayIndex: relativeDayIndex,
+        sortOrder: 0, // Will be recalculated by backend
+      });
+
+      console.log('✅ Workout moved successfully');
+
+      // Refresh the calendar
+      if (athleteId === leftAthleteId) {
+        console.log('🔄 Refetching left calendar');
+        refetchLeft();
+      } else {
+        console.log('🔄 Refetching right calendar');
+        refetchRight();
+      }
+
+      toast({
+        title: t('calendar.workoutMoved'),
+        status: 'success',
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error('❌ Failed to move workout:', error);
+      toast({
+        title: t('calendar.failedToMove'),
+        description: t('common.retry'),
+        status: 'error',
+        duration: 3000,
+      });
+    }
+  };
+
   const handleCopyWorkout = async (scheduledId: string, targetDayIndex: number, targetAthleteId: string) => {
     console.log('🔄 handleCopyWorkout called:', { scheduledId, targetDayIndex, targetAthleteId });
 
@@ -609,7 +689,7 @@ export function AthleteComparePage() {
                 onRemoveWorkout={(scheduledId) => handleRemoveWorkout(scheduledId, leftAthleteId!)}
                 onWorkoutClick={() => {}}
                 onScheduleWorkout={() => {}}
-                onMoveWorkout={() => {}}
+                onMoveWorkout={(scheduledId, dayIndex) => handleMoveWorkout(scheduledId, dayIndex, leftAthleteId!)}
                 onCopyWorkout={(scheduledId, dayIndex) => handleCopyWorkout(scheduledId, dayIndex, leftAthleteId!)}
                 onCopyWeek={(weekISO, weekLabel, workoutCount) => handleCopyWeek(weekISO, weekLabel, workoutCount, leftAthleteId!)}
                 onPasteWeek={copyModeData && copyModeData.sourceAthleteId === rightAthleteId
@@ -685,7 +765,7 @@ export function AthleteComparePage() {
                 onRemoveWorkout={(scheduledId) => handleRemoveWorkout(scheduledId, rightAthleteId!)}
                 onWorkoutClick={() => {}}
                 onScheduleWorkout={() => {}}
-                onMoveWorkout={() => {}}
+                onMoveWorkout={(scheduledId, dayIndex) => handleMoveWorkout(scheduledId, dayIndex, rightAthleteId!)}
                 onCopyWorkout={(scheduledId, dayIndex) => handleCopyWorkout(scheduledId, dayIndex, rightAthleteId!)}
                 onCopyWeek={(weekISO, weekLabel, workoutCount) => handleCopyWeek(weekISO, weekLabel, workoutCount, rightAthleteId!)}
                 onPasteWeek={copyModeData && copyModeData.sourceAthleteId === leftAthleteId
