@@ -36,9 +36,9 @@ import {
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Users, Library, Plus, Dumbbell, AlertCircle, LayoutGrid, List, UserPlus, Search, Trash2, Eye } from 'lucide-react';
+import { Users, Library, Plus, Dumbbell, AlertCircle, LayoutGrid, List, UserPlus, Search, Trash2, Eye, Upload } from 'lucide-react';
 import { Header } from '../components/organisms';
-import { AthleteCard, AthleteListItem, InviteAthleteModal, WorkoutViewModal, type Athlete } from '../components/organisms/Coach';
+import { AthleteCard, AthleteListItem, InviteAthleteModal, WorkoutViewModal, WorkoutImportModal, type Athlete } from '../components/organisms/Coach';
 import { useAthletes } from '../hooks';
 import { useUser } from '../contexts/UserContext';
 import { useWorkoutsAPI, useCoachWorkoutsAPI, deleteWorkout } from '../hooks/useCalendarAPI';
@@ -164,6 +164,9 @@ export function CoachPage() {
 
   // Invite modal state
   const { isOpen: isInviteOpen, onOpen: onInviteOpen, onClose: onInviteClose } = useDisclosure();
+
+  // Import workout modal state
+  const { isOpen: isImportOpen, onOpen: onImportOpen, onClose: onImportClose } = useDisclosure();
 
   // Delete confirmation dialog state
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
@@ -426,13 +429,23 @@ export function CoachPage() {
                       </Tab>
                     </TabList>
                     {libraryTabIndex === 0 && (
-                      <IconButton
-                        aria-label={t('coach.createWorkout')}
-                        icon={<Plus size={16} />}
-                        colorScheme="brand"
-                        size="sm"
-                        onClick={handleCreateWorkout}
-                      />
+                      <HStack spacing={2}>
+                        <IconButton
+                          aria-label={t('workoutImport.import') || 'Import Workout'}
+                          icon={<Upload size={16} />}
+                          colorScheme="blue"
+                          variant="outline"
+                          size="sm"
+                          onClick={onImportOpen}
+                        />
+                        <IconButton
+                          aria-label={t('coach.createWorkout')}
+                          icon={<Plus size={16} />}
+                          colorScheme="brand"
+                          size="sm"
+                          onClick={handleCreateWorkout}
+                        />
+                      </HStack>
                     )}
                   </HStack>
 
@@ -579,6 +592,17 @@ export function CoachPage() {
           onClose={onViewClose}
           workout={workoutToView}
         />
+
+        {/* Import Workout Modal */}
+        {user?.id && (
+          <WorkoutImportModal
+            isOpen={isImportOpen}
+            onClose={onImportClose}
+            coachId={user.id}
+            categories={systemCategories}
+            onImportSuccess={refetchCoachWorkouts}
+          />
+        )}
       </Box>
     );
   }
@@ -693,13 +717,23 @@ export function CoachPage() {
                   </Tab>
                 </TabList>
                 {libraryTabIndex === 0 && (
-                  <IconButton
-                    aria-label={t('coach.createWorkout')}
-                    icon={<Plus size={16} />}
-                    colorScheme="brand"
-                    size="sm"
-                    onClick={handleCreateWorkout}
-                  />
+                  <HStack spacing={2}>
+                    <IconButton
+                      aria-label={t('workoutImport.import') || 'Import Workout'}
+                      icon={<Upload size={16} />}
+                      colorScheme="blue"
+                      variant="outline"
+                      size="sm"
+                      onClick={onImportOpen}
+                    />
+                    <IconButton
+                      aria-label={t('coach.createWorkout')}
+                      icon={<Plus size={16} />}
+                      colorScheme="brand"
+                      size="sm"
+                      onClick={handleCreateWorkout}
+                    />
+                  </HStack>
                 )}
               </HStack>
 
@@ -843,6 +877,17 @@ export function CoachPage() {
         onClose={onViewClose}
         workout={workoutToView}
       />
+
+      {/* Import Workout Modal */}
+      {user?.id && (
+        <WorkoutImportModal
+          isOpen={isImportOpen}
+          onClose={onImportClose}
+          coachId={user.id}
+          categories={systemCategories}
+          onImportSuccess={refetchCoachWorkouts}
+        />
+      )}
     </Box>
   );
 }

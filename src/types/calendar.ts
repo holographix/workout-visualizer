@@ -25,6 +25,10 @@ export interface ScheduledWorkout {
   notes?: string; // Coach notes when scheduling
   completed: boolean;
   completedAt?: string;
+  // Skip tracking (when athlete can't complete workout)
+  skipped?: boolean;
+  skipReason?: string;
+  skippedAt?: string;
   // Workout structure overrides (coach modifications for specific athlete/day)
   structureOverride?: any; // Modified workout structure
   durationOverride?: number; // Modified duration in seconds
@@ -41,6 +45,15 @@ export interface ScheduledWorkout {
   rpe?: number;
   feeling?: WorkoutFeeling;
   resultNotes?: string;
+  // Linked imported activities (from FIT files)
+  activities?: Array<{
+    id: string;
+    name: string;
+    startTime: string;
+    avgPower?: number;
+    avgHeartRate?: number;
+    durationSeconds: number;
+  }>;
 }
 
 export interface TrainingWeek {

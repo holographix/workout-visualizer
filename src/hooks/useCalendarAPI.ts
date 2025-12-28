@@ -39,12 +39,34 @@ interface ApiScheduledWorkout {
   notes: string | null;
   completed: boolean;
   completedAt: string | null;
+  // Skip tracking
+  skipped?: boolean;
+  skipReason?: string | null;
+  skippedAt?: string | null;
   // Workout structure overrides
   structureOverride?: any;
   durationOverride?: number;
   tssOverride?: number;
   ifOverride?: number;
   isModified?: boolean;
+  // Actual results
+  actualDurationSeconds?: number;
+  actualTSS?: number;
+  actualIF?: number;
+  avgPower?: number;
+  avgHeartRate?: number;
+  rpe?: number;
+  feeling?: 'GREAT' | 'GOOD' | 'OK' | 'TIRED' | 'EXHAUSTED';
+  resultNotes?: string | null;
+  // Imported activities (FIT files)
+  activities?: Array<{
+    id: string;
+    name: string;
+    startTime: string;
+    avgPower?: number;
+    avgHeartRate?: number;
+    durationSeconds: number;
+  }>;
   workout: ApiWorkout;
 }
 
@@ -99,12 +121,28 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
       dayIndex: apiWorkout.dayIndex,
       sortOrder: apiWorkout.sortOrder,
       completed: apiWorkout.completed,
+      completedAt: apiWorkout.completedAt,
+      // Skip tracking
+      skipped: apiWorkout.skipped,
+      skipReason: apiWorkout.skipReason,
+      skippedAt: apiWorkout.skippedAt,
       // Include override fields
       structureOverride: apiWorkout.structureOverride,
       durationOverride: apiWorkout.durationOverride,
       tssOverride: apiWorkout.tssOverride,
       ifOverride: apiWorkout.ifOverride,
       isModified: apiWorkout.isModified,
+      // Actual results
+      actualDurationSeconds: apiWorkout.actualDurationSeconds,
+      actualTSS: apiWorkout.actualTSS,
+      actualIF: apiWorkout.actualIF,
+      avgPower: apiWorkout.avgPower,
+      avgHeartRate: apiWorkout.avgHeartRate,
+      rpe: apiWorkout.rpe,
+      feeling: apiWorkout.feeling,
+      resultNotes: apiWorkout.resultNotes,
+      // Imported activities (FIT files)
+      activities: apiWorkout.activities,
     };
   }, []);
 
@@ -262,11 +300,26 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
       await api.put(`/api/calendar/scheduled/${scheduledId}/complete`, { completed });
       setScheduledWorkouts(prev =>
         prev.map(sw =>
-          sw.id === scheduledId ? { ...sw, completed } : sw
+          sw.id === scheduledId ? { ...sw, completed, skipped: false } : sw
         )
       );
     } catch (err) {
       console.error('Failed to update workout:', err);
+      throw err;
+    }
+  }, []);
+
+  // Skip workout with reason
+  const skipWorkout = useCallback(async (scheduledId: string, skipReason?: string) => {
+    try {
+      await api.put(`/api/calendar/scheduled/${scheduledId}/skip`, { skipReason });
+      setScheduledWorkouts(prev =>
+        prev.map(sw =>
+          sw.id === scheduledId ? { ...sw, skipped: true, skipReason, completed: false } : sw
+        )
+      );
+    } catch (err) {
+      console.error('Failed to skip workout:', err);
       throw err;
     }
   }, []);
@@ -399,6 +452,7 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
     moveWorkout,
     copyWorkout,
     toggleComplete,
+    skipWorkout,
     modifyWorkoutStructure,
     resetWorkoutStructure,
     refetch: loadWeek,
@@ -1015,6 +1069,9 @@ export function useAthleteCalendarAPI({
           notes: string | null;
           completed: boolean;
           completedAt: string | null;
+          skipped?: boolean;
+          skipReason?: string | null;
+          skippedAt?: string | null;
           actualDurationSeconds: number | null;
           actualTSS: number | null;
           actualIF: number | null;
@@ -1023,6 +1080,14 @@ export function useAthleteCalendarAPI({
           rpe: number | null;
           feeling: string | null;
           resultNotes: string | null;
+          activities?: Array<{
+            id: string;
+            name: string;
+            startTime: string;
+            avgPower?: number;
+            avgHeartRate?: number;
+            durationSeconds: number;
+          }>;
           date: string;
           weekStart: string;
           coachName: string | null;
@@ -1066,6 +1131,9 @@ export function useAthleteCalendarAPI({
         notes: w.notes || undefined,
         completed: w.completed,
         completedAt: w.completedAt || undefined,
+        skipped: w.skipped || false,
+        skipReason: w.skipReason || undefined,
+        skippedAt: w.skippedAt || undefined,
         actualDurationSeconds: w.actualDurationSeconds || undefined,
         actualTSS: w.actualTSS || undefined,
         actualIF: w.actualIF || undefined,
@@ -1074,6 +1142,7 @@ export function useAthleteCalendarAPI({
         rpe: w.rpe || undefined,
         feeling: w.feeling as AthleteScheduledWorkout['feeling'],
         resultNotes: w.resultNotes || undefined,
+        activities: w.activities || undefined,
         date: w.date,
         weekStart: new Date(w.weekStart),
         coachName: w.coachName,
@@ -1093,10 +1162,33 @@ export function useAthleteCalendarAPI({
     loadData();
   }, [loadData]);
 
+  // Skip workout with reason
+  const skipWorkout = useCallback(async (scheduledId: string, skipReason?: string) => {
+    console.log('[useAthleteCalendarAPI skipWorkout] Called with:', { scheduledId, skipReason });
+    try {
+      console.log('[useAthleteCalendarAPI skipWorkout] Making API call to skip workout');
+      const response = await api.put(`/api/calendar/scheduled/${scheduledId}/skip`, { skipReason });
+      console.log('[useAthleteCalendarAPI skipWorkout] API call successful:', response);
+      console.log('[useAthleteCalendarAPI skipWorkout] Response has skipped?', response.skipped);
+      console.log('[useAthleteCalendarAPI skipWorkout] Response has skipReason?', response.skipReason);
+
+      // Update with response data to ensure we have the correct state
+      setScheduledWorkouts(prev =>
+        prev.map(sw =>
+          sw.id === scheduledId ? { ...sw, ...response } : sw
+        )
+      );
+    } catch (err) {
+      console.error('[useAthleteCalendarAPI skipWorkout] Failed to skip workout:', err);
+      throw err;
+    }
+  }, []);
+
   return {
     scheduledWorkouts,
     isLoading,
     error,
+    skipWorkout,
     refetch: loadData,
   };
 }

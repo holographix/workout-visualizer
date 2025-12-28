@@ -4,3 +4,4 @@ export { WorkoutBuilder } from './WorkoutBuilder';
 export { InviteAthleteModal } from './InviteAthleteModal';
 export { CategoryManagementModal } from './CategoryManagementModal';
 export { WorkoutViewModal } from './WorkoutViewModal';
+export { WorkoutImportModal } from './WorkoutImportModal';

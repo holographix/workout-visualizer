@@ -172,6 +172,24 @@ export function OnboardingWizard({ athleteId, onComplete }: OnboardingWizardProp
     setState((prev) => ({ ...prev, currentStep: Math.max(prev.currentStep - 1, 1) }));
   };
 
+  const handleSkip = async () => {
+    if (isSubmitting || isSaving) return;
+    setIsSubmitting(true);
+
+    try {
+      await completeOnboarding();
+      onComplete();
+    } catch (error) {
+      toast({
+        title: t('common.error'),
+        description: error instanceof Error ? error.message : 'Failed to skip onboarding',
+        status: 'error',
+        duration: 3000,
+      });
+      setIsSubmitting(false);
+    }
+  };
+
   const canProceed = (): boolean => {
     switch (state.currentStep) {
       case 1:
@@ -257,9 +275,20 @@ export function OnboardingWizard({ athleteId, onComplete }: OnboardingWizardProp
     <Container maxW="container.md" py={8}>
       <VStack spacing={6} align="stretch">
         {/* Header */}
-        <Box textAlign="center">
+        <Box textAlign="center" position="relative">
           <Heading size="lg" mb={2}>{t('onboarding.title')}</Heading>
           <Text color="gray.500">{t('onboarding.subtitle')}</Text>
+          <Button
+            position="absolute"
+            top={0}
+            right={0}
+            variant="ghost"
+            size="sm"
+            onClick={handleSkip}
+            isLoading={isSubmitting || isSaving}
+          >
+            {t('onboarding.skip')}
+          </Button>
         </Box>
 
         {/* Progress */}

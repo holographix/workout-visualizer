@@ -33,7 +33,7 @@ export interface DayCapacity {
 
 interface WeeklyCalendarProps {
   scheduledWorkouts: ScheduledWorkout[];
-  onRemoveWorkout: (scheduledId: string) => void;
+  onRemoveWorkout?: (scheduledId: string) => void; // Optional - only for coach views
   onEditWorkout?: (scheduled: ScheduledWorkout) => void;
   onWorkoutClick: (scheduled: ScheduledWorkout) => void;
   onScheduleWorkout: (workoutId: string, dayIndex: number) => void;

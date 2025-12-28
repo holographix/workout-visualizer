@@ -31,7 +31,7 @@ interface DayColumnProps {
   day: DayColumnType;
   athleteId?: string; // ID of the athlete this day column belongs to (for cross-calendar drag-drop)
   onWorkoutClick: (scheduled: ScheduledWorkout) => void;
-  onRemoveWorkout: (scheduledId: string) => void;
+  onRemoveWorkout?: (scheduledId: string) => void; // Optional - only for coach views
   onEditWorkout?: (scheduled: ScheduledWorkout) => void;
   onDrop: (workoutId: string, dayIndex: number) => void;
   onMoveWorkout?: (scheduledId: string) => void; // Parent handles dayIndex calculation
@@ -314,23 +314,23 @@ export function DayColumn({ day, athleteId, onWorkoutClick, onRemoveWorkout, onE
               const workoutAthleteId = (scheduled as { athleteId?: string }).athleteId;
               const athleteColor = workoutAthleteId && athleteColorMap ? athleteColorMap.get(workoutAthleteId) : undefined;
 
-              // Drag handlers for moving workouts between days
-              const handleCardDragStart = (e: React.DragEvent) => {
+              // Drag handlers for moving workouts between days (only if drag is enabled)
+              const handleCardDragStart = onWorkoutDragStart ? (e: React.DragEvent) => {
                 e.dataTransfer.setData('application/json', JSON.stringify({
                   scheduledId: scheduled.id,
                   isMoving: true,
                   sourceAthleteId: athleteId, // Include athlete ID for cross-calendar detection
                 }));
                 e.dataTransfer.effectAllowed = 'copyMove';
-                onWorkoutDragStart?.(scheduled);
-              };
+                onWorkoutDragStart(scheduled);
+              } : undefined;
 
               return (
                 <WorkoutCard
                   key={scheduled.id}
                   scheduled={scheduled}
                   onClick={() => onWorkoutClick(scheduled)}
-                  onRemove={() => onRemoveWorkout(scheduled.id)}
+                  onRemove={onRemoveWorkout ? () => onRemoveWorkout(scheduled.id) : undefined}
                   onEdit={onEditWorkout ? () => onEditWorkout(scheduled) : undefined}
                   onDragStart={handleCardDragStart}
                   onDragEnd={onWorkoutDragEnd}

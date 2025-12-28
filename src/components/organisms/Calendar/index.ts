@@ -7,3 +7,4 @@ export { WorkoutLibrarySidebar } from './WorkoutLibrarySidebar';
 export { WorkoutCompletionModal } from './WorkoutCompletionModal';
 export { WorkoutViewerModal } from './WorkoutViewerModal';
 export { ScheduledWorkoutEditor } from './ScheduledWorkoutEditor';
+export { ActivityImportModal } from './ActivityImportModal';

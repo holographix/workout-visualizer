@@ -12,7 +12,7 @@ import {
   Skeleton,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Zap, X, CheckCircle, Edit2, Edit3 } from 'lucide-react';
+import { Clock, Zap, X, CheckCircle, Edit2, Edit3, FileCheck, AlertTriangle, FileText } from 'lucide-react';
 import type { ScheduledWorkout } from '../../../types/calendar';
 import { getWorkoutTypeConfig } from '../../../utils/workoutTypes';
 import type { AthleteColorScheme } from '../../../utils/athleteColors';
@@ -58,6 +58,7 @@ export function WorkoutCard({
 }: WorkoutCardProps) {
   const { t } = useTranslation();
 
+
   const handleDragStart = (e: React.DragEvent) => {
     onDragStart?.(e);
   };
@@ -71,8 +72,20 @@ export function WorkoutCard({
   const hoverBg = useColorModeValue('gray.50', 'gray.600');
   const textColor = useColorModeValue('gray.800', 'white');
   const mutedColor = useColorModeValue('gray.500', 'gray.400');
+
+  // Manual completion - green
   const completedBg = useColorModeValue('green.50', 'green.900');
   const completedBorder = useColorModeValue('green.200', 'green.700');
+
+  // Completed with imported file - blue gradient
+  const completedWithFileBg = useColorModeValue('blue.50', 'blue.900');
+  const completedWithFileBorder = useColorModeValue('blue.300', 'blue.600');
+
+  const skippedBg = useColorModeValue('gray.100', 'gray.800');
+  const skippedBorder = useColorModeValue('gray.300', 'gray.600');
+
+  // Check if workout has imported file
+  const hasImportedFile = scheduled.activities && scheduled.activities.length > 0;
 
   const workout = scheduled.workout;
   const isOptimistic = !workout; // Loading placeholder if workout data not yet loaded
@@ -149,20 +162,44 @@ export function WorkoutCard({
               _dark={{ borderColor: 'gray.800' }}
             />
           )}
-          {/* Completion checkmark overlay */}
-          {scheduled.completed && (
-            <Icon
-              as={CheckCircle}
-              w={3.5}
-              h={3.5}
-              color="white"
-              position="absolute"
-              bottom="-3px"
-              right="-3px"
-              bg="green.500"
-              borderRadius="full"
-              p={0.5}
-            />
+          {/* Completion/skip status overlay */}
+          {(scheduled.completed || scheduled.skipped) && (
+            <Tooltip
+              label={
+                scheduled.skipped
+                  ? `${t('calendar.skipped') || 'Skipped'}${scheduled.skipReason ? `: ${scheduled.skipReason}` : ''}`
+                  : scheduled.activities && scheduled.activities.length > 0
+                    ? t('calendar.completedWithData') || 'Completed with imported data'
+                    : t('calendar.completedManually') || 'Completed manually'
+              }
+              placement="top"
+              hasArrow
+            >
+              <Icon
+                as={
+                  scheduled.skipped
+                    ? AlertTriangle
+                    : scheduled.activities && scheduled.activities.length > 0
+                      ? FileCheck
+                      : CheckCircle
+                }
+                w={3.5}
+                h={3.5}
+                color="white"
+                position="absolute"
+                bottom="-3px"
+                right="-3px"
+                bg={
+                  scheduled.skipped
+                    ? 'orange.500'
+                    : scheduled.activities && scheduled.activities.length > 0
+                      ? 'blue.500'
+                      : 'green.500'
+                }
+                borderRadius="full"
+                p={0.5}
+              />
+            </Tooltip>
           )}
           {/* Content: Icon + duration - white text on colored bg */}
           <HStack spacing={1.5}>
@@ -191,15 +228,37 @@ export function WorkoutCard({
       draggable={!!onDragStart}
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
-      bg={scheduled.completed ? completedBg : bgColor}
+      bg={
+        scheduled.skipped
+          ? skippedBg
+          : scheduled.completed && hasImportedFile
+            ? completedWithFileBg
+            : scheduled.completed
+              ? completedBg
+              : bgColor
+      }
       borderWidth="1px"
-      borderColor={scheduled.completed ? completedBorder : borderColor}
+      borderColor={
+        scheduled.skipped
+          ? skippedBorder
+          : scheduled.completed && hasImportedFile
+            ? completedWithFileBorder
+            : scheduled.completed
+              ? completedBorder
+              : borderColor
+      }
       borderRadius="lg"
-      borderLeftWidth={athleteColor ? '3px' : '1px'}
-      borderLeftColor={athleteColor ? `${athleteColor}.500` : undefined}
+      borderLeftWidth={athleteColor ? '3px' : hasImportedFile && scheduled.completed ? '3px' : '1px'}
+      borderLeftColor={
+        athleteColor
+          ? `${athleteColor}.500`
+          : hasImportedFile && scheduled.completed
+            ? 'blue.400'
+            : undefined
+      }
       p={2}
       cursor={onDragStart ? 'grab' : 'pointer'}
-      shadow="sm"
+      shadow={hasImportedFile && scheduled.completed ? 'md' : 'sm'}
       transition="all 0.15s"
       _hover={{ bg: hoverBg, shadow: 'md' }}
       _active={{ transform: 'scale(0.98)' }}
@@ -245,17 +304,46 @@ export function WorkoutCard({
             <Icon as={Edit3} w={2.5} h={2.5} color="white" />
           </Flex>
         )}
-        {scheduled.completed && (
-          <Flex
-            w="16px"
-            h="16px"
-            borderRadius="full"
-            bg="green.500"
-            align="center"
-            justify="center"
+        {(scheduled.completed || scheduled.skipped) && (
+          <Tooltip
+            label={
+              scheduled.skipped
+                ? `${t('calendar.skipped') || 'Skipped'}${scheduled.skipReason ? `: ${scheduled.skipReason}` : ''}`
+                : scheduled.activities && scheduled.activities.length > 0
+                  ? t('calendar.completedWithData') || 'Completed with imported data'
+                  : t('calendar.completedManually') || 'Completed manually'
+            }
+            placement="top"
+            hasArrow
           >
-            <Icon as={CheckCircle} w={2.5} h={2.5} color="white" />
-          </Flex>
+            <Flex
+              w="16px"
+              h="16px"
+              borderRadius="full"
+              bg={
+                scheduled.skipped
+                  ? 'orange.500'
+                  : scheduled.activities && scheduled.activities.length > 0
+                    ? 'blue.500'
+                    : 'green.500'
+              }
+              align="center"
+              justify="center"
+            >
+              <Icon
+                as={
+                  scheduled.skipped
+                    ? AlertTriangle
+                    : scheduled.activities && scheduled.activities.length > 0
+                      ? FileCheck
+                      : CheckCircle
+                }
+                w={2.5}
+                h={2.5}
+                color="white"
+              />
+            </Flex>
+          </Tooltip>
         )}
       </VStack>
 
@@ -311,14 +399,29 @@ export function WorkoutCard({
       <Text
         fontSize="xs"
         fontWeight="600"
-        color={textColor}
+        color={scheduled.skipped ? mutedColor : textColor}
         lineHeight="1.2"
         noOfLines={2}
         mb={2}
         pr={7}
+        textDecoration={scheduled.skipped ? 'line-through' : 'none'}
+        opacity={scheduled.skipped ? 0.7 : 1}
       >
         {title}
       </Text>
+
+      {/* File data indicator - only show for completed workouts with imported files */}
+      {hasImportedFile && scheduled.completed && (
+        <HStack spacing={1} mb={1} fontSize="2xs" color="blue.600" _dark={{ color: 'blue.300' }}>
+          <Icon as={FileText} w={3} h={3} />
+          <Text fontWeight="600">
+            {scheduled.activities?.length === 1
+              ? t('calendar.fileAttached') || 'File attached'
+              : `${scheduled.activities?.length} ${t('calendar.filesAttached') || 'files'}`
+            }
+          </Text>
+        </HStack>
+      )}
 
       {/* Metrics - ultra compact */}
       <VStack spacing={0.5} align="stretch" fontSize="2xs" color={mutedColor}>

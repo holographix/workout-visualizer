@@ -38,14 +38,14 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, Users, Calendar as CalendarIcon, Grid3X3 } from 'lucide-react';
+import { ChevronDown, Users, Calendar as CalendarIcon, Grid3X3, Upload } from 'lucide-react';
 import {
   startOfWeek,
   endOfWeek,
   startOfMonth,
   endOfMonth,
 } from 'date-fns';
-import { WeeklyCalendar, MonthlyCalendar, WorkoutViewerModal } from '../components/organisms/Calendar';
+import { WeeklyCalendar, MonthlyCalendar, WorkoutViewerModal, ActivityImportModal } from '../components/organisms/Calendar';
 import { Header } from '../components/organisms';
 import { useUser } from '../contexts/UserContext';
 import { useCoachCalendarAPI, useAthleteCalendarAPI, submitWorkoutResults } from '../hooks/useCalendarAPI';
@@ -174,6 +174,7 @@ export function CalendarPage() {
   const {
     scheduledWorkouts: athleteWorkouts,
     isLoading: athleteLoading,
+    skipWorkout,
     refetch: refetchAthleteWorkouts,
   } = useAthleteCalendarAPI({
     athleteId: !isCoach ? user?.id : undefined,
@@ -184,6 +185,9 @@ export function CalendarPage() {
   // State for workout viewer modal
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [isViewerModalOpen, setIsViewerModalOpen] = useState(false);
+
+  // State for activity import modal
+  const [isActivityImportOpen, setIsActivityImportOpen] = useState(false);
 
   // Handle workout click for athlete view
   const handleAthleteWorkoutClick = useCallback((scheduled: ScheduledWorkout) => {
@@ -214,6 +218,39 @@ export function CalendarPage() {
       throw error;
     }
   }, [selectedWorkoutId, toast, t, refetchAthleteWorkouts]);
+
+  // Handle skip workout (for athlete)
+  const handleSkipWorkout = useCallback(async (skipReason?: string) => {
+    console.log('[CalendarPage handleSkipWorkout] Called with:', { skipReason, selectedWorkoutId, hasSkipWorkout: !!skipWorkout });
+    if (!selectedWorkoutId || !skipWorkout) {
+      console.warn('[CalendarPage handleSkipWorkout] Early return - missing selectedWorkoutId or skipWorkout function');
+      return;
+    }
+
+    try {
+      console.log('[CalendarPage handleSkipWorkout] Calling skipWorkout function');
+      await skipWorkout(selectedWorkoutId, skipReason);
+      console.log('[CalendarPage handleSkipWorkout] skipWorkout completed successfully');
+      toast({
+        title: t('calendar.workoutSkipped') || 'Workout skipped',
+        description: skipReason,
+        status: 'info',
+        duration: 3000,
+      });
+      // Don't refetch immediately - the skipWorkout function already updates the state
+      // Refetching can cause a race condition where old data overwrites the new state
+      console.log('[CalendarPage handleSkipWorkout] Skipping refetch - state already updated');
+    } catch (error) {
+      console.error('[CalendarPage handleSkipWorkout] Failed to skip workout:', error);
+      toast({
+        title: t('common.error') || 'Error',
+        description: t('calendar.skipError') || 'Failed to skip workout',
+        status: 'error',
+        duration: 3000,
+      });
+      throw error;
+    }
+  }, [selectedWorkoutId, skipWorkout, toast, t]);
 
   // Convert athlete workouts to ScheduledWorkout format for calendar
   const athleteWeeklyWorkouts = useMemo(() => {
@@ -258,9 +295,20 @@ export function CalendarPage() {
               {t('calendar.monthView')}
             </Button>
           </HStack>
-          <Text fontSize="sm" color="gray.500">
-            {t('calendar.myWorkouts') || 'My Workouts'}
-          </Text>
+          <HStack spacing={2}>
+            <Text fontSize="sm" color="gray.500">
+              {t('calendar.myWorkouts') || 'My Workouts'}
+            </Text>
+            <Button
+              size="sm"
+              variant="outline"
+              colorScheme="brand"
+              leftIcon={<Upload size={16} />}
+              onClick={() => setIsActivityImportOpen(true)}
+            >
+              {t('activityImport.button') || 'Import Activities'}
+            </Button>
+          </HStack>
         </Flex>
 
         <Box flex={1} overflow="auto" px={{ base: 0, md: 6 }} py={{ base: 2, md: 6 }}>
@@ -269,7 +317,6 @@ export function CalendarPage() {
               scheduledWorkouts={athleteWeeklyWorkouts}
               weekStart={weekStart}
               onWeekChange={handleWeekChange}
-              onRemoveWorkout={() => {}}
               onWorkoutClick={handleAthleteWorkoutClick}
               onScheduleWorkout={() => {}}
               isLoading={athleteLoading}
@@ -298,7 +345,19 @@ export function CalendarPage() {
           scheduledWorkoutId={selectedWorkoutId}
           isCoachView={false}
           onResultsSubmit={handleSubmitResults}
+          onSkipWorkout={handleSkipWorkout}
+          onActivityImport={refetchAthleteWorkouts}
         />
+
+        {/* Activity Import Modal (Athlete) */}
+        {user?.id && (
+          <ActivityImportModal
+            isOpen={isActivityImportOpen}
+            onClose={() => setIsActivityImportOpen(false)}
+            athleteId={user.id}
+            onImportComplete={refetchAthleteWorkouts}
+          />
+        )}
       </Box>
     );
   }

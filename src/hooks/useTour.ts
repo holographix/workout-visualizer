@@ -160,6 +160,7 @@ export function useTour(options: UseTourOptions = {}): UseTourReturn {
 
   const shouldShowChecklist =
     !tourState?.tourCompleted &&
+    !tourState?.tourDismissed &&
     (tourState?.setupChecklistCompleted?.length ?? 0) < 4;
 
   useEffect(() => {

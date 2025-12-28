@@ -140,6 +140,10 @@ export function AthleteComparePage() {
     [athletes, rightAthleteId]
   );
 
+  // Theme colors (must be before any conditional returns)
+  const headerBg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+
   // Show modal if no athletes selected or invalid selection
   useEffect(() => {
     if (!isLoadingAthletes && athletes.length > 0) {
@@ -600,9 +604,6 @@ export function AthleteComparePage() {
       />
     );
   }
-
-  const headerBg = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   return (
     <Box minH="100vh">
