@@ -412,7 +412,9 @@ export function AthleteCalendarPage() {
                   onClick={async () => {
                     try {
                       // Re-add the workout using the captured undoItem
-                      await addWorkout(undoItem.workoutId, undoItem.dayIndex);
+                      // Convert absolute day index to relative (0-6 for week days)
+                      const relativeDayIndex = undoItem.absoluteDayIndex % 7;
+                      await addWorkout(undoItem.workoutId, relativeDayIndex);
 
                       // Remove from undo stack
                       setUndoStack(prev => prev.filter(item => item !== undoItem));

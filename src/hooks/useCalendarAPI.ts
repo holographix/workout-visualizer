@@ -418,6 +418,7 @@ export interface CreateWorkoutPayload {
   categoryId: string;
   coachId?: string;
   workoutType?: string;
+  attachments?: string[];
 }
 
 // API workout response (full details including id)

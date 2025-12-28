@@ -190,14 +190,19 @@ export function CompactWorkoutEditor({ structure, onChange }: CompactWorkoutEdit
 
         return {
           type: 'step',
+          length: {
+            value: 1,
+            unit: 'repetition',
+          },
           steps: [{
             name: step.name,
-            intensityClass: step.intensityClass,
+            intensityClass: step.intensityClass as 'warmUp' | 'active' | 'rest' | 'coolDown',
             length: {
               value: step.durationValue,
-              unit: step.durationUnit,
+              unit: step.durationUnit as 'second' | 'minute' | 'repetition',
             },
             targets: [targets],
+            openDuration: false,
           }],
         };
       }),

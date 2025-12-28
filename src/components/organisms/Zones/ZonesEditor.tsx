@@ -254,7 +254,7 @@ export function ZonesEditor({ athleteId, onSave }: ZonesEditorProps) {
         </HStack>
 
         {ftp ? (
-          <PowerZonesTable zones={powerZones} ftp={ftp} />
+          <PowerZonesTable zones={powerZones ?? null} ftp={ftp} />
         ) : (
           <Text color={mutedColor} fontSize="sm" textAlign="center" py={4}>
             {t('zones.enterFTPToSeeZones')}
@@ -282,7 +282,7 @@ export function ZonesEditor({ athleteId, onSave }: ZonesEditorProps) {
         </HStack>
 
         {maxHR ? (
-          <HRZonesTable zones={hrZones} maxHR={maxHR} />
+          <HRZonesTable zones={hrZones ?? null} maxHR={maxHR} />
         ) : (
           <Text color={mutedColor} fontSize="sm" textAlign="center" py={4}>
             {t('zones.enterMaxHRToSeeZones')}

@@ -263,12 +263,12 @@ export function AthleteStatsPage() {
                 </Text>
                 <HStack justify="space-between" fontSize="sm">
                   <Text color={mutedColor}>
-                    {assessment.latestAssessment.testType === 'SPRINT_12MIN'
+                    {(assessment.latestAssessment as any).testType === 'SPRINT_12MIN'
                       ? t('stats.sprint12', 'Sprint + 12\' Climb')
                       : t('stats.power125', '1\'/2\'/5\' Power')}
                   </Text>
                   <Text>
-                    {format(new Date(assessment.latestAssessment.testDate), 'MMM d, yyyy')}
+                    {format(new Date((assessment.latestAssessment as any).testDate || assessment.latestAssessment.day2CompletedAt), 'MMM d, yyyy')}
                   </Text>
                 </HStack>
                 <Text fontSize="xs" color={mutedColor} mt={1}>
@@ -314,15 +314,15 @@ export function AthleteStatsPage() {
                     >
                       <Td>
                         <Text fontSize="sm">
-                          {format(new Date(test.testDate), 'MMM d, yyyy')}
+                          {format(new Date((test as any).testDate || new Date()), 'MMM d, yyyy')}
                         </Text>
                       </Td>
                       <Td>
                         <Badge
-                          colorScheme={test.testType === 'SPRINT_12MIN' ? 'blue' : 'purple'}
+                          colorScheme={(test as any).testType === 'SPRINT_12MIN' ? 'blue' : 'purple'}
                           fontSize="xs"
                         >
-                          {test.testType === 'SPRINT_12MIN' ? '15\"+12\'' : '1\'/2\'/5\''}
+                          {(test as any).testType === 'SPRINT_12MIN' ? '15\"+12\'' : '1\'/2\'/5\''}
                         </Badge>
                       </Td>
                       <Td isNumeric>
