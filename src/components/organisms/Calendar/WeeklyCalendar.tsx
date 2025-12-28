@@ -368,8 +368,8 @@ export function WeeklyCalendar({
                         onRemoveWorkout={onRemoveWorkout}
                         onEditWorkout={onEditWorkout}
                         onDrop={onScheduleWorkout}
-                        onMoveWorkout={onMoveWorkout}
-                        onCopyWorkout={onCopyWorkout}
+                        onMoveWorkout={onMoveWorkout ? (scheduledId) => onMoveWorkout(scheduledId, day.dayIndex) : undefined}
+                        onCopyWorkout={onCopyWorkout ? (scheduledId) => onCopyWorkout(scheduledId, day.dayIndex) : undefined}
                         onTap={onDayTap}
                         showTapHint={!!selectedWorkoutName}
                         isUnavailable={unavailableDays.includes(day.dayIndex)}
@@ -421,8 +421,8 @@ export function WeeklyCalendar({
                       onRemoveWorkout={onRemoveWorkout}
                       onEditWorkout={onEditWorkout}
                       onDrop={onScheduleWorkout}
-                      onMoveWorkout={onMoveWorkout}
-                      onCopyWorkout={onCopyWorkout}
+                      onMoveWorkout={onMoveWorkout ? (scheduledId) => onMoveWorkout(scheduledId, day.dayIndex) : undefined}
+                      onCopyWorkout={onCopyWorkout ? (scheduledId) => onCopyWorkout(scheduledId, day.dayIndex) : undefined}
                       onTap={onDayTap}
                       showTapHint={!!selectedWorkoutName}
                       isUnavailable={unavailableDays.includes(day.dayIndex)}
