@@ -853,6 +853,7 @@
     "weekCopied": "Week copied",
     "weekCopiedDescription": "Copied {{count}} workouts to {{week}}",
     "failedToCopyWeek": "Failed to copy week",
+    "copyWeekWithinSameCalendar": "Copy week within same calendar",
     "workoutsMerged": "Workouts merged",
     "workoutsMergedDescription": "Added {{count}} workouts to {{week}}",
     "weekOverwritten": "Week overwritten",

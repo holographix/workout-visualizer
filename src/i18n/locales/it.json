@@ -916,6 +916,7 @@
     "weekCopied": "Settimana copiata",
     "weekCopiedDescription": "Copiati {{count}} allenamenti a {{week}}",
     "failedToCopyWeek": "Impossibile copiare la settimana",
+    "copyWeekWithinSameCalendar": "Copia settimana nello stesso calendario",
     "workoutsMerged": "Allenamenti uniti",
     "workoutsMergedDescription": "Aggiunti {{count}} allenamenti a {{week}}",
     "weekOverwritten": "Settimana sovrascritta",

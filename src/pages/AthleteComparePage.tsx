@@ -692,11 +692,13 @@ export function AthleteComparePage() {
                 onMoveWorkout={(scheduledId, dayIndex) => handleMoveWorkout(scheduledId, dayIndex, leftAthleteId!)}
                 onCopyWorkout={(scheduledId, dayIndex) => handleCopyWorkout(scheduledId, dayIndex, leftAthleteId!)}
                 onCopyWeek={(weekISO, weekLabel, workoutCount) => handleCopyWeek(weekISO, weekLabel, workoutCount, leftAthleteId!)}
-                onPasteWeek={copyModeData && copyModeData.sourceAthleteId === rightAthleteId
+                onPasteWeek={copyModeData
                   ? (weekISO, weekLabel, workoutCount) => handlePasteWeek(weekISO, weekLabel, workoutCount, leftAthleteId!)
                   : undefined}
-                copyWeekTooltip={`Copy week to ${rightAthlete?.fullName || 'other athlete'}`}
-                isPasteMode={copyModeData?.sourceAthleteId === rightAthleteId}
+                copyWeekTooltip={copyModeData?.sourceAthleteId === leftAthleteId
+                  ? t('athleteComparison.copyWeekWithinSameCalendar')
+                  : `Copy week to ${rightAthlete?.fullName || 'other athlete'}`}
+                isPasteMode={!!copyModeData}
                 pasteSourceWeekISO={copyModeData?.sourceAthleteId === leftAthleteId ? copyModeData.sourceWeekISO : undefined}
                 pastingWeeks={pastingTarget?.athleteId === leftAthleteId ? new Set([pastingTarget.weekISO]) : new Set()}
                 startWeek={leftWeekStart}
@@ -768,11 +770,13 @@ export function AthleteComparePage() {
                 onMoveWorkout={(scheduledId, dayIndex) => handleMoveWorkout(scheduledId, dayIndex, rightAthleteId!)}
                 onCopyWorkout={(scheduledId, dayIndex) => handleCopyWorkout(scheduledId, dayIndex, rightAthleteId!)}
                 onCopyWeek={(weekISO, weekLabel, workoutCount) => handleCopyWeek(weekISO, weekLabel, workoutCount, rightAthleteId!)}
-                onPasteWeek={copyModeData && copyModeData.sourceAthleteId === leftAthleteId
+                onPasteWeek={copyModeData
                   ? (weekISO, weekLabel, workoutCount) => handlePasteWeek(weekISO, weekLabel, workoutCount, rightAthleteId!)
                   : undefined}
-                copyWeekTooltip={`Copy week to ${leftAthlete?.fullName || 'other athlete'}`}
-                isPasteMode={copyModeData?.sourceAthleteId === leftAthleteId}
+                copyWeekTooltip={copyModeData?.sourceAthleteId === rightAthleteId
+                  ? t('athleteComparison.copyWeekWithinSameCalendar')
+                  : `Copy week to ${leftAthlete?.fullName || 'other athlete'}`}
+                isPasteMode={!!copyModeData}
                 pasteSourceWeekISO={copyModeData?.sourceAthleteId === rightAthleteId ? copyModeData.sourceWeekISO : undefined}
                 pastingWeeks={pastingTarget?.athleteId === rightAthleteId ? new Set([pastingTarget.weekISO]) : new Set()}
                 startWeek={rightWeekStart}
