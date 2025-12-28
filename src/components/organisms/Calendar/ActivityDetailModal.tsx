@@ -328,22 +328,23 @@ export function ActivityDetailModal({
                   </Text>
                 </VStack>
               </HStack>
-              <Button
-                leftIcon={<Icon as={Trash2} />}
-                colorScheme="red"
-                variant="ghost"
-                size="sm"
-                onClick={onDeleteAlertOpen}
-              >
-                {t('common.delete') || 'Delete'}
-              </Button>
+              {onDelete && (
+                <Button
+                  leftIcon={<Icon as={Trash2} />}
+                  colorScheme="red"
+                  variant="ghost"
+                  size="sm"
+                  onClick={onDeleteAlertOpen}
+                >
+                  {t('common.delete') || 'Delete'}
+                </Button>
+              )}
             </HStack>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody flex="1" overflowY="auto">
-            <VStack spacing={6} align="stretch">
-              {/* Summary stats */}
-              <SimpleGrid columns={{ base: 2, md: 4, lg: 6 }} spacing={4}>
+          <ModalBody flex="1" overflowY="auto" minH="0" pb={6}>
+            {/* Summary stats */}
+            <SimpleGrid columns={{ base: 2, md: 4, lg: 6 }} spacing={4} mb={6}>
                 <Stat size="sm" bg={cardBg} p={3} borderRadius="md">
                   <StatLabel>{t('workout.duration') || 'Duration'}</StatLabel>
                   <StatNumber fontSize="lg">{formatDuration(activity.durationSeconds)}</StatNumber>
@@ -397,8 +398,8 @@ export function ActivityDetailModal({
                 )}
               </SimpleGrid>
 
-              {/* Tabs for different views */}
-              <Tabs variant="enclosed" colorScheme="blue" onChange={setSelectedTab}>
+            {/* Tabs for different views */}
+            <Tabs variant="enclosed" colorScheme="blue" onChange={setSelectedTab} mb={6}>
                 <TabList>
                   <Tab>
                     <Icon as={Zap} mr={2} />
@@ -578,7 +579,7 @@ export function ActivityDetailModal({
                           return (
                             <MapContainer
                               bounds={bounds}
-                              boundsOptions={{ padding: [30, 30] }}
+                              boundsOptions={{ padding: [50, 50], maxZoom: 15 }}
                               style={{ height: '100%', width: '100%' }}
                               scrollWheelZoom={true}
                               key={`map-${activity.id}`} // Force remount on activity change
@@ -679,18 +680,17 @@ export function ActivityDetailModal({
                 </TabPanels>
               </Tabs>
 
-              {/* Notes */}
-              {activity.notes && (
-                <Box bg={cardBg} p={4} borderRadius="md">
-                  <Text fontWeight="medium" mb={2}>
-                    {t('activityDetail.notes') || 'Notes'}
-                  </Text>
-                  <Text fontSize="sm" color={mutedColor} whiteSpace="pre-wrap">
-                    {activity.notes}
-                  </Text>
-                </Box>
-              )}
-            </VStack>
+            {/* Notes */}
+            {activity.notes && (
+              <Box bg={cardBg} p={4} borderRadius="md">
+                <Text fontWeight="medium" mb={2}>
+                  {t('activityDetail.notes') || 'Notes'}
+                </Text>
+                <Text fontSize="sm" color={mutedColor} whiteSpace="pre-wrap">
+                  {activity.notes}
+                </Text>
+              </Box>
+            )}
           </ModalBody>
           <ModalFooter flexShrink={0}>
             <Button onClick={onClose}>{t('common.close') || 'Close'}</Button>

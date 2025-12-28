@@ -46,7 +46,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { startOfWeek, startOfMonth, endOfMonth, startOfWeek as getWeekStart, endOfWeek, addWeeks, subWeeks, format } from 'date-fns';
 import { ArrowLeft, Library, User, CalendarDays, CalendarRange, X, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { MonthlyCalendar, MultiWeekCalendar, WorkoutLibrarySidebar, ScheduledWorkoutEditor } from '../components/organisms/Calendar';
+import { MonthlyCalendar, MultiWeekCalendar, WorkoutLibrarySidebar, ScheduledWorkoutEditor, WorkoutViewerModal } from '../components/organisms/Calendar';
 import type { ScheduledWorkout } from '../types/calendar';
 import type { ApiWorkoutItem } from '../components/organisms/Calendar/WorkoutLibrarySidebar';
 import { useCalendarAPI, useCalendarMonthAPI, useWorkoutsAPI, useAthleteSettings } from '../hooks';
@@ -76,6 +76,7 @@ export function AthleteCalendarPage() {
   const [editingWorkout, setEditingWorkout] = useState<ScheduledWorkout | null>(null);
   const [mobileTabIndex, setMobileTabIndex] = useState(0);
   const [undoStack, setUndoStack] = useState<Array<{ workoutId: string; absoluteDayIndex: number; title: string }>>([]);
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const toast = useToast();
 
   // View mode toggle (multi-week vs month)
@@ -99,6 +100,9 @@ export function AthleteCalendarPage() {
   const { isOpen: isCompareModalOpen, onOpen: onOpenCompareModal, onClose: onCloseCompareModal } = useDisclosure();
   const [compareAthletes, setCompareAthletes] = useState<CoachAthleteListItem[]>([]);
   const [selectedCompareAthleteId, setSelectedCompareAthleteId] = useState<string>('');
+
+  // Workout viewer modal state
+  const { isOpen: isViewerOpen, onOpen: onViewerOpen, onClose: onViewerClose } = useDisclosure();
 
   // Fetch coach's athletes for comparison
   useEffect(() => {
@@ -465,9 +469,9 @@ export function AthleteCalendarPage() {
   }, [refetchMultiWeek, multiWeekWorkouts, toast, t]);
 
   const handleWorkoutClick = useCallback((scheduled: ScheduledWorkout) => {
-    console.log('Workout clicked:', scheduled);
-    // TODO: Open workout detail modal
-  }, []);
+    setSelectedWorkoutId(scheduled.id);
+    onViewerOpen();
+  }, [onViewerOpen]);
 
   const handleEditWorkout = useCallback((scheduled: ScheduledWorkout) => {
     setEditingWorkout(scheduled);
@@ -961,6 +965,17 @@ export function AthleteCalendarPage() {
             </ModalFooter>
           </ModalContent>
         </Modal>
+
+        {/* Workout Viewer Modal - for viewing completed workouts */}
+        <WorkoutViewerModal
+          isOpen={isViewerOpen}
+          onClose={() => {
+            onViewerClose();
+            setSelectedWorkoutId(null);
+          }}
+          scheduledWorkoutId={selectedWorkoutId}
+          isCoachView={true}
+        />
       </Box>
     );
   }
@@ -1164,6 +1179,17 @@ export function AthleteCalendarPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      {/* Workout Viewer Modal - for viewing completed workouts */}
+      <WorkoutViewerModal
+        isOpen={isViewerOpen}
+        onClose={() => {
+          onViewerClose();
+          setSelectedWorkoutId(null);
+        }}
+        scheduledWorkoutId={selectedWorkoutId}
+        isCoachView={true}
+      />
     </Box>
   );
 }

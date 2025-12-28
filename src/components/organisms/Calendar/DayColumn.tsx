@@ -108,12 +108,13 @@ export function DayColumn({ day, athleteId, onWorkoutClick, onRemoveWorkout, onE
     }
     e.preventDefault();
 
-    // Determine drop effect based on source and Alt key
+    // Determine drop effect based on source and modifier keys
     const effectAllowed = e.dataTransfer.effectAllowed;
+    const isCopyModifier = e.altKey || e.metaKey || e.ctrlKey; // Alt, CMD (Mac), or CTRL (Windows/Linux)
 
     if (effectAllowed === 'copyMove') {
-      // Card drag - allow both move (default) and copy (with Alt)
-      e.dataTransfer.dropEffect = e.altKey ? 'copy' : 'move';
+      // Card drag - allow both move (default) and copy (with Alt/CMD/CTRL)
+      e.dataTransfer.dropEffect = isCopyModifier ? 'copy' : 'move';
     } else if (effectAllowed === 'copy') {
       // Library workout drag - always copy
       e.dataTransfer.dropEffect = 'copy';
@@ -146,25 +147,42 @@ export function DayColumn({ day, athleteId, onWorkoutClick, onRemoveWorkout, onE
 
     try {
       const data = JSON.parse(e.dataTransfer.getData('application/json'));
-      const isCopyingWithAlt = e.altKey && data.isMoving;
+      const isCopyModifier = e.altKey || e.metaKey || e.ctrlKey; // Alt, CMD (Mac), or CTRL (Windows/Linux)
+      const isCopyingWithModifier = isCopyModifier && data.isMoving;
       const isCrossAthleteMove = data.sourceAthleteId && athleteId && data.sourceAthleteId !== athleteId;
+      const isSourceCompleted = data.isCompleted === true;
 
       console.log('🎯 DayColumn drop:', {
         data,
         athleteId,
         isCrossAthleteMove,
+        isCopyModifier,
+        isSourceCompleted,
         onCopyWorkout: !!onCopyWorkout,
         onMoveWorkout: !!onMoveWorkout
       });
 
       if (data.isMoving && data.scheduledId) {
+        // Special handling for completed workouts
+        if (isSourceCompleted) {
+          // Completed workouts can ONLY be copied (with modifier key)
+          if (!isCopyModifier) {
+            console.log('❌ Completed workout dropped without modifier - ignoring');
+            return; // Do nothing if no modifier key
+          }
+          console.log('➡️ Completed workout copy detected, calling onCopyWorkout');
+          onCopyWorkout?.(data.scheduledId);
+          return;
+        }
+
+        // Normal (non-completed) workout handling
         // If dragging between different athletes, always copy
         if (isCrossAthleteMove) {
           console.log('➡️ Cross-athlete copy detected, calling onCopyWorkout');
           onCopyWorkout?.(data.scheduledId);
-        } else if (isCopyingWithAlt) {
-          // Alt key held - copy workout to new day (same athlete)
-          console.log('➡️ Alt-copy detected, calling onCopyWorkout');
+        } else if (isCopyingWithModifier) {
+          // Alt/CMD/CTRL key held - copy workout to new day (same athlete)
+          console.log('➡️ Modifier-copy detected, calling onCopyWorkout');
           onCopyWorkout?.(data.scheduledId);
         } else {
           // Move workout between days (same athlete)
@@ -314,24 +332,31 @@ export function DayColumn({ day, athleteId, onWorkoutClick, onRemoveWorkout, onE
               const workoutAthleteId = (scheduled as { athleteId?: string }).athleteId;
               const athleteColor = workoutAthleteId && athleteColorMap ? athleteColorMap.get(workoutAthleteId) : undefined;
 
-              // Drag handlers for moving workouts between days (only if drag is enabled)
+              // Drag handlers for moving workouts between days
+              // All workouts can be dragged (including completed ones for copying)
               const handleCardDragStart = onWorkoutDragStart ? (e: React.DragEvent) => {
                 e.dataTransfer.setData('application/json', JSON.stringify({
                   scheduledId: scheduled.id,
                   isMoving: true,
                   sourceAthleteId: athleteId, // Include athlete ID for cross-calendar detection
+                  isCompleted: scheduled.completed || scheduled.skipped, // Track if source is completed
                 }));
                 e.dataTransfer.effectAllowed = 'copyMove';
                 onWorkoutDragStart(scheduled);
               } : undefined;
+
+              // Don't show edit/delete buttons for completed or skipped workouts
+              const isCompletedOrSkipped = scheduled.completed || scheduled.skipped;
+              const showEdit = onEditWorkout && !isCompletedOrSkipped;
+              const showRemove = onRemoveWorkout && !isCompletedOrSkipped;
 
               return (
                 <WorkoutCard
                   key={scheduled.id}
                   scheduled={scheduled}
                   onClick={() => onWorkoutClick(scheduled)}
-                  onRemove={onRemoveWorkout ? () => onRemoveWorkout(scheduled.id) : undefined}
-                  onEdit={onEditWorkout ? () => onEditWorkout(scheduled) : undefined}
+                  onRemove={showRemove ? () => onRemoveWorkout(scheduled.id) : undefined}
+                  onEdit={showEdit ? () => onEditWorkout(scheduled) : undefined}
                   onDragStart={handleCardDragStart}
                   onDragEnd={onWorkoutDragEnd}
                   athleteColor={athleteColor}

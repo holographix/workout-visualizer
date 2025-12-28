@@ -245,6 +245,8 @@ export function MultiWeekCalendar({
                       onDrop={(workoutId) => onScheduleWorkout(workoutId, absoluteDayIndex)}
                       onMoveWorkout={(scheduledId) => onMoveWorkout?.(scheduledId, absoluteDayIndex)}
                       onCopyWorkout={(scheduledId) => onCopyWorkout?.(scheduledId, absoluteDayIndex)}
+                      onWorkoutDragStart={() => {}} // Enable dragging
+                      onWorkoutDragEnd={() => {}} // Enable dragging
                       isUnavailable={unavailableDays.includes(day.dayIndex)}
                       maxHours={dayCapacities.find(c => c.dayIndex === day.dayIndex)?.maxHours}
                       isLoading={isWeekLoading}

@@ -1363,7 +1363,7 @@ export function WorkoutViewerModal({
         isOpen={isActivityDetailOpen}
         onClose={onActivityDetailClose}
         activity={selectedActivity}
-        onDelete={handleActivityDelete}
+        onDelete={!isCoachView ? handleActivityDelete : undefined}
       />
     )}
     </>
