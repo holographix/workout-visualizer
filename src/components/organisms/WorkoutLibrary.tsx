@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -18,16 +19,22 @@ import {
   Text,
   VStack,
   useColorModeValue,
+  useDisclosure,
+  Tooltip,
 } from '@chakra-ui/react';
-import { FolderOpen, Zap, Search, Clock, TrendingUp } from 'lucide-react';
+import { FolderOpen, Zap, Search, Clock, TrendingUp, Upload } from 'lucide-react';
+import { WorkoutUploadModal } from './WorkoutUpload';
 import { workoutLibrary, type WorkoutCategory, type WorkoutLibraryItem } from '../../data/workoutLibrary';
 import type { Workout } from '../../types/workout';
+import type { ConvertedWorkout } from '../../types/workoutUpload';
 import { getWorkoutTypeConfig } from '../../utils/workoutTypes';
 
 interface WorkoutLibraryProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectWorkout: (workout: Workout) => void;
+  onImportWorkout?: (workout: ConvertedWorkout) => Promise<void>;
+  categories?: Array<{ id: string; name: string }>;
 }
 
 const formatDuration = (hours: number): string => {
@@ -41,9 +48,17 @@ export function WorkoutLibrary({
   isOpen,
   onClose,
   onSelectWorkout,
+  onImportWorkout,
+  categories = [],
 }: WorkoutLibraryProps) {
+  const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string>(workoutLibrary[0]?.id || '');
   const [searchQuery, setSearchQuery] = useState('');
+  const {
+    isOpen: isUploadOpen,
+    onOpen: onUploadOpen,
+    onClose: onUploadClose,
+  } = useDisclosure();
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
@@ -80,23 +95,38 @@ export function WorkoutLibrary({
       <ModalOverlay backdropFilter="blur(4px)" />
       <ModalContent bg={bgColor} maxH="85vh">
         <ModalHeader borderBottomWidth="1px" borderColor={borderColor}>
-          <HStack spacing={3}>
-            <Flex
-              w={10}
-              h={10}
-              borderRadius="xl"
-              bgGradient="linear(to-br, purple.500, blue.600)"
-              align="center"
-              justify="center"
-            >
-              <Icon as={FolderOpen} w={5} h={5} color="white" />
-            </Flex>
-            <Box>
-              <Heading size="md">Workout Library</Heading>
-              <Text fontSize="xs" color={mutedColor} fontWeight="normal">
-                Select a workout to visualize
-              </Text>
-            </Box>
+          <HStack justify="space-between" w="full" pr={8}>
+            <HStack spacing={3}>
+              <Flex
+                w={10}
+                h={10}
+                borderRadius="xl"
+                bgGradient="linear(to-br, purple.500, blue.600)"
+                align="center"
+                justify="center"
+              >
+                <Icon as={FolderOpen} w={5} h={5} color="white" />
+              </Flex>
+              <Box>
+                <Heading size="md">{t('library.title')}</Heading>
+                <Text fontSize="xs" color={mutedColor} fontWeight="normal">
+                  {t('library.selectToVisualize')}
+                </Text>
+              </Box>
+            </HStack>
+            {onImportWorkout && (
+              <Tooltip label={t('workoutUpload.title', 'Import Workout')}>
+                <Button
+                  leftIcon={<Upload size={16} />}
+                  size="sm"
+                  colorScheme="brand"
+                  variant="outline"
+                  onClick={onUploadOpen}
+                >
+                  {t('workoutUpload.import', 'Import')}
+                </Button>
+              </Tooltip>
+            )}
           </HStack>
         </ModalHeader>
         <ModalCloseButton />
@@ -138,7 +168,7 @@ export function WorkoutLibrary({
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search workouts..."
+                    placeholder={t('library.searchPlaceholder')}
                     bg={inputBg}
                   />
                 </InputGroup>
@@ -158,7 +188,7 @@ export function WorkoutLibrary({
                 {filteredWorkouts.length === 0 ? (
                   <Flex align="center" justify="center" h="full">
                     <Text color={mutedColor} fontSize="sm">
-                      No workouts found
+                      {t('library.noWorkoutsFound')}
                     </Text>
                   </Flex>
                 ) : (
@@ -182,6 +212,16 @@ export function WorkoutLibrary({
           </Flex>
         </ModalBody>
       </ModalContent>
+
+      {/* Upload Modal */}
+      {onImportWorkout && (
+        <WorkoutUploadModal
+          isOpen={isUploadOpen}
+          onClose={onUploadClose}
+          onImport={onImportWorkout}
+          categories={categories}
+        />
+      )}
     </Modal>
   );
 }

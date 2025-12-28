@@ -1,0 +1,353 @@
+{
+  "stats": {
+    "suites": 4,
+    "tests": 9,
+    "passes": 0,
+    "pending": 0,
+    "failures": 9,
+    "start": "2025-12-26T18:45:55.634Z",
+    "end": "2025-12-26T18:54:16.457Z",
+    "duration": 500823,
+    "testsRegistered": 9,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "8b3b313b-8f84-42e4-91e1-2ac6dde243e0",
+      "title": "",
+      "fullFile": "cypress/e2e/workout-modification.cy.ts",
+      "file": "cypress/e2e/workout-modification.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "2a726330-85ae-452b-bd54-d3654c90ff79",
+          "title": "Workout Modification Feature",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "926652f8-5fea-496e-81b9-ecb57a305848",
+              "title": "Coach modifies scheduled workout",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should navigate to athlete calendar and see scheduled workouts",
+                  "fullTitle": "Workout Modification Feature Coach modifies scheduled workout should navigate to athlete calendar and see scheduled workouts",
+                  "timedOut": null,
+                  "duration": 18300,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "// Navigate to coach page\ncy.visit('/coach');\ncy.wait(1000);\n// Should see list of athletes\ncy.get('body').should('contain', /athlete|atleta/i);\n// Click on first athlete to go to their calendar\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\n// Should be on athlete calendar page\ncy.url().should('include', '/athlete/');\ncy.url().should('include', '/calendar');",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: expected '<body.chakra-ui-dark>' to contain /athlete|atleta/i",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: expected '<body.chakra-ui-dark>' to contain /athlete|atleta/i\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:30:21)",
+                    "diff": null
+                  },
+                  "uuid": "96e337fb-954f-40b7-95be-9269c400877e",
+                  "parentUUID": "926652f8-5fea-496e-81b9-ecb57a305848",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show Edit button on workout card hover",
+                  "fullTitle": "Workout Modification Feature Coach modifies scheduled workout should show Edit button on workout card hover",
+                  "timedOut": null,
+                  "duration": 18254,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "// Navigate to an athlete calendar with scheduled workouts\ncy.visit('/coach');\ncy.wait(1000);\n// Click on first athlete\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\n// Find a workout card (if exists)\ncy.get('body').then(function ($body) {\n    // Check if there are scheduled workouts\n    if ($body.find('[role=\"group\"]').length > 0) {\n        // Hover over the workout card\n        cy.get('[role=\"group\"]').first().trigger('mouseover');\n        // Edit button should appear (with aria-label containing \"edit\" or \"modifica\")\n        cy.get('[aria-label*=\"dit\"], [aria-label*=\"odifica\"]').should('exist');\n    }\n    else {\n        cy.log('No scheduled workouts found - test skipped for this athlete');\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:47:9)",
+                    "diff": null
+                  },
+                  "uuid": "4256e959-e5db-4e83-943a-12b09097fafc",
+                  "parentUUID": "926652f8-5fea-496e-81b9-ecb57a305848",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should open ScheduledWorkoutEditor modal when clicking Edit button",
+                  "fullTitle": "Workout Modification Feature Coach modifies scheduled workout should open ScheduledWorkoutEditor modal when clicking Edit button",
+                  "timedOut": null,
+                  "duration": 18216,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.visit('/coach');\ncy.wait(1000);\n// Click on first athlete\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\n// Find a workout card\ncy.get('body').then(function ($body) {\n    if ($body.find('[role=\"group\"]').length > 0) {\n        // Hover and click edit button\n        cy.get('[role=\"group\"]').first().trigger('mouseover');\n        cy.get('[aria-label*=\"dit\"], [aria-label*=\"odifica\"]').first().click({ force: true });\n        // Modal should open\n        cy.get('[role=\"dialog\"]').should('be.visible');\n        // Modal should contain edit-related text\n        cy.get('[role=\"dialog\"]').should('contain', /edit|modifica/i);\n        // Modal should show workout details\n        cy.get('[role=\"dialog\"]').should('contain', /duration|durata|TSS|IF/i);\n    }\n    else {\n        cy.log('No scheduled workouts found - test skipped');\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:70:9)",
+                    "diff": null
+                  },
+                  "uuid": "6f9f7d44-46df-4361-aa2f-28a3445af5ba",
+                  "parentUUID": "926652f8-5fea-496e-81b9-ecb57a305848",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should modify workout and save changes",
+                  "fullTitle": "Workout Modification Feature Coach modifies scheduled workout should modify workout and save changes",
+                  "timedOut": null,
+                  "duration": 18169,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.visit('/coach');\ncy.wait(1000);\n// Click on first athlete\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\n// Find a workout card\ncy.get('body').then(function ($body) {\n    if ($body.find('[role=\"group\"]').length > 0) {\n        // Open editor\n        cy.get('[role=\"group\"]').first().trigger('mouseover');\n        cy.get('[aria-label*=\"dit\"], [aria-label*=\"odifica\"]').first().click({ force: true });\n        // Wait for modal to open\n        cy.get('[role=\"dialog\"]').should('be.visible');\n        // Look for workout builder elements (steps, add button, etc.)\n        cy.get('[role=\"dialog\"]').within(function () {\n            // Try to find add step button or similar\n            cy.get('body').then(function ($modal) {\n                if ($modal.find('button').length > 2) {\n                    // Find and click Save button\n                    cy.contains('button', /save|salva/i).click();\n                    // Toast notification should appear\n                    cy.get('[role=\"status\"], [role=\"alert\"]', { timeout: 5000 }).should('exist');\n                    // Modal should close\n                    cy.get('[role=\"dialog\"]').should('not.exist');\n                }\n                else {\n                    cy.log('Workout builder not fully loaded - closing modal');\n                    cy.contains('button', /cancel|annulla/i).click();\n                }\n            });\n        });\n    }\n    else {\n        cy.log('No scheduled workouts found - test skipped');\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:99:9)",
+                    "diff": null
+                  },
+                  "uuid": "820f35d0-74b5-40b1-a588-fd5ebd806fae",
+                  "parentUUID": "926652f8-5fea-496e-81b9-ecb57a305848",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show modified indicator on workout card after modification",
+                  "fullTitle": "Workout Modification Feature Coach modifies scheduled workout should show modified indicator on workout card after modification",
+                  "timedOut": null,
+                  "duration": 18286,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "// This test would require a workout that was previously modified\n// For now, we'll just check the structure exists\ncy.visit('/coach');\ncy.wait(1000);\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\n// If there's a modified workout, it should have some visual indicator\n// This is implementation-specific - could be a badge, icon, or border\ncy.get('body').then(function ($body) {\n    if ($body.find('[role=\"group\"]').length > 0) {\n        // Check if any workout cards exist\n        cy.get('[role=\"group\"]').should('exist');\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:143:9)",
+                    "diff": null
+                  },
+                  "uuid": "1ba5aa95-df45-4f0b-8e34-a7a0e80ca539",
+                  "parentUUID": "926652f8-5fea-496e-81b9-ecb57a305848",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should reset workout to original structure",
+                  "fullTitle": "Workout Modification Feature Coach modifies scheduled workout should reset workout to original structure",
+                  "timedOut": null,
+                  "duration": 18246,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.visit('/coach');\ncy.wait(1000);\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\ncy.get('body').then(function ($body) {\n    if ($body.find('[role=\"group\"]').length > 0) {\n        // Open editor\n        cy.get('[role=\"group\"]').first().trigger('mouseover');\n        cy.get('[aria-label*=\"dit\"], [aria-label*=\"odifica\"]').first().click({ force: true });\n        cy.get('[role=\"dialog\"]').should('be.visible');\n        // Look for Reset button (only visible if workout was modified)\n        cy.get('[role=\"dialog\"]').within(function () {\n            cy.get('body').then(function ($modal) {\n                if ($modal.find('button:contains(\"Reset\"), button:contains(\"Ripristina\")').length > 0) {\n                    // Click Reset button\n                    cy.contains('button', /reset|ripristina/i).click();\n                    // Confirmation or success message\n                    cy.get('[role=\"status\"], [role=\"alert\"]', { timeout: 5000 }).should('exist');\n                    // Modal should close\n                    cy.get('[role=\"dialog\"]').should('not.exist');\n                }\n                else {\n                    // No reset button (workout not modified) - just close\n                    cy.contains('button', /cancel|annulla/i).click();\n                }\n            });\n        });\n    }\n    else {\n        cy.log('No scheduled workouts found - test skipped');\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:160:9)",
+                    "diff": null
+                  },
+                  "uuid": "6f62ebb9-77e2-46c2-9bfe-7ce36b0099d2",
+                  "parentUUID": "926652f8-5fea-496e-81b9-ecb57a305848",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "96e337fb-954f-40b7-95be-9269c400877e",
+                "4256e959-e5db-4e83-943a-12b09097fafc",
+                "6f9f7d44-46df-4361-aa2f-28a3445af5ba",
+                "820f35d0-74b5-40b1-a588-fd5ebd806fae",
+                "1ba5aa95-df45-4f0b-8e34-a7a0e80ca539",
+                "6f62ebb9-77e2-46c2-9bfe-7ce36b0099d2"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 109471,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "c1001a6f-1f86-4181-8fae-3fb6b05273e2",
+              "title": "API Integration",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should send PUT request when modifying workout",
+                  "fullTitle": "Workout Modification Feature API Integration should send PUT request when modifying workout",
+                  "timedOut": null,
+                  "duration": 18223,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.intercept('PUT', '/api/calendar/scheduled/*/structure').as('modifyWorkout');\ncy.visit('/coach');\ncy.wait(1000);\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\ncy.get('body').then(function ($body) {\n    if ($body.find('[role=\"group\"]').length > 0) {\n        cy.get('[role=\"group\"]').first().trigger('mouseover');\n        cy.get('[aria-label*=\"dit\"], [aria-label*=\"odifica\"]').first().click({ force: true });\n        cy.get('[role=\"dialog\"]').should('be.visible');\n        cy.get('[role=\"dialog\"]').within(function () {\n            cy.get('body').then(function ($modal) {\n                if ($modal.find('button').length > 2) {\n                    cy.contains('button', /save|salva/i).click();\n                    // Should make API call\n                    cy.wait('@modifyWorkout', { timeout: 10000 }).then(function (interception) {\n                        expect(interception.request.method).to.equal('PUT');\n                        expect(interception.request.body).to.have.property('structure');\n                    });\n                }\n                else {\n                    cy.contains('button', /cancel|annulla/i).click();\n                    cy.log('Workout builder not ready - skipping API test');\n                }\n            });\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:203:9)",
+                    "diff": null
+                  },
+                  "uuid": "a304f515-55e0-4582-99fe-bc09a0e691c3",
+                  "parentUUID": "c1001a6f-1f86-4181-8fae-3fb6b05273e2",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should send DELETE request when resetting workout",
+                  "fullTitle": "Workout Modification Feature API Integration should send DELETE request when resetting workout",
+                  "timedOut": null,
+                  "duration": 18281,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.intercept('DELETE', '/api/calendar/scheduled/*/structure').as('resetWorkout');\ncy.visit('/coach');\ncy.wait(1000);\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\ncy.get('body').then(function ($body) {\n    if ($body.find('[role=\"group\"]').length > 0) {\n        cy.get('[role=\"group\"]').first().trigger('mouseover');\n        cy.get('[aria-label*=\"dit\"], [aria-label*=\"odifica\"]').first().click({ force: true });\n        cy.get('[role=\"dialog\"]').should('be.visible');\n        cy.get('[role=\"dialog\"]').within(function () {\n            cy.get('body').then(function ($modal) {\n                if ($modal.find('button:contains(\"Reset\"), button:contains(\"Ripristina\")').length > 0) {\n                    cy.contains('button', /reset|ripristina/i).click();\n                    // Should make API call\n                    cy.wait('@resetWorkout', { timeout: 10000 }).then(function (interception) {\n                        expect(interception.request.method).to.equal('DELETE');\n                    });\n                }\n                else {\n                    cy.contains('button', /cancel|annulla/i).click();\n                    cy.log('No reset button - workout not modified');\n                }\n            });\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:239:9)",
+                    "diff": null
+                  },
+                  "uuid": "c3b552b9-5543-4d90-9e1a-7ca141a0f86b",
+                  "parentUUID": "c1001a6f-1f86-4181-8fae-3fb6b05273e2",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "a304f515-55e0-4582-99fe-bc09a0e691c3",
+                "c3b552b9-5543-4d90-9e1a-7ca141a0f86b"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 36504,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "bf50cb06-f33e-4ad6-a4d4-a482d49722bf",
+              "title": "Error Handling",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should show error toast if modification fails",
+                  "fullTitle": "Workout Modification Feature Error Handling should show error toast if modification fails",
+                  "timedOut": null,
+                  "duration": 18316,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.intercept('PUT', '/api/calendar/scheduled/*/structure', {\n    statusCode: 500,\n    body: { message: 'Internal Server Error' }\n}).as('modifyWorkoutError');\ncy.visit('/coach');\ncy.wait(1000);\ncy.get('[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]').first().click();\ncy.wait(1000);\ncy.get('body').then(function ($body) {\n    if ($body.find('[role=\"group\"]').length > 0) {\n        cy.get('[role=\"group\"]').first().trigger('mouseover');\n        cy.get('[aria-label*=\"dit\"], [aria-label*=\"odifica\"]').first().click({ force: true });\n        cy.get('[role=\"dialog\"]').should('be.visible');\n        cy.get('[role=\"dialog\"]').within(function () {\n            cy.get('body').then(function ($modal) {\n                if ($modal.find('button').length > 2) {\n                    cy.contains('button', /save|salva/i).click();\n                    // Should show error toast\n                    cy.get('[role=\"status\"], [role=\"alert\"]', { timeout: 5000 })\n                        .should('contain', /error|errore/i);\n                }\n                else {\n                    cy.contains('button', /cancel|annulla/i).click();\n                }\n            });\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"], a[href*=\"/athlete/\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/workout-modification.cy.ts:279:9)",
+                    "diff": null
+                  },
+                  "uuid": "268082b2-72d0-4352-83e0-acdbeb92b585",
+                  "parentUUID": "bf50cb06-f33e-4ad6-a4d4-a482d49722bf",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "268082b2-72d0-4352-83e0-acdbeb92b585"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 18316,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "6.3.2"
+    }
+  }
+}

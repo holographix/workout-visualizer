@@ -8,13 +8,27 @@ This document outlines all implemented features, their business logic, and user 
 2. [Authentication](#authentication)
 3. [Onboarding](#onboarding)
 4. [Assessment Tests](#assessment-tests)
-5. [Coach Features](#coach-features)
-6. [Athlete Features](#athlete-features)
-7. [Workout Builder](#workout-builder)
-8. [Calendar System](#calendar-system)
-9. [Settings & Availability](#settings--availability)
-10. [Guided Tour & Setup Checklist](#guided-tour--setup-checklist)
-11. [User Journeys for E2E Testing](#user-journeys-for-e2e-testing)
+5. [Training Zones](#training-zones)
+6. [Coach Features](#coach-features)
+7. [Athlete Features](#athlete-features)
+8. [Workout Builder](#workout-builder)
+9. [Calendar System](#calendar-system)
+10. [Settings & Availability](#settings--availability)
+11. [Guided Tour & Setup Checklist](#guided-tour--setup-checklist)
+12. [User Journeys for E2E Testing](#user-journeys-for-e2e-testing)
+13. [Future Features / Roadmap](#future-features--roadmap)
+    - [CRITICAL: Auto Plan Generation Engine](#1-auto-plan-generation-engine)
+    - [IMPLEMENTED: Zone Calculation System](#2-zone-calculation-system-implemented)
+    - [CRITICAL: Third-Party Integrations (Strava/Garmin/Wahoo)](#3-third-party-integrations)
+    - [CRITICAL: AI Chat Assistant](#4-ai-chat-assistant)
+    - [HIGH: Extended Performance Data](#5-extended-performance-data)
+    - [HIGH: Experience Level in Onboarding](#6-experience-level-in-onboarding)
+    - [HIGH: Coach Selection / Marketplace](#7-coach-selection--marketplace)
+    - [HIGH: Payment Integration (Stripe)](#8-payment-integration-stripe)
+    - [MEDIUM: Advanced Analytics Dashboard](#10-advanced-analytics-dashboard)
+    - [MEDIUM: Adaptive Plan Modifications](#11-adaptive-plan-modifications)
+    - [MEDIUM: Macro-Objectives for Non-Racers](#12-macro-objectives-for-non-racers)
+    - [MEDIUM: Fixed vs Flexible Days](#13-fixed-vs-flexible-days-preference)
 
 ---
 
@@ -222,6 +236,134 @@ interface Assessment {
   notes?: string;
 }
 ```
+
+---
+
+## Training Zones
+
+### Overview
+
+Training zones provide personalized power and heart rate targets for athletes based on their assessment test results. Coaches can view athlete zones on the stats page to inform training prescription.
+
+### Zone Calculation (Coach's Formula)
+
+Based on the coach's "Calcolo zone.xlsx" spreadsheet:
+
+**FC Soglia (Threshold HR)** = 93% of Max HR
+
+#### Power Zones (6 zones, % of FTP)
+
+| Zone | Name | Italian | % FTP |
+|------|------|---------|-------|
+| Z1 | Active Recovery | Recupero Attivo | 0-55% |
+| Z2 | Endurance | Resistenza | 55-75% |
+| Z3 | Tempo | Tempo (Medio) | 75-90% |
+| Z4 | Lactate Threshold | Soglia Lattacida | 90-105% |
+| Z5 | VO2Max | VO2MAX | 105-120% |
+| Z6 | Anaerobic Capacity | Capacità Anaerobica | 120-150% |
+
+#### HR Zones (5 zones, % of FC Soglia)
+
+| Zone | Name | Italian | % FC Soglia |
+|------|------|---------|-------------|
+| Z1 | Active Recovery | Recupero Attivo | <68% |
+| Z2 | Endurance | Resistenza | 68-83% |
+| Z3 | Tempo | Tempo (Medio) | 83-94% |
+| Z4 | Lactate Threshold | Soglia Lattacida | 94-105% |
+| Z5 | VO2Max | VO2MAX | 105-120% |
+
+### Zone Systems
+
+**Power Zone Systems:**
+- `COGGAN` (default) - Standard 6-zone Coggan model
+- `POLARIZED` - 3-zone polarized training
+- `CUSTOM` - Custom zone boundaries
+
+**HR Zone Systems:**
+- `STANDARD` (default) - Standard 5-zone model based on FC Soglia
+- `KARVONEN` - Karvonen formula using heart rate reserve
+- `CUSTOM` - Custom zone boundaries
+
+### Auto-Update from Assessments
+
+When an athlete completes an assessment test:
+1. **FTP** is automatically updated from the estimated FTP (95% of 12' climb power or 90% of 5' power)
+2. **Max HR** is automatically updated if the test result is higher than the current value
+3. Power and HR zones are automatically recalculated based on new values
+
+### Display Location
+
+Training zones are displayed on the **AthleteStatsPage** (`/athlete/:athleteId/stats`) for coach view:
+- Power Zones table with zone name, watt range, and %FTP
+- HR Zones table with zone name, BPM range, and %FC Soglia
+- FTP badge showing current FTP value
+- Max HR badge showing current Max HR value
+- Empty state messaging when FTP or Max HR is not set
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/zones/:athleteId` | Get all zones (power + HR) with calculated values |
+| GET | `/api/zones/:athleteId/power` | Get power zones configuration |
+| PUT | `/api/zones/:athleteId/power` | Update power zones |
+| GET | `/api/zones/:athleteId/hr` | Get HR zones configuration |
+| PUT | `/api/zones/:athleteId/hr` | Update HR zones |
+| PUT | `/api/zones/:athleteId/data` | Update athlete's FTP, maxHR, restingHR |
+| POST | `/api/zones/calculate/power` | Calculate power zones from FTP (without saving) |
+| POST | `/api/zones/calculate/hr` | Calculate HR zones from maxHR (without saving) |
+
+### Data Models
+
+```typescript
+interface PowerZoneConfig {
+  id?: string;
+  athleteId: string;
+  zoneSystem: 'COGGAN' | 'POLARIZED' | 'CUSTOM';
+  zone1Max: number;  // Default: 55
+  zone2Max: number;  // Default: 75
+  zone3Max: number;  // Default: 90
+  zone4Max: number;  // Default: 105
+  zone5Max: number;  // Default: 120
+  zone6Max: number;  // Default: 150
+}
+
+interface HRZoneConfig {
+  id?: string;
+  athleteId: string;
+  zoneSystem: 'STANDARD' | 'KARVONEN' | 'CUSTOM';
+  zone1Max: number;  // Default: 68
+  zone2Max: number;  // Default: 83
+  zone3Max: number;  // Default: 94
+  zone4Max: number;  // Default: 105
+  zone5Max: number;  // Default: 120
+}
+
+interface CalculatedPowerZone {
+  zone: number;
+  name: string;
+  minWatts: number;
+  maxWatts: number | null;
+  minPercent: number;
+  maxPercent: number | null;
+}
+
+interface CalculatedHRZone {
+  zone: number;
+  name: string;
+  minBPM: number;
+  maxBPM: number | null;
+  minPercent: number;
+  maxPercent: number | null;
+}
+```
+
+### Components
+
+| Component | Location | Description |
+|-----------|----------|-------------|
+| AthleteStatsPage | `pages/AthleteStatsPage.tsx` | Coach view with zones display |
+| useZones | `hooks/useZones.ts` | Hook for fetching and updating zones |
 
 ---
 
@@ -567,10 +709,59 @@ interface ScheduledWorkout {
   completed: boolean;
   completedAt: string | null;
   notes: string | null;
+  // Workout structure overrides (Feature 3: Edit Scheduled Workout Duration)
+  structureOverride?: any; // Modified workout structure
+  durationOverride?: number; // Modified duration in seconds
+  tssOverride?: number; // Recalculated TSS
+  ifOverride?: number; // Recalculated IF
+  isModified?: boolean; // Flag indicating workout has been customized
 }
 ```
 
-### API Endpoints
+### Workout Modification Feature (Feature 3)
+
+**Overview:**
+Coaches can customize scheduled workouts for individual athletes without changing the original workout template. This allows personalizing workout duration, intensity, or structure while preserving the base workout for other athletes.
+
+**Use Case:**
+A coach schedules "Sweet Spot Intervals (60 min)" for multiple athletes, but one athlete needs a shorter version due to time constraints. The coach can modify just that athlete's scheduled workout to 45 minutes without affecting other athletes or the original workout template.
+
+**Features:**
+- Edit button appears on workout cards (hover on desktop)
+- Opens ScheduledWorkoutEditor modal
+- Uses WorkoutBuilder component for structure editing
+- Shows current stats (duration, TSS, IF) vs. original
+- Automatically recalculates TSS and IF based on modifications
+- Visual indicator when workout is modified
+- Reset to original button available for modified workouts
+- Changes are athlete-specific and don't affect the base workout
+
+**Components:**
+| Component | Location | Description |
+|-----------|----------|-------------|
+| ScheduledWorkoutEditor | `components/organisms/Calendar/ScheduledWorkoutEditor.tsx` | Modal for editing scheduled workout structure |
+| WorkoutCard | `components/organisms/Calendar/WorkoutCard.tsx` | Added Edit button with Edit2 icon |
+| WorkoutBuilder | `components/organisms/Coach/WorkoutBuilder.tsx` | Reused for structure editing |
+
+**Business Logic:**
+1. Coach clicks Edit button on scheduled workout card
+2. Modal opens with current workout structure (override OR original)
+3. Coach modifies structure using WorkoutBuilder interface
+4. On save, backend:
+   - Stores modified structure in `structureOverride` field
+   - Calculates duration from new structure → `durationOverride`
+   - Calculates TSS and IF from new structure → `tssOverride`, `ifOverride`
+   - Sets `isModified` flag to `true`
+5. Calendar displays modified workout with override values
+6. Reset button clears all overrides and restores original workout
+
+**TSS/IF Calculation:**
+The backend automatically calculates TSS and IF from the modified structure:
+- Duration: Sum of all step durations
+- Intensity Factor (IF): Weighted average intensity based on step targets
+- Training Stress Score (TSS): `duration_hours × IF² × 100`
+
+**API Endpoints:**
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/calendar/week/{athleteId}?weekStart={date}` | Get training week |
@@ -578,6 +769,63 @@ interface ScheduledWorkout {
 | POST | `/api/calendar/scheduled` | Add workout to day |
 | DELETE | `/api/calendar/scheduled/{id}` | Remove scheduled workout |
 | PUT | `/api/calendar/scheduled/{id}/complete` | Toggle completion |
+| **PUT** | **`/api/calendar/scheduled/{id}/structure`** | **Modify workout structure** |
+| **DELETE** | **`/api/calendar/scheduled/{id}/structure`** | **Reset to original structure** |
+
+**Request/Response (Modify Structure):**
+```typescript
+// PUT /api/calendar/scheduled/:id/structure
+Request: {
+  structure: {
+    steps: [
+      { type: 'warmUp', length: { value: 10, unit: 'minute' }, targets: [...] },
+      { type: 'active', length: { value: 20, unit: 'minute' }, targets: [...] },
+      { type: 'coolDown', length: { value: 10, unit: 'minute' }, targets: [...] }
+    ]
+  }
+}
+
+Response: {
+  id: "uuid",
+  workoutId: "uuid",
+  structureOverride: { ... },
+  durationOverride: 2400, // seconds
+  tssOverride: 65.5,
+  ifOverride: 0.88,
+  isModified: true,
+  ...
+}
+```
+
+**Request/Response (Reset Structure):**
+```typescript
+// DELETE /api/calendar/scheduled/:id/structure
+Response: {
+  id: "uuid",
+  workoutId: "uuid",
+  structureOverride: null,
+  durationOverride: null,
+  tssOverride: null,
+  ifOverride: null,
+  isModified: false,
+  ...
+}
+```
+
+**UI States:**
+- **Normal workout:** Original workout structure displayed
+- **Modified workout:**
+  - Shows override values for duration/TSS/IF
+  - Visual indicator (badge or border) showing "Modified"
+  - Reset button available in edit modal
+- **Edit modal:**
+  - Shows "Original Stats" or "Modified Stats" header
+  - Alert if workout already modified
+  - WorkoutBuilder for editing structure
+  - Save and Reset buttons in footer
+
+**User Journey:**
+See [Journey 25: Coach Modifies Scheduled Workout](#journey-25-coach-modifies-scheduled-workout)
 
 ---
 
@@ -1397,6 +1645,133 @@ type ChecklistItemId = 'profile' | 'availability' | 'goals' | 'assessment';
 
 ---
 
+### Journey 23: Coach Views Athlete Training Zones
+
+**Preconditions:**
+- Coach is logged in
+- Athlete has completed an assessment test (FTP and/or Max HR set)
+
+**Steps:**
+1. Navigate to `/coach`
+2. Click on an athlete card
+3. Click "View Stats" button or navigate to `/athlete/:athleteId/stats`
+4. Scroll to "Training Zones" section
+5. Verify Power Zones table is visible:
+   - FTP badge shows athlete's current FTP
+   - 6 zones displayed (Z1-Z6)
+   - Each zone shows name, watt range, and %FTP
+6. Verify HR Zones table is visible:
+   - Max HR badge shows athlete's current Max HR
+   - 5 zones displayed (Z1-Z5)
+   - Each zone shows name, BPM range, and %FC Soglia
+7. If athlete has no FTP, verify message: "No FTP data - complete an assessment test"
+8. If athlete has no Max HR, verify message: "No Max HR data - complete an assessment test"
+
+**Expected Results:**
+- Training zones section displays after assessment data
+- Power zones calculated correctly from FTP
+- HR zones calculated correctly from Max HR (via FC Soglia = 93% of Max HR)
+- Empty state messages shown when data is missing
+- Zone colors follow standard color scheme (gray, blue, green, yellow, orange, red)
+
+---
+
+### Journey 24: Assessment Updates Training Zones
+
+**Preconditions:**
+- Athlete is logged in
+- Has no prior assessment
+
+**Steps:**
+1. Navigate to `/dashboard`
+2. Click "Start Assessment" on AssessmentCard
+3. Select "Sprint + 12min Climb" protocol
+4. Fill in test results:
+   - Sprint Peak Power: 900 W
+   - Sprint Max HR: 188 bpm
+   - 12' Climb Avg Power: 280 W
+   - 12' Climb Max HR: 175 bpm
+5. Click "Save"
+6. Navigate to profile/settings
+7. Verify FTP is updated to ~266W (95% of 280)
+8. Verify Max HR is updated to 188 bpm
+9. Navigate to `/athlete/:athleteId/stats` (or have coach view)
+10. Verify Power Zones show correct watt ranges based on FTP
+11. Verify HR Zones show correct BPM ranges based on Max HR
+
+**Expected Results:**
+- FTP automatically calculated from 12' climb power (× 0.95)
+- Max HR automatically updated from highest HR in test
+- Training zones immediately recalculated with new values
+- Coach can see updated zones on athlete stats page
+
+---
+
+### Journey 25: Coach Modifies Scheduled Workout
+
+**Preconditions:**
+- Coach is logged in
+- Has at least one athlete with a scheduled workout on their calendar
+
+**Steps:**
+1. Navigate to `/coach`
+2. Click on an athlete card to view their calendar
+3. Verify navigation to `/athlete/:athleteId/calendar`
+4. Hover over a scheduled workout card
+5. Verify Edit button (pencil icon) appears on hover
+6. Click Edit button
+7. Verify ScheduledWorkoutEditor modal opens
+8. Observe current stats badge showing duration, TSS, IF
+9. If workout was previously modified, verify:
+   - Alert appears: "This workout has been customized"
+   - "Reset to Original" button is visible
+10. Modify the workout structure:
+    - Change first step duration from 10 to 15 minutes
+    - Or add a new step
+    - Or adjust intensity targets
+11. Observe updated duration/TSS/IF values updating in real-time
+12. Click "Save"
+13. Verify success toast: "Workout Modified"
+14. Verify modal closes
+15. Observe workout card now shows modified values
+16. Click Edit button again
+17. Observe modified stats displayed
+18. Click "Reset to Original" button
+19. Verify confirmation or success toast
+20. Verify workout card shows original values
+21. Verify isModified flag is false
+
+**API Calls Expected:**
+- `PUT /api/calendar/scheduled/:id/structure` when saving modifications
+- `DELETE /api/calendar/scheduled/:id/structure` when resetting to original
+- Backend should return updated ScheduledWorkout with:
+  - `structureOverride` populated (or null after reset)
+  - `durationOverride` calculated (or null after reset)
+  - `tssOverride` calculated (or null after reset)
+  - `ifOverride` calculated (or null after reset)
+  - `isModified: true` (or false after reset)
+
+**Expected Results:**
+- Edit button appears on hover over workout cards
+- ScheduledWorkoutEditor modal opens with WorkoutBuilder
+- Modifications are saved with recalculated metrics
+- Modified workouts display override values
+- Reset button restores original workout structure
+- Changes are athlete-specific (don't affect other athletes or base workout)
+- Visual indicator shows when workout is modified
+- All metrics (duration, TSS, IF) automatically recalculated by backend
+
+**Error Scenarios:**
+- Save fails (500 error): Shows error toast, modal stays open
+- Invalid structure: Backend validation error, shows error toast
+- Non-existent workout (404): Shows error toast
+- Network error: Shows error toast with retry option
+
+**Cypress Test:**
+See `cypress/e2e/workout-modification.cy.ts` for complete E2E test coverage
+
+---
+
 ## Test Data Requirements
 
 ### Users
@@ -1494,3 +1869,393 @@ All user-facing text uses i18n keys. Key namespaces:
 - `workoutViewer.*` - Workout viewer modal (structure, report, results, athleteNotes, notCompleted messages)
 
 Supported locales: `en`, `it`
+
+---
+
+## Future Features / Roadmap
+
+This section documents features from the original requirements document that have not yet been implemented. These are organized by priority.
+
+---
+
+### CRITICAL - Core Differentiators
+
+These features represent the core value proposition that differentiates RidePro from competitors.
+
+#### 1. Auto Plan Generation Engine
+
+**Description:**
+The flagship feature - intelligent, auto-generated training plans based on athlete profile and goals.
+
+**3-Week Onboarding Protocol:**
+| Week | Purpose | Activities |
+|------|---------|------------|
+| Week 1 | Adaptation | Unstructured riding, coach observes baseline |
+| Week 2 | CP Tests | Critical Power tests (Sprint+12 or 1/2/5min) |
+| Week 3+ | Personalized Plan | 24-week periodized plan generated |
+
+**Business Logic:**
+- Generate 24-week periodized plan based on:
+  - Goal event date(s) and priority (A/B/C)
+  - Weekly availability (hours/days)
+  - Athlete category and discipline
+  - CP test results → training zones
+  - Terrain preference
+- Periodization phases: Base → Build → Peak → Taper
+- Auto-adjust for rest weeks every 3-4 weeks
+- Consider athlete's experience level for progression rate
+
+**Implementation Notes:**
+- Backend algorithm service for plan generation
+- Integration with assessment results for zone calculation
+- Re-generation triggers: new goal, significant CP change, athlete request
+
+---
+
+#### 2. Zone Calculation System (IMPLEMENTED)
+
+**Status: IMPLEMENTED** - See [Training Zones](#training-zones) section above.
+
+**Description:**
+Automatically calculate training zones from assessment test results.
+
+**Zone Models:**
+- **Power Zones** (7 zones based on FTP/CP)
+- **Heart Rate Zones** (5 zones based on LTHR)
+- **RPE Zones** (Borg Scale 6-20 fallback)
+
+**Power Zone Calculation (from CP):**
+| Zone | Name | % of FTP |
+|------|------|----------|
+| Z1 | Recovery | < 55% |
+| Z2 | Endurance | 55-75% |
+| Z3 | Tempo | 76-90% |
+| Z4 | Threshold | 91-105% |
+| Z5 | VO2max | 106-120% |
+| Z6 | Anaerobic | 121-150% |
+| Z7 | Neuromuscular | > 150% |
+
+**HR Zone Calculation (from LTHR):**
+| Zone | Name | % of LTHR |
+|------|------|-----------|
+| Z1 | Recovery | < 68% |
+| Z2 | Aerobic | 68-83% |
+| Z3 | Tempo | 84-94% |
+| Z4 | Threshold | 95-105% |
+| Z5 | Anaerobic | > 105% |
+
+**Borg Scale Fallback (RPE 6-20):**
+For athletes without power meters, use perceived exertion:
+| RPE | Effort Level | Equivalent Zone |
+|-----|--------------|-----------------|
+| 6-9 | Very Light | Z1 |
+| 10-11 | Light | Z2 |
+| 12-13 | Moderate | Z3 |
+| 14-16 | Hard | Z4 |
+| 17-19 | Very Hard | Z5-Z6 |
+| 20 | Maximum | Z7 |
+
+**API Endpoints (Proposed):**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/zones/:athleteId` | Get calculated zones |
+| POST | `/api/zones/:athleteId/calculate` | Recalculate from latest assessment |
+| PUT | `/api/zones/:athleteId/override` | Manual zone override |
+
+---
+
+#### 3. Third-Party Integrations
+
+**Description:**
+Auto-sync workout data from fitness platforms.
+
+**Supported Platforms:**
+- **Strava** - Activity sync, power/HR data
+- **Garmin Connect** - Activity sync, advanced metrics
+- **Wahoo** - Activity sync, structured workouts
+
+**Features:**
+- OAuth2 authentication flow
+- Automatic activity import after upload
+- Map planned workouts to completed activities
+- Import actual power/HR/duration to workout reports
+- Sync assessment data from outdoor rides
+
+**Implementation Notes:**
+- Backend integration service per platform
+- Webhook support for real-time sync (where available)
+- Activity matching algorithm (date + duration similarity)
+- Settings page for connection management
+
+**API Endpoints (Proposed):**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/integrations/:athleteId` | List connected integrations |
+| POST | `/api/integrations/:athleteId/strava/connect` | Initiate Strava OAuth |
+| POST | `/api/integrations/:athleteId/strava/callback` | OAuth callback |
+| DELETE | `/api/integrations/:athleteId/strava` | Disconnect Strava |
+| POST | `/api/integrations/:athleteId/sync` | Manual sync trigger |
+
+---
+
+#### 4. AI Chat Assistant
+
+**Description:**
+Conversational AI for plan adjustments and athlete-coach communication.
+
+**Capabilities:**
+- Request plan modifications ("I'm too tired this week")
+- Report fatigue/illness/injury
+- Ask training questions
+- Get workout explanations
+- Request rest days or reduced load
+
+**Example Interactions:**
+```
+Athlete: "I have a cold, can you adjust my training?"
+AI: "I'll reduce your intensity for the next 3 days and replace intervals with Z2 endurance rides. Take an extra rest day if needed."
+
+Athlete: "Why am I doing so many Z2 rides?"
+AI: "You're in your base building phase. Z2 rides build aerobic capacity, which is the foundation for higher intensity work later in your plan."
+```
+
+**Implementation Notes:**
+- LLM integration (Claude API or similar)
+- Context includes: athlete profile, current plan, recent workouts, goals
+- Coach notification for significant changes
+- Chat history persistence
+
+---
+
+### HIGH PRIORITY - Enhanced Functionality
+
+Features that significantly improve the user experience.
+
+#### 5. Extended Performance Data
+
+**Additional Fields for User Profile:**
+- **Max Heart Rate** (measured or calculated 220-age)
+- **Resting Heart Rate** (morning measurement)
+- **LTHR** (Lactate Threshold Heart Rate)
+- **VO2Max** (estimated or from test)
+- **Weight History** (track changes over time)
+
+**Database Schema Additions:**
+```prisma
+model User {
+  // ... existing fields ...
+  maxHeartRate      Int?      @map("max_heart_rate")
+  restingHeartRate  Int?      @map("resting_heart_rate")
+  lthr              Int?      // Lactate Threshold HR
+  vo2max            Float?    // ml/kg/min
+}
+
+model WeightHistory {
+  id        String   @id @default(uuid())
+  athleteId String   @map("athlete_id")
+  athlete   User     @relation(fields: [athleteId], references: [id])
+  weight    Float    // kg
+  date      DateTime @db.Date
+  @@index([athleteId])
+  @@map("weight_history")
+}
+```
+
+---
+
+#### 6. Experience Level in Onboarding
+
+**Add to Onboarding Step 3 or new step:**
+
+| Level | Description | Plan Characteristics |
+|-------|-------------|---------------------|
+| Beginner | < 1 year cycling | Slower progression, more rest, simpler workouts |
+| Intermediate | 1-3 years | Moderate progression, standard periodization |
+| Advanced | 3+ years | Faster progression, complex intervals, less rest |
+
+**Impact on Plan Generation:**
+- Beginner: Max 3 workouts/week, focus on consistency
+- Intermediate: 4-5 workouts/week, introduce intervals
+- Advanced: 5-6 workouts/week, complex periodization
+
+---
+
+#### 7. Coach Selection / Marketplace
+
+**Description:**
+Athletes without a coach can browse and select from available coaches.
+
+**Features:**
+- Coach profiles (bio, specialization, certifications)
+- Coach availability and pricing
+- Athlete reviews/ratings
+- Request coaching relationship
+- Coach acceptance workflow
+
+**Components (Proposed):**
+- `CoachMarketplace.tsx` - Browse coaches
+- `CoachProfile.tsx` - Detailed coach view
+- `CoachRequestModal.tsx` - Request coaching
+
+---
+
+#### 8. Payment Integration (Stripe)
+
+**Description:**
+Monetization through subscription plans.
+
+**Subscription Tiers:**
+| Tier | Price | Features |
+|------|-------|----------|
+| Free | €0 | Basic calendar, manual workouts |
+| Athlete Pro | €9.99/mo | Auto plans, integrations, AI chat |
+| Coach | €29.99/mo | Unlimited athletes, advanced analytics |
+
+**Implementation:**
+- Stripe integration for payments
+- Subscription management
+- Feature gating based on tier
+- Trial period support
+
+---
+
+#### 9. Borg Scale RPE Fallback
+
+**Already Documented Above in Zone Calculation**
+
+For athletes without power meters, provide RPE-based workout targets using the Borg Scale (6-20).
+
+---
+
+### MEDIUM PRIORITY - Future Enhancements
+
+Features for long-term development.
+
+#### 10. Advanced Analytics Dashboard
+
+**Metrics to Display:**
+- Performance Management Chart (CTL/ATL/TSB)
+- Power curve (best efforts over time)
+- Training load trends
+- Zone distribution
+- Progress toward goals
+
+**Components (Proposed):**
+- `PerformanceChart.tsx` - CTL/ATL/TSB visualization
+- `PowerCurve.tsx` - Best efforts curve
+- `TrainingLoadChart.tsx` - Weekly load trends
+- `ZoneDistribution.tsx` - Pie/bar chart of time in zones
+
+---
+
+#### 11. Adaptive Plan Modifications
+
+**Description:**
+Automatically adjust the plan based on completed workout data.
+
+**Triggers for Adaptation:**
+- Missed workouts (reschedule or adjust load)
+- Over/under performance (adjust targets)
+- Fatigue indicators (reduce intensity)
+- Life events (vacation, illness)
+
+**Implementation Notes:**
+- Compare planned vs actual workout data
+- Calculate accumulated fatigue
+- Suggest or auto-apply modifications
+- Coach approval workflow (optional)
+
+---
+
+#### 12. Macro-Objectives for Non-Racers
+
+**Description:**
+For athletes not targeting specific events, provide general fitness objectives.
+
+**Objective Types:**
+| Objective | Description |
+|-----------|-------------|
+| General Fitness | Maintain/improve overall cycling fitness |
+| Weight Management | Focus on calorie burn, longer Z2 rides |
+| Endurance Building | Increase base fitness for longer rides |
+| Power Improvement | Increase FTP through structured intervals |
+| Event Preparation | General prep without specific date |
+
+**Impact on Plan:**
+- Continuous periodization (no specific peak)
+- Rolling 8-12 week cycles
+- Flexible intensity distribution
+
+---
+
+#### 13. Fixed vs Flexible Days Preference
+
+**Description:**
+Athletes can specify if certain days must always have training or must always be rest.
+
+**Settings:**
+- Fixed training days (always schedule here)
+- Fixed rest days (never schedule here)
+- Flexible days (schedule based on load)
+
+**Example:**
+```
+Monday: Flexible
+Tuesday: Fixed Training (after-work ride)
+Wednesday: Flexible
+Thursday: Fixed Rest (family night)
+Friday: Flexible
+Saturday: Fixed Training (long ride)
+Sunday: Flexible
+```
+
+---
+
+### Implementation Priority Matrix
+
+| Feature | Priority | Effort | Dependencies |
+|---------|----------|--------|--------------|
+| Zone Calculation | Critical | Medium | Assessment Tests (done) |
+| Auto Plan Generation | Critical | High | Zone Calculation |
+| Strava Integration | Critical | High | None |
+| AI Chat | Critical | High | Plan Generation |
+| Extended Performance Data | High | Low | None |
+| Experience Level | High | Low | None |
+| Coach Marketplace | High | Medium | Payment Integration |
+| Payment Integration | High | High | None |
+| Borg Scale RPE | High | Low | Zone Calculation |
+| Analytics Dashboard | Medium | High | Third-party integrations |
+| Adaptive Plans | Medium | High | Plan Generation |
+| Macro-Objectives | Medium | Medium | Plan Generation |
+| Fixed/Flexible Days | Medium | Low | None |
+
+---
+
+### Phase Implementation Suggestion
+
+**Phase 2: Core Intelligence**
+1. Zone Calculation System
+2. Extended Performance Data
+3. Experience Level in Onboarding
+4. Borg Scale RPE Fallback
+5. Fixed/Flexible Days
+
+**Phase 3: Auto Planning**
+1. Auto Plan Generation Engine
+2. Macro-Objectives for Non-Racers
+3. Adaptive Plan Modifications
+
+**Phase 4: Integrations**
+1. Strava Integration
+2. Garmin Connect Integration
+3. Wahoo Integration
+
+**Phase 5: Monetization & Growth**
+1. Payment Integration (Stripe)
+2. Coach Marketplace
+3. AI Chat Assistant
+
+**Phase 6: Advanced Features**
+1. Advanced Analytics Dashboard
+2. Performance Management Chart
+3. Power Curve Analysis

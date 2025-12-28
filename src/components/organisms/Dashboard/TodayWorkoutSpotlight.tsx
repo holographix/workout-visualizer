@@ -1,6 +1,7 @@
 import { Box, Flex, Text, VStack, HStack, Button, Icon, chakra, SimpleGrid, useColorModeValue } from '@chakra-ui/react';
 import { motion, isValidMotionProp } from 'framer-motion';
 import { Play, Clock, Zap, CheckCircle, Bike, Footprints, Dumbbell, Target, TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { AthleteScheduledWorkout } from '../../../types/calendar';
 
 const MotionBox = chakra(motion.div, {
@@ -34,11 +35,11 @@ function getWorkoutIcon(workoutType?: string) {
   }
 }
 
-function getIntensityLabel(tss: number): { label: string; color: string } {
-  if (tss >= 150) return { label: 'Very Hard', color: 'red.400' };
-  if (tss >= 100) return { label: 'Hard', color: 'orange.400' };
-  if (tss >= 50) return { label: 'Moderate', color: 'yellow.400' };
-  return { label: 'Easy', color: 'green.400' };
+function getIntensityLabel(tss: number, t: (key: string) => string): { label: string; color: string } {
+  if (tss >= 150) return { label: t('dashboard.veryHard'), color: 'red.400' };
+  if (tss >= 100) return { label: t('dashboard.hard'), color: 'orange.400' };
+  if (tss >= 50) return { label: t('dashboard.moderate'), color: 'yellow.400' };
+  return { label: t('dashboard.easy'), color: 'green.400' };
 }
 
 export function TodayWorkoutSpotlight({
@@ -46,6 +47,8 @@ export function TodayWorkoutSpotlight({
   onStartWorkout,
   onViewWorkout,
 }: TodayWorkoutSpotlightProps) {
+  const { t } = useTranslation();
+
   // Light/dark mode colors - clean and minimal
   const restDayBg = useColorModeValue('white', 'dark.700');
   const restDayBorder = useColorModeValue('gray.100', 'dark.500');
@@ -87,10 +90,10 @@ export function TodayWorkoutSpotlight({
             </Flex>
             <VStack align="start" spacing={1}>
               <Text fontSize={{ base: 'lg', lg: '2xl' }} fontWeight="bold" color={restDayTitle}>
-                Rest Day
+                {t('dashboard.restDay')}
               </Text>
               <Text fontSize={{ base: 'sm', lg: 'md' }} color={restDaySubtitle}>
-                No workout scheduled for today. Recover strong!
+                {t('dashboard.restDayMessage')}
               </Text>
             </VStack>
           </Flex>
@@ -103,7 +106,7 @@ export function TodayWorkoutSpotlight({
   const duration = workout.workout.attributes.totalTimePlanned || 0;
   const tss = workout.workout.attributes.tssPlanned || 0;
   const isCompleted = workout.completed;
-  const intensity = getIntensityLabel(tss);
+  const intensity = getIntensityLabel(tss, t);
   const ifScore = workout.workout.attributes.ifPlanned;
 
   return (
@@ -166,7 +169,7 @@ export function TodayWorkoutSpotlight({
                   letterSpacing="wider"
                   color={isCompleted ? 'whiteAlpha.800' : 'blackAlpha.700'}
                 >
-                  {isCompleted ? 'Completed' : "Today's Workout"}
+                  {isCompleted ? t('calendar.completed') : t('dashboard.todaysWorkout')}
                 </Text>
               </HStack>
 
@@ -219,7 +222,7 @@ export function TodayWorkoutSpotlight({
               fontSize="md"
               mt={{ base: 4, lg: 6 }}
             >
-              {isCompleted ? 'View Results' : 'Start Workout'}
+              {isCompleted ? t('dashboard.viewResults') : t('dashboard.startWorkout')}
             </Button>
           </Flex>
 
@@ -256,7 +259,7 @@ export function TodayWorkoutSpotlight({
                 <HStack spacing={2}>
                   <Icon as={Clock} boxSize={5} color={isCompleted ? 'whiteAlpha.600' : 'blackAlpha.500'} />
                   <Text fontSize="xs" color={isCompleted ? 'whiteAlpha.700' : 'blackAlpha.600'} textTransform="uppercase" letterSpacing="wide">
-                    Duration
+                    {t('dashboard.duration')}
                   </Text>
                 </HStack>
                 <Text fontSize="2xl" fontWeight="bold" color={isCompleted ? 'white' : 'dark.800'}>
@@ -269,7 +272,7 @@ export function TodayWorkoutSpotlight({
                   <HStack spacing={2}>
                     <Icon as={Zap} boxSize={5} color={isCompleted ? 'whiteAlpha.600' : 'blackAlpha.500'} />
                     <Text fontSize="xs" color={isCompleted ? 'whiteAlpha.700' : 'blackAlpha.600'} textTransform="uppercase" letterSpacing="wide">
-                      Training Load
+                      {t('dashboard.trainingLoad')}
                     </Text>
                   </HStack>
                   <Text fontSize="2xl" fontWeight="bold" color={isCompleted ? 'white' : 'dark.800'}>
@@ -282,7 +285,7 @@ export function TodayWorkoutSpotlight({
                 <HStack spacing={2}>
                   <Icon as={Target} boxSize={5} color={isCompleted ? 'whiteAlpha.600' : 'blackAlpha.500'} />
                   <Text fontSize="xs" color={isCompleted ? 'whiteAlpha.700' : 'blackAlpha.600'} textTransform="uppercase" letterSpacing="wide">
-                    Intensity
+                    {t('dashboard.intensity')}
                   </Text>
                 </HStack>
                 <HStack spacing={2}>

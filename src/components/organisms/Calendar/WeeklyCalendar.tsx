@@ -34,8 +34,11 @@ export interface DayCapacity {
 interface WeeklyCalendarProps {
   scheduledWorkouts: ScheduledWorkout[];
   onRemoveWorkout: (scheduledId: string) => void;
+  onEditWorkout?: (scheduled: ScheduledWorkout) => void;
   onWorkoutClick: (scheduled: ScheduledWorkout) => void;
   onScheduleWorkout: (workoutId: string, dayIndex: number) => void;
+  onMoveWorkout?: (scheduledId: string, targetDayIndex: number) => void;
+  onCopyWorkout?: (scheduledId: string, targetDayIndex: number) => void;
   onDayTap?: (dayIndex: number) => void; // Mobile tap-to-place
   selectedWorkoutName?: string; // Show which workout is selected on mobile
   // Controlled week props (optional - if not provided, uses internal state)
@@ -65,8 +68,11 @@ const SCALE_MAX = 1.0; // Scale for focused column
 export function WeeklyCalendar({
   scheduledWorkouts,
   onRemoveWorkout,
+  onEditWorkout,
   onWorkoutClick,
   onScheduleWorkout,
+  onMoveWorkout,
+  onCopyWorkout,
   onDayTap,
   selectedWorkoutName,
   weekStart: controlledWeekStart,
@@ -187,6 +193,8 @@ export function WeeklyCalendar({
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const headerBg = useColorModeValue('gray.50', 'gray.900');
+  const scrollbarThumb = useColorModeValue('gray.300', 'gray.600');
+  const scrollbarThumbHover = useColorModeValue('gray.400', 'gray.500');
 
   const days: DayColumnType[] = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {
@@ -358,7 +366,10 @@ export function WeeklyCalendar({
                         day={day}
                         onWorkoutClick={onWorkoutClick}
                         onRemoveWorkout={onRemoveWorkout}
+                        onEditWorkout={onEditWorkout}
                         onDrop={onScheduleWorkout}
+                        onMoveWorkout={onMoveWorkout}
+                        onCopyWorkout={onCopyWorkout}
                         onTap={onDayTap}
                         showTapHint={!!selectedWorkoutName}
                         isUnavailable={unavailableDays.includes(day.dayIndex)}
@@ -375,12 +386,32 @@ export function WeeklyCalendar({
                 <Box w={`${MOBILE_EDGE_PADDING}px`} flexShrink={0} />
               </Flex>
             ) : (
-              /* Desktop: Standard grid layout */
-              <Flex minH="400px">
+              /* Desktop: Horizontal scrollable layout for narrow viewports */
+              <Flex
+                minH="400px"
+                overflowX="auto"
+                css={{
+                  '&::-webkit-scrollbar': {
+                    height: '8px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    background: 'transparent',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: scrollbarThumb,
+                    borderRadius: '4px',
+                  },
+                  '&::-webkit-scrollbar-thumb:hover': {
+                    background: scrollbarThumbHover,
+                  },
+                }}
+              >
                 {days.map((day) => (
                   <Box
                     key={day.dayIndex}
-                    flex={1}
+                    flex="1 0 200px"
+                    minW="200px"
+                    maxW="100%"
                     borderRightWidth={day.dayIndex < 6 ? '1px' : 0}
                     borderColor={borderColor}
                   >
@@ -388,7 +419,10 @@ export function WeeklyCalendar({
                       day={day}
                       onWorkoutClick={onWorkoutClick}
                       onRemoveWorkout={onRemoveWorkout}
+                      onEditWorkout={onEditWorkout}
                       onDrop={onScheduleWorkout}
+                      onMoveWorkout={onMoveWorkout}
+                      onCopyWorkout={onCopyWorkout}
                       onTap={onDayTap}
                       showTapHint={!!selectedWorkoutName}
                       isUnavailable={unavailableDays.includes(day.dayIndex)}

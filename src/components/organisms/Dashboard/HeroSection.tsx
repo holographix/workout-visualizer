@@ -2,6 +2,7 @@ import { Box, Flex, Text, VStack, HStack, Badge, chakra, useColorModeValue } fro
 import { motion, isValidMotionProp } from 'framer-motion';
 import { Trophy, Target } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const MotionBox = chakra(motion.div, {
   shouldForwardProp: (prop) => isValidMotionProp(prop) || prop === 'children',
@@ -24,9 +25,10 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ userName, nextGoal }: HeroSectionProps) {
+  const { t } = useTranslation();
   const firstName = userName?.split(' ')[0] || 'Athlete';
   const daysUntilGoal = nextGoal ? differenceInDays(new Date(nextGoal.date), new Date()) : null;
-  const greeting = getGreeting();
+  const greeting = getGreeting(t);
 
   // Light/dark mode colors - clean white for light mode
   const bgColor = useColorModeValue('white', undefined);
@@ -118,7 +120,7 @@ export function HeroSection({ userName, nextGoal }: HeroSectionProps) {
                 <HStack spacing={2}>
                   <Trophy size={18} color="var(--chakra-colors-brand-400)" />
                   <Text fontSize="xs" color="brand.400" fontWeight="600" textTransform="uppercase" letterSpacing="wide">
-                    Next Goal
+                    {t('dashboard.nextGoal')}
                   </Text>
                   <Badge
                     bg={nextGoal.type === 'A' ? 'red.500' : nextGoal.type === 'B' ? 'orange.500' : 'blue.500'}
@@ -155,7 +157,7 @@ export function HeroSection({ userName, nextGoal }: HeroSectionProps) {
                   {daysUntilGoal}
                 </MotionText>
                 <Text fontSize="sm" color={mutedText} fontWeight="500">
-                  days to go
+                  {t('dashboard.daysToGo')}
                 </Text>
               </VStack>
             </Flex>
@@ -183,7 +185,7 @@ export function HeroSection({ userName, nextGoal }: HeroSectionProps) {
             >
               <Target size={20} color="var(--chakra-colors-gray-500)" />
               <Text fontSize="sm" color={mutedText}>
-                Set a goal to start your countdown
+                {t('dashboard.setGoalPrompt')}
               </Text>
             </Flex>
           </MotionBox>
@@ -193,9 +195,9 @@ export function HeroSection({ userName, nextGoal }: HeroSectionProps) {
   );
 }
 
-function getGreeting(): string {
+function getGreeting(t: (key: string) => string): string {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
+  if (hour < 12) return t('dashboard.goodMorning');
+  if (hour < 17) return t('dashboard.goodAfternoon');
+  return t('dashboard.goodEvening');
 }

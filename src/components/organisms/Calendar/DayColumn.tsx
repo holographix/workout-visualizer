@@ -29,9 +29,15 @@ function WorkoutCardSkeleton() {
 
 interface DayColumnProps {
   day: DayColumnType;
+  athleteId?: string; // ID of the athlete this day column belongs to (for cross-calendar drag-drop)
   onWorkoutClick: (scheduled: ScheduledWorkout) => void;
   onRemoveWorkout: (scheduledId: string) => void;
+  onEditWorkout?: (scheduled: ScheduledWorkout) => void;
   onDrop: (workoutId: string, dayIndex: number) => void;
+  onMoveWorkout?: (scheduledId: string, targetDayIndex: number) => void;
+  onCopyWorkout?: (scheduledId: string, targetDayIndex: number) => void;
+  onWorkoutDragStart?: (scheduled: ScheduledWorkout) => void;
+  onWorkoutDragEnd?: () => void;
   onTap?: (dayIndex: number) => void;
   showTapHint?: boolean;
   isUnavailable?: boolean; // When true, day is greyed out and no workouts can be assigned
@@ -41,7 +47,7 @@ interface DayColumnProps {
   isCompact?: boolean; // Mobile: show compact cards when column is not in focus
 }
 
-export function DayColumn({ day, onWorkoutClick, onRemoveWorkout, onDrop, onTap, showTapHint, isUnavailable, maxHours, isLoading, athleteColorMap, isCompact }: DayColumnProps) {
+export function DayColumn({ day, athleteId, onWorkoutClick, onRemoveWorkout, onEditWorkout, onDrop, onMoveWorkout, onCopyWorkout, onWorkoutDragStart, onWorkoutDragEnd, onTap, showTapHint, isUnavailable, maxHours, isLoading, athleteColorMap, isCompact }: DayColumnProps) {
   const { t } = useTranslation();
   const toast = useToast();
   const [isOver, setIsOver] = useState(false);
@@ -65,8 +71,11 @@ export function DayColumn({ day, onWorkoutClick, onRemoveWorkout, onDrop, onTap,
   // Calculate allocated hours from workouts
   const allocatedHours = useMemo(() => {
     return day.workouts.reduce((total, sw) => {
-      // totalTimePlanned is in hours
-      return total + (sw.workout?.attributes?.totalTimePlanned || 0);
+      // Use durationOverride (in seconds) if available, otherwise use base workout duration (in hours)
+      const durationHours = sw.durationOverride
+        ? sw.durationOverride / 3600
+        : (sw.workout?.attributes?.totalTimePlanned || 0);
+      return total + durationHours;
     }, 0);
   }, [day.workouts]);
 
@@ -98,7 +107,21 @@ export function DayColumn({ day, onWorkoutClick, onRemoveWorkout, onDrop, onTap,
       return;
     }
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
+
+    // Determine drop effect based on source and Alt key
+    const effectAllowed = e.dataTransfer.effectAllowed;
+
+    if (effectAllowed === 'copyMove') {
+      // Card drag - allow both move (default) and copy (with Alt)
+      e.dataTransfer.dropEffect = e.altKey ? 'copy' : 'move';
+    } else if (effectAllowed === 'copy') {
+      // Library workout drag - always copy
+      e.dataTransfer.dropEffect = 'copy';
+    } else {
+      // Fallback
+      e.dataTransfer.dropEffect = 'move';
+    }
+
     setIsOver(true);
   }, [isUnavailable, isFull]);
 
@@ -123,7 +146,33 @@ export function DayColumn({ day, onWorkoutClick, onRemoveWorkout, onDrop, onTap,
 
     try {
       const data = JSON.parse(e.dataTransfer.getData('application/json'));
-      if (data.workoutId) {
+      const isCopyingWithAlt = e.altKey && data.isMoving;
+      const isCrossAthleteMove = data.sourceAthleteId && athleteId && data.sourceAthleteId !== athleteId;
+
+      console.log('🎯 DayColumn drop:', {
+        data,
+        athleteId,
+        isCrossAthleteMove,
+        onCopyWorkout: !!onCopyWorkout,
+        onMoveWorkout: !!onMoveWorkout
+      });
+
+      if (data.isMoving && data.scheduledId) {
+        // If dragging between different athletes, always copy
+        if (isCrossAthleteMove) {
+          console.log('➡️ Cross-athlete copy detected, calling onCopyWorkout');
+          onCopyWorkout?.(data.scheduledId);
+        } else if (isCopyingWithAlt) {
+          // Alt key held - copy workout to new day (same athlete)
+          console.log('➡️ Alt-copy detected, calling onCopyWorkout');
+          onCopyWorkout?.(data.scheduledId);
+        } else {
+          // Move workout between days (same athlete)
+          console.log('➡️ Same-athlete move detected, calling onMoveWorkout');
+          onMoveWorkout?.(data.scheduledId);
+        }
+      } else if (data.workoutId) {
+        // Adding new workout from library
         // Check if workout duration would exceed remaining capacity
         const workoutDuration = data.durationHours || 0;
         if (maxHours !== undefined && workoutDuration > remainingCapacity) {
@@ -138,10 +187,10 @@ export function DayColumn({ day, onWorkoutClick, onRemoveWorkout, onDrop, onTap,
         }
         onDrop(data.workoutId, day.dayIndex);
       }
-    } catch {
-      console.warn('Invalid drop data');
+    } catch (err) {
+      console.warn('Invalid drop data', err);
     }
-  }, [day.dayIndex, onDrop, isUnavailable, maxHours, remainingCapacity, toast, t]);
+  }, [day.dayIndex, onDrop, onMoveWorkout, onCopyWorkout, isUnavailable, maxHours, remainingCapacity, toast, t, athleteId]);
 
   const handleTap = useCallback(() => {
     if (isUnavailable || isFull) return;
@@ -262,14 +311,29 @@ export function DayColumn({ day, onWorkoutClick, onRemoveWorkout, onDrop, onTap,
           <VStack spacing={2} align="stretch">
             {day.workouts.map((scheduled) => {
               // Get athlete color if available (coach view)
-              const athleteId = (scheduled as { athleteId?: string }).athleteId;
-              const athleteColor = athleteId && athleteColorMap ? athleteColorMap.get(athleteId) : undefined;
+              const workoutAthleteId = (scheduled as { athleteId?: string }).athleteId;
+              const athleteColor = workoutAthleteId && athleteColorMap ? athleteColorMap.get(workoutAthleteId) : undefined;
+
+              // Drag handlers for moving workouts between days
+              const handleCardDragStart = (e: React.DragEvent) => {
+                e.dataTransfer.setData('application/json', JSON.stringify({
+                  scheduledId: scheduled.id,
+                  isMoving: true,
+                  sourceAthleteId: athleteId, // Include athlete ID for cross-calendar detection
+                }));
+                e.dataTransfer.effectAllowed = 'copyMove';
+                onWorkoutDragStart?.(scheduled);
+              };
+
               return (
                 <WorkoutCard
                   key={scheduled.id}
                   scheduled={scheduled}
                   onClick={() => onWorkoutClick(scheduled)}
                   onRemove={() => onRemoveWorkout(scheduled.id)}
+                  onEdit={onEditWorkout ? () => onEditWorkout(scheduled) : undefined}
+                  onDragStart={handleCardDragStart}
+                  onDragEnd={onWorkoutDragEnd}
                   athleteColor={athleteColor}
                   isCompact={isCompact}
                 />

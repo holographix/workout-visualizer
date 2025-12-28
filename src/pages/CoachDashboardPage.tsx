@@ -459,6 +459,14 @@ export function CoachDashboardPage() {
                   variant="ghost"
                   justifyContent="space-between"
                   rightIcon={<ChevronRight size={16} />}
+                  onClick={() => navigate('/coach/compare')}
+                >
+                  Compare Athletes
+                </Button>
+                <Button
+                  variant="ghost"
+                  justifyContent="space-between"
+                  rightIcon={<ChevronRight size={16} />}
                   onClick={() => navigate('/workout/new')}
                 >
                   {t('coachDashboard.createWorkout')}

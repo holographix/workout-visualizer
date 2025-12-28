@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { CalendarPage, AvailabilityPage, CoachPage, WorkoutBuilderPage, AthleteCalendarPage, AthleteStatsPage, AthleteDashboardPage, CoachDashboardPage, OnboardingPage } from './pages';
 import { WorkoutVisualizerPage } from './pages/WorkoutVisualizerPage';
+import { AthleteComparePage } from './pages/AthleteComparePage';
 import { useUser } from './contexts/UserContext';
 import { AuthGuard, OnboardingGuard } from './components/guards';
 
@@ -49,6 +50,7 @@ function App() {
           }
         />
         <Route path="/coach" element={<CoachPage />} />
+        <Route path="/coach/compare" element={<AthleteComparePage />} />
         <Route path="/workout/new" element={<WorkoutBuilderPage />} />
         <Route path="/workout/:id" element={<WorkoutBuilderPage />} />
       </Routes>

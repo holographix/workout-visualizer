@@ -1,9 +1,9 @@
 /**
  * AuthGuard
- * Route guard that redirects unauthenticated users to Clerk sign-in
+ * Route guard that shows Clerk sign-in for unauthenticated users
  */
-import { useAuth, RedirectToSignIn } from '@clerk/clerk-react';
-import { Spinner, Center } from '@chakra-ui/react';
+import { useAuth, SignIn } from '@clerk/clerk-react';
+import { Spinner, Center, Box } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
 
 interface AuthGuardProps {
@@ -22,9 +22,24 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // Not signed in - redirect to Clerk sign-in
+  // Not signed in - show embedded Clerk sign-in
   if (!isSignedIn) {
-    return <RedirectToSignIn />;
+    return (
+      <Center h="100vh" bg="gray.50" _dark={{ bg: 'gray.900' }}>
+        <Box>
+          <SignIn
+            appearance={{
+              elements: {
+                rootBox: {
+                  boxShadow: 'lg',
+                  borderRadius: 'xl',
+                },
+              },
+            }}
+          />
+        </Box>
+      </Center>
+    );
   }
 
   return <>{children}</>;

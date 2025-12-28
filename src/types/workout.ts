@@ -1,6 +1,11 @@
 export interface WorkoutTarget {
-  minValue: number;
-  maxValue: number;
+  minValue: number;        // Power % FTP (existing)
+  maxValue: number;        // Power % FTP (existing)
+  cadenceMin?: number;     // Optional RPM (30-200)
+  cadenceMax?: number;     // Optional RPM (30-200)
+  hrMin?: number;          // Optional BPM or %
+  hrMax?: number;          // Optional BPM or %
+  hrType?: 'bpm' | 'percent'; // Absolute vs percentage
 }
 
 // The actual step data (inside steps array or directly)
@@ -83,6 +88,12 @@ export interface FlatSegment {
   description?: string;
   openDuration: boolean;
   group?: number; // ID to link repetitions together
+  // Optional cadence and HR targets
+  cadenceMin?: number;
+  cadenceMax?: number;
+  hrMin?: number;
+  hrMax?: number;
+  hrType?: 'bpm' | 'percent';
 }
 
 export interface ParsedWorkout {

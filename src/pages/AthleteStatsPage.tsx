@@ -6,6 +6,7 @@
  * @module pages/AthleteStatsPage
  */
 import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -49,8 +50,12 @@ import {
   Scale,
   Ruler,
 } from 'lucide-react';
-import { useAthleteStats } from '../hooks/useAssessments';
+import { useAthleteStats, useAssessments } from '../hooks/useAssessments';
+import { useZones } from '../hooks/useZones';
 import { format } from 'date-fns';
+import { POWER_ZONE_COLORS } from '../types/zones';
+import { AssessmentDetailsModal } from '../components/organisms/Assessment/AssessmentDetailsModal';
+import type { Assessment } from '../types/assessment';
 
 export function AthleteStatsPage() {
   const { athleteId } = useParams<{ athleteId: string }>();
@@ -60,12 +65,29 @@ export function AthleteStatsPage() {
   // Fetch athlete stats with real data
   const { stats, isLoading, error } = useAthleteStats(athleteId);
 
+  // Fetch full assessments data for the modal
+  const { assessments } = useAssessments({ athleteId });
+
+  // Fetch zones data
+  const { zonesData, fetchZones, loading: zonesLoading } = useZones();
+
+  // State for assessment details modal
+  const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
+
+  // Fetch zones when athleteId changes
+  useEffect(() => {
+    if (athleteId) {
+      fetchZones(athleteId);
+    }
+  }, [athleteId, fetchZones]);
+
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const cardBg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const headerBg = useColorModeValue('white', 'gray.800');
   const mutedColor = useColorModeValue('gray.600', 'gray.400');
   const warningBg = useColorModeValue('orange.50', 'orange.900');
+  const hoverBg = useColorModeValue('gray.50', 'gray.700');
 
   if (isLoading) {
     return (
@@ -279,8 +301,17 @@ export function AthleteStatsPage() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {assessment.assessmentHistory.map((test, idx) => (
-                    <Tr key={test.id}>
+                  {assessment.assessmentHistory.map((test, idx) => {
+                    // Find the full assessment data
+                    const fullAssessment = assessments?.find(a => a.id === test.id);
+                    return (
+                    <Tr
+                      key={test.id}
+                      cursor="pointer"
+                      transition="all 0.2s"
+                      _hover={{ bg: hoverBg }}
+                      onClick={() => fullAssessment && setSelectedAssessment(fullAssessment)}
+                    >
                       <Td>
                         <Text fontSize="sm">
                           {format(new Date(test.testDate), 'MMM d, yyyy')}
@@ -300,7 +331,8 @@ export function AthleteStatsPage() {
                         </Text>
                       </Td>
                     </Tr>
-                  ))}
+                    );
+                  })}
                 </Tbody>
               </Table>
             ) : (
@@ -312,7 +344,115 @@ export function AthleteStatsPage() {
             )}
           </Box>
         </SimpleGrid>
+
+        {/* Training Zones Section */}
+        <Box mt={6}>
+          <HStack mb={4} spacing={3}>
+            <Activity size={24} />
+            <Heading size="lg">{t('zones.trainingZones', 'Training Zones')}</Heading>
+          </HStack>
+
+          {zonesLoading ? (
+            <Box py={8} textAlign="center">
+              <Spinner size="lg" color="brand.500" />
+            </Box>
+          ) : (
+            <Box
+              bg={cardBg}
+              borderRadius="xl"
+              borderWidth="1px"
+              borderColor={borderColor}
+              p={6}
+            >
+              <HStack mb={4} justify="space-between" wrap="wrap">
+                <Heading size="sm">{t('zones.trainingZones', 'Training Zones')}</Heading>
+                <HStack spacing={3}>
+                  {zonesData?.athlete.ftp && (
+                    <Badge colorScheme="orange">
+                      FTP: {zonesData.athlete.ftp}W
+                    </Badge>
+                  )}
+                  {zonesData?.athlete.maxHR && (
+                    <Badge colorScheme="red">
+                      Max HR: {zonesData.athlete.maxHR} bpm
+                    </Badge>
+                  )}
+                </HStack>
+              </HStack>
+
+              {zonesData?.power.calculatedZones || zonesData?.hr.calculatedZones ? (
+                <Box overflowX="auto">
+                  <Table size="sm" variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>{t('zones.zone', 'Zone')}</Th>
+                        <Th>{t('zones.name', 'Name')}</Th>
+                        <Th isNumeric>{t('zones.fcMin', 'FC Min')}</Th>
+                        <Th isNumeric>{t('zones.fcMax', 'FC Max')}</Th>
+                        <Th isNumeric>{t('zones.powerMin', 'Power Min')}</Th>
+                        <Th isNumeric>{t('zones.powerMax', 'Power Max')}</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {[1, 2, 3, 4, 5, 6].map((zoneNum) => {
+                        const powerZone = zonesData?.power.calculatedZones?.find(z => z.zone === zoneNum);
+                        const hrZone = zonesData?.hr.calculatedZones?.find(z => z.zone === zoneNum);
+                        const zoneName = powerZone?.name || hrZone?.name || '--';
+
+                        return (
+                          <Tr key={zoneNum}>
+                            <Td>
+                              <Badge
+                                colorScheme={POWER_ZONE_COLORS[zoneNum - 1]?.split('.')[0] || 'gray'}
+                                variant="solid"
+                              >
+                                Z{zoneNum}
+                              </Badge>
+                            </Td>
+                            <Td fontSize="sm" fontWeight="medium">
+                              {zoneName}
+                            </Td>
+                            <Td isNumeric fontSize="sm">
+                              {hrZone ? `${hrZone.minBPM}` : '--'}
+                            </Td>
+                            <Td isNumeric fontSize="sm">
+                              {hrZone ? `${hrZone.maxBPM}` : '--'}
+                            </Td>
+                            <Td isNumeric fontSize="sm">
+                              {powerZone ? `${powerZone.minWatts}` : '--'}
+                            </Td>
+                            <Td isNumeric fontSize="sm">
+                              {powerZone ? `${powerZone.maxWatts}` : '--'}
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                </Box>
+              ) : (
+                <Box py={8} textAlign="center">
+                  <VStack spacing={2}>
+                    <Text color={mutedColor} fontSize="sm">
+                      {t('zones.noData', 'No zone data available')}
+                    </Text>
+                    <Text color={mutedColor} fontSize="xs">
+                      {t('zones.completeAssessment', 'Complete an assessment test to calculate zones')}
+                    </Text>
+                  </VStack>
+                </Box>
+              )}
+            </Box>
+          )}
+        </Box>
       </Container>
+
+      {/* Assessment Details Modal */}
+      <AssessmentDetailsModal
+        assessment={selectedAssessment}
+        isOpen={!!selectedAssessment}
+        onClose={() => setSelectedAssessment(null)}
+      />
     </Box>
   );
 }

@@ -1,0 +1,25 @@
+{
+  "athletes": [
+    {
+      "id": "1",
+      "fullName": "Mario Rossi",
+      "email": "mario@example.com",
+      "ftp": 250,
+      "maxHR": 185
+    },
+    {
+      "id": "2",
+      "fullName": "Giulia Bianchi",
+      "email": "giulia@example.com",
+      "ftp": 220,
+      "maxHR": 190
+    }
+  ],
+  "coaches": [
+    {
+      "id": "3",
+      "fullName": "Coach Marco",
+      "email": "marco@example.com"
+    }
+  ]
+}

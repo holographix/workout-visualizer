@@ -40,6 +40,12 @@ export const parseWorkout = (data: Workout): ParsedWorkout => {
             type: step.intensityClass,
             name: step.name ?? '', // Exact name from JSON, empty if not present
             openDuration: step.openDuration,
+            // Extract optional cadence and HR targets
+            ...(target?.cadenceMin !== undefined && { cadenceMin: target.cadenceMin }),
+            ...(target?.cadenceMax !== undefined && { cadenceMax: target.cadenceMax }),
+            ...(target?.hrMin !== undefined && { hrMin: target.hrMin }),
+            ...(target?.hrMax !== undefined && { hrMax: target.hrMax }),
+            ...(target?.hrType !== undefined && { hrType: target.hrType }),
         });
 
         currentTime += duration;

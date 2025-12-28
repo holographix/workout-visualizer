@@ -1,30 +1,28 @@
 /**
- * Assessment Types
- * Types for fitness assessment tests
+ * Assessment Types - 2-Day Protocol
+ * Types for the 2-day fitness assessment test
+ *
+ * Day 1: 1'/2'/5' efforts on 6-7% gradient
+ * Day 2: 5" sprint + 12' climb on 6-7% gradient
+ * Athletes have 15 days to complete Day 2 after Day 1
  */
-
-export type AssessmentType = 'SPRINT_12MIN' | 'POWER_1_2_5MIN';
 
 /**
- * Sprint + 12min protocol data
- * - Sprint: 15" all-out effort - record PEAK power
- * - Climb: 12' steady effort - record AVERAGE power
+ * Assessment status enum
+ * Tracks progression through the 2-day test
  */
-export interface Sprint12MinData {
-  testDate: string;
-  sprintPeakPower?: number;   // Peak power during 15" sprint (W)
-  sprintMaxHR?: number;       // Max HR during sprint (bpm)
-  climb12AvgPower?: number;   // Average power during 12' climb (W)
-  climb12MaxHR?: number;      // Max HR during 12' climb (bpm)
-  notes?: string;
-}
+export type AssessmentStatus =
+  | 'DAY1_PENDING'      // Test started, Day 1 not yet completed
+  | 'DAY1_COMPLETED'    // Day 1 complete, waiting for Day 2
+  | 'DAY2_PENDING'      // Day 2 started but not completed
+  | 'COMPLETED'         // Both days completed
+  | 'EXPIRED';          // Day 1 completed but 15-day window elapsed
 
 /**
- * 1/2/5 minute protocol data
- * All efforts record AVERAGE power over the duration
+ * Day 1 data (1'/2'/5' efforts)
+ * All efforts performed on 6-7% gradient climb
  */
-export interface Power125MinData {
-  testDate: string;
+export interface Day1Data {
   effort1minAvgPower?: number;  // Average power during 1' effort (W)
   effort1minMaxHR?: number;     // Max HR during 1' effort (bpm)
   effort2minAvgPower?: number;  // Average power during 2' effort (W)
@@ -35,30 +33,54 @@ export interface Power125MinData {
 }
 
 /**
+ * Day 2 data (5" sprint + 12' climb)
+ * Both efforts performed on 6-7% gradient climb
+ */
+export interface Day2Data {
+  sprint5secPeakPower?: number;  // Peak power during 5" sprint (W)
+  sprint5secMaxHR?: number;      // Max HR during sprint (bpm)
+  climb12minAvgPower?: number;   // Average power during 12' climb (W)
+  climb12minMaxHR?: number;      // Max HR during 12' climb (bpm)
+  notes?: string;
+}
+
+/**
  * Assessment record from API
+ * Combines both Day 1 and Day 2 data
  */
 export interface Assessment {
   id: string;
   athleteId: string;
-  testType: AssessmentType;
-  testDate: string;
-  // Sprint + 12min protocol
-  sprintPeakPower: number | null;
-  sprintMaxHR: number | null;
-  climb12AvgPower: number | null;
-  climb12MaxHR: number | null;
-  // 1/2/5 min protocol
+  testStatus: AssessmentStatus;
+
+  // Timing
+  startedAt: string;
+  day1CompletedAt: string | null;
+  day2CompletedAt: string | null;
+  expiresAt: string | null;
+
+  // Day 1 data (1'/2'/5' efforts)
   effort1minAvgPower: number | null;
   effort1minMaxHR: number | null;
   effort2minAvgPower: number | null;
   effort2minMaxHR: number | null;
   effort5minAvgPower: number | null;
   effort5minMaxHR: number | null;
-  // Calculated
+
+  // Day 2 data (5" sprint + 12' climb)
+  sprint5secPeakPower: number | null;
+  sprint5secMaxHR: number | null;
+  climb12minAvgPower: number | null;
+  climb12minMaxHR: number | null;
+
+  // Calculated results
   estimatedFTP: number | null;
+  maxHR: number | null;
   notes: string | null;
+
   createdAt: string;
   updatedAt: string;
+
   // Relation (when fetching single assessment)
   athlete?: {
     id: string;
@@ -68,22 +90,18 @@ export interface Assessment {
 }
 
 /**
- * Assessment form state for Sprint + 12min protocol
+ * Ongoing test response
+ * Returned when checking for an athlete's ongoing test
  */
-export interface Sprint12MinFormState {
-  testDate: Date;
-  sprintPeakPower: string;
-  sprintMaxHR: string;
-  climb12AvgPower: string;
-  climb12MaxHR: string;
-  notes: string;
+export interface OngoingTest extends Assessment {
+  daysRemaining: number | null;  // Days until expiration (null if Day 1 not completed)
+  isExpiringSoon: boolean;        // True if < 3 days remaining
 }
 
 /**
- * Assessment form state for 1/2/5min protocol
+ * Day 1 form state
  */
-export interface Power125MinFormState {
-  testDate: Date;
+export interface Day1FormState {
   effort1minAvgPower: string;
   effort1minMaxHR: string;
   effort2minAvgPower: string;
@@ -94,31 +112,75 @@ export interface Power125MinFormState {
 }
 
 /**
- * Assessment protocol metadata
+ * Day 2 form state
  */
-export const ASSESSMENT_PROTOCOLS = {
-  SPRINT_12MIN: {
-    value: 'SPRINT_12MIN' as const,
-    titleKey: 'assessment.protocols.sprint12min.title',
-    descriptionKey: 'assessment.protocols.sprint12min.description',
+export interface Day2FormState {
+  sprint5secPeakPower: string;
+  sprint5secMaxHR: string;
+  climb12minAvgPower: string;
+  climb12minMaxHR: string;
+  notes: string;
+}
+
+/**
+ * Protocol instructions and metadata
+ */
+export const ASSESSMENT_PROTOCOL = {
+  title: '2-Day Assessment Protocol',
+  description: 'Complete power profile test across two days on a 6-7% gradient climb',
+  gradient: '6-7%',
+  expirationDays: 15,
+
+  day1: {
+    title: 'Day 1: Power Profile (1\'/2\'/5\')',
+    description: 'Three maximum efforts at different durations',
+    efforts: [
+      {
+        duration: '1 minute',
+        metric: 'Average Power',
+        instructions: 'Maximum sustainable effort for 1 minute',
+      },
+      {
+        duration: '2 minutes',
+        metric: 'Average Power',
+        instructions: 'Maximum sustainable effort for 2 minutes',
+      },
+      {
+        duration: '5 minutes',
+        metric: 'Average Power',
+        instructions: 'Maximum sustainable effort for 5 minutes',
+      },
+    ],
     fields: [
-      { key: 'sprintPeakPower', labelKey: 'assessment.fields.sprintPeakPower', unit: 'W', isPeak: true },
-      { key: 'sprintMaxHR', labelKey: 'assessment.fields.sprintMaxHR', unit: 'bpm', isPeak: false },
-      { key: 'climb12AvgPower', labelKey: 'assessment.fields.climb12AvgPower', unit: 'W', isPeak: false },
-      { key: 'climb12MaxHR', labelKey: 'assessment.fields.climb12MaxHR', unit: 'bpm', isPeak: false },
+      { key: 'effort1minAvgPower', label: '1\' Avg Power', unit: 'W', isRequired: false },
+      { key: 'effort1minMaxHR', label: '1\' Max HR', unit: 'bpm', isRequired: false },
+      { key: 'effort2minAvgPower', label: '2\' Avg Power', unit: 'W', isRequired: false },
+      { key: 'effort2minMaxHR', label: '2\' Max HR', unit: 'bpm', isRequired: false },
+      { key: 'effort5minAvgPower', label: '5\' Avg Power', unit: 'W', isRequired: false },
+      { key: 'effort5minMaxHR', label: '5\' Max HR', unit: 'bpm', isRequired: false },
     ],
   },
-  POWER_1_2_5MIN: {
-    value: 'POWER_1_2_5MIN' as const,
-    titleKey: 'assessment.protocols.power125min.title',
-    descriptionKey: 'assessment.protocols.power125min.description',
+
+  day2: {
+    title: 'Day 2: Sprint + Endurance (5"/12\')',
+    description: 'Peak power sprint followed by threshold climb',
+    efforts: [
+      {
+        duration: '5 seconds',
+        metric: 'Peak Power',
+        instructions: 'All-out maximum effort sprint',
+      },
+      {
+        duration: '12 minutes',
+        metric: 'Average Power',
+        instructions: 'Sustained threshold effort climb',
+      },
+    ],
     fields: [
-      { key: 'effort1minAvgPower', labelKey: 'assessment.fields.effort1minAvgPower', unit: 'W', isPeak: false },
-      { key: 'effort1minMaxHR', labelKey: 'assessment.fields.effort1minMaxHR', unit: 'bpm', isPeak: false },
-      { key: 'effort2minAvgPower', labelKey: 'assessment.fields.effort2minAvgPower', unit: 'W', isPeak: false },
-      { key: 'effort2minMaxHR', labelKey: 'assessment.fields.effort2minMaxHR', unit: 'bpm', isPeak: false },
-      { key: 'effort5minAvgPower', labelKey: 'assessment.fields.effort5minAvgPower', unit: 'W', isPeak: false },
-      { key: 'effort5minMaxHR', labelKey: 'assessment.fields.effort5minMaxHR', unit: 'bpm', isPeak: false },
+      { key: 'sprint5secPeakPower', label: '5" Peak Power', unit: 'W', isRequired: false },
+      { key: 'sprint5secMaxHR', label: '5" Max HR', unit: 'bpm', isRequired: false },
+      { key: 'climb12minAvgPower', label: '12\' Avg Power', unit: 'W', isRequired: false },
+      { key: 'climb12minMaxHR', label: '12\' Max HR', unit: 'bpm', isRequired: false },
     ],
   },
 } as const;

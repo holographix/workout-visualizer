@@ -161,10 +161,10 @@ export function Header() {
                             </Text>
                             <HStack spacing={1}>
                               {userIsCoach && (
-                                <Badge colorScheme="purple" fontSize="9px">Coach</Badge>
+                                <Badge colorScheme="purple" fontSize="9px">{t('roles.coach')}</Badge>
                               )}
                               {!userIsCoach && (
-                                <Badge colorScheme="blue" fontSize="9px">Athlete</Badge>
+                                <Badge colorScheme="blue" fontSize="9px">{t('roles.athlete')}</Badge>
                               )}
                             </HStack>
                           </VStack>

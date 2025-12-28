@@ -24,6 +24,7 @@ interface ApiWorkout {
   ifPlanned: number | null;
   structure: unknown;
   workoutType?: string;
+  attachments?: string[]; // File URLs
   category: {
     id: string;
     name: string;
@@ -38,6 +39,12 @@ interface ApiScheduledWorkout {
   notes: string | null;
   completed: boolean;
   completedAt: string | null;
+  // Workout structure overrides
+  structureOverride?: any;
+  durationOverride?: number;
+  tssOverride?: number;
+  ifOverride?: number;
+  isModified?: boolean;
   workout: ApiWorkout;
 }
 
@@ -81,7 +88,7 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
         title: workout.name,
         description: workout.description || '',
         attributes: {
-          structure: { structure: [] },
+          structure: workout.structure as any || { structure: [] },
           totalTimePlanned: workout.durationSeconds / 3600,
           tssPlanned: workout.tssPlanned || 0,
           ifPlanned: workout.ifPlanned || 0,
@@ -92,6 +99,12 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
       dayIndex: apiWorkout.dayIndex,
       sortOrder: apiWorkout.sortOrder,
       completed: apiWorkout.completed,
+      // Include override fields
+      structureOverride: apiWorkout.structureOverride,
+      durationOverride: apiWorkout.durationOverride,
+      tssOverride: apiWorkout.tssOverride,
+      ifOverride: apiWorkout.ifOverride,
+      isModified: apiWorkout.isModified,
     };
   }, []);
 
@@ -145,10 +158,24 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
 
   // Add workout to a day
   const addWorkout = useCallback(async (workoutId: string, dayIndex: number): Promise<ScheduledWorkout | null> => {
+    const optimisticId = `optimistic-${Date.now()}`;
+
     try {
       const weekId = await ensureTrainingWeek();
       const sortOrder = scheduledWorkouts.filter(sw => sw.dayIndex === dayIndex).length;
 
+      // Optimistic update - add placeholder immediately
+      const optimisticWorkout: ScheduledWorkout = {
+        id: optimisticId,
+        workoutId,
+        workout: null as any, // Will be filled by API response
+        dayIndex,
+        sortOrder,
+        completed: false,
+      };
+      setScheduledWorkouts(prev => [...prev, optimisticWorkout]);
+
+      // Make API call
       const result = await api.post<ApiScheduledWorkout>('/api/calendar/scheduled', {
         trainingWeekId: weekId,
         workoutId,
@@ -156,11 +183,16 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
         sortOrder,
       });
 
+      // Replace optimistic entry with real data
       const newScheduled = convertToFrontendFormat(result);
-      setScheduledWorkouts(prev => [...prev, newScheduled]);
+      setScheduledWorkouts(prev =>
+        prev.map(sw => sw.id === optimisticId ? newScheduled : sw)
+      );
       return newScheduled;
     } catch (err) {
       console.error('Failed to add workout:', err);
+      // Remove optimistic entry on error
+      setScheduledWorkouts(prev => prev.filter(sw => sw.id !== optimisticId));
       throw err;
     }
   }, [ensureTrainingWeek, scheduledWorkouts, convertToFrontendFormat]);
@@ -176,6 +208,54 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
     }
   }, []);
 
+  // Move scheduled workout to a different day
+  const moveWorkout = useCallback(async (scheduledId: string, newDayIndex: number) => {
+    const sourceWorkout = scheduledWorkouts.find(sw => sw.id === scheduledId);
+    if (!sourceWorkout) {
+      console.error('Source workout not found');
+      return;
+    }
+
+    // Store original state for rollback
+    const originalWorkouts = scheduledWorkouts;
+    const optimisticId = `optimistic-move-${Date.now()}`;
+
+    try {
+      // Optimistic update - remove source and add skeleton in destination
+      setScheduledWorkouts(prev => [
+        ...prev.filter(sw => sw.id !== scheduledId),
+        {
+          id: optimisticId,
+          workoutId: sourceWorkout.workoutId,
+          workout: null as any, // Skeleton placeholder
+          dayIndex: newDayIndex,
+          sortOrder: sourceWorkout.sortOrder,
+          completed: sourceWorkout.completed,
+          isModified: sourceWorkout.isModified,
+          durationOverride: sourceWorkout.durationOverride,
+          tssOverride: sourceWorkout.tssOverride,
+          structureOverride: sourceWorkout.structureOverride,
+        },
+      ]);
+
+      const result = await api.put<ApiScheduledWorkout>(`/api/calendar/scheduled/${scheduledId}`, {
+        dayIndex: newDayIndex,
+      });
+
+      const updatedWorkout = convertToFrontendFormat(result);
+
+      // Replace skeleton with real server data
+      setScheduledWorkouts(prev =>
+        prev.map(sw => sw.id === optimisticId ? updatedWorkout : sw)
+      );
+    } catch (err) {
+      console.error('Failed to move workout:', err);
+      // Rollback on error
+      setScheduledWorkouts(originalWorkouts);
+      throw err;
+    }
+  }, [convertToFrontendFormat, scheduledWorkouts]);
+
   // Mark workout as completed
   const toggleComplete = useCallback(async (scheduledId: string, completed: boolean) => {
     try {
@@ -187,6 +267,83 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
       );
     } catch (err) {
       console.error('Failed to update workout:', err);
+      throw err;
+    }
+  }, []);
+
+  // Modify scheduled workout structure (coach customization)
+  const modifyWorkoutStructure = useCallback(async (scheduledId: string, structure: any) => {
+    try {
+      const response = await api.put<ApiScheduledWorkout>(
+        `/api/calendar/scheduled/${scheduledId}/structure`,
+        { structure }
+      );
+      setScheduledWorkouts(prev =>
+        prev.map(sw =>
+          sw.id === scheduledId
+            ? {
+                ...sw,
+                structureOverride: response.structureOverride,
+                durationOverride: response.durationOverride,
+                tssOverride: response.tssOverride,
+                ifOverride: response.ifOverride,
+                isModified: response.isModified,
+              }
+            : sw
+        )
+      );
+      return response;
+    } catch (err) {
+      console.error('Failed to modify workout structure:', err);
+      throw err;
+    }
+  }, []);
+
+  // Copy scheduled workout to a different day (clone)
+  const copyWorkout = useCallback(async (scheduledId: string, newDayIndex: number) => {
+    const sourceWorkout = scheduledWorkouts.find(sw => sw.id === scheduledId);
+    if (!sourceWorkout) {
+      console.error('Source workout not found');
+      return;
+    }
+
+    try {
+      // Add the workout to the new day
+      const newWorkout = await addWorkout(sourceWorkout.workoutId, newDayIndex);
+
+      // If the source had modifications, copy them to the new workout
+      if (newWorkout && sourceWorkout.isModified && sourceWorkout.structureOverride) {
+        await modifyWorkoutStructure(newWorkout.id, sourceWorkout.structureOverride);
+      }
+    } catch (err) {
+      console.error('Failed to copy workout:', err);
+      throw err;
+    }
+  }, [scheduledWorkouts, addWorkout, modifyWorkoutStructure]);
+
+  // Reset scheduled workout to original structure
+  const resetWorkoutStructure = useCallback(async (scheduledId: string) => {
+    try {
+      const response = await api.delete<ApiScheduledWorkout>(
+        `/api/calendar/scheduled/${scheduledId}/structure`
+      );
+      setScheduledWorkouts(prev =>
+        prev.map(sw =>
+          sw.id === scheduledId
+            ? {
+                ...sw,
+                structureOverride: undefined,
+                durationOverride: undefined,
+                tssOverride: undefined,
+                ifOverride: undefined,
+                isModified: false,
+              }
+            : sw
+        )
+      );
+      return response;
+    } catch (err) {
+      console.error('Failed to reset workout structure:', err);
       throw err;
     }
   }, []);
@@ -239,7 +396,11 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
     error,
     addWorkout,
     removeWorkout,
+    moveWorkout,
+    copyWorkout,
     toggleComplete,
+    modifyWorkoutStructure,
+    resetWorkoutStructure,
     refetch: loadWeek,
   };
 }
@@ -415,48 +576,121 @@ export function useCalendarMonthAPI({
   startDate: Date;
   endDate: Date;
 }) {
-  const [weeks, setWeeks] = useState<Array<{
+  type WeekData = {
     id: string;
     weekStart: string;
     scheduledWorkouts: Array<{
       id: string;
       dayIndex: number;
       sortOrder: number;
+      completed: boolean;
+      structureOverride?: any;
+      durationOverride?: number;
+      tssOverride?: number;
+      ifOverride?: number;
+      isModified?: boolean;
       workout: {
         id: string;
         name: string;
         durationSeconds: number;
         tssPlanned: number | null;
         ifPlanned: number | null;
+        workoutType?: string;
       };
     }>;
-  }>>([]);
+  };
+
+  // Cache of loaded weeks by ISO date (yyyy-MM-dd) - use ref to avoid triggering effects
+  const weeksCacheRef = useRef<Map<string, WeekData>>(new Map());
+  const loadingWeeksRef = useRef<Set<string>>(new Set());
+
+  // State for UI updates
+  const [weeksCache, setWeeksCache] = useState<Map<string, WeekData>>(new Map());
+  const [loadingWeeks, setLoadingWeeks] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const startDateISO = format(startDate, 'yyyy-MM-dd');
   const endDateISO = format(endDate, 'yyyy-MM-dd');
 
+  // Generate list of week start dates in the range
+  const getWeekStarts = useCallback((startISO: string, endISO: string): string[] => {
+    const weekStarts: string[] = [];
+    const start = new Date(startISO);
+    const end = new Date(endISO);
+    let current = startOfWeek(start, { weekStartsOn: 1 });
+    const endWeek = startOfWeek(end, { weekStartsOn: 1 });
+
+    while (current <= endWeek) {
+      weekStarts.push(format(current, 'yyyy-MM-dd'));
+      current = addDays(current, 7);
+    }
+
+    return weekStarts;
+  }, []);
+
   const loadWeeks = useCallback(async () => {
     if (!athleteId) return;
 
-    setIsLoading(true);
+    const requiredWeeks = getWeekStarts(startDateISO, endDateISO);
+
+    // Determine which weeks we already have cached (using refs to avoid loops)
+    const newWeeks = requiredWeeks.filter(
+      weekISO => !weeksCacheRef.current.has(weekISO) && !loadingWeeksRef.current.has(weekISO)
+    );
+
+    // If no new weeks to fetch, we're done
+    if (newWeeks.length === 0) {
+      setIsLoading(false);
+      setIsFetching(false);
+      return;
+    }
+
+    // Set isLoading only on first load
+    if (weeksCacheRef.current.size === 0) {
+      setIsLoading(true);
+    }
+
+    setIsFetching(true);
     setError(null);
 
+    // Mark new weeks as loading
+    newWeeks.forEach(weekISO => loadingWeeksRef.current.add(weekISO));
+    setLoadingWeeks(new Set(loadingWeeksRef.current));
+
     try {
-      const data = await api.get<typeof weeks>(
-        `/api/calendar/weeks/${athleteId}?start=${startDateISO}&end=${endDateISO}`
+      // Fetch only the new weeks
+      const newWeekStart = newWeeks[0];
+      const newWeekEnd = newWeeks[newWeeks.length - 1];
+
+      const data = await api.get<WeekData[]>(
+        `/api/calendar/weeks/${athleteId}?start=${newWeekStart}&end=${newWeekEnd}`
       ).catch(() => []);
 
-      setWeeks(data || []);
+      // Update cache with newly loaded weeks (normalize weekStart to ISO format)
+      (data || []).forEach(week => {
+        const weekStartISO = format(new Date(week.weekStart), 'yyyy-MM-dd');
+        weeksCacheRef.current.set(weekStartISO, week);
+      });
+      setWeeksCache(new Map(weeksCacheRef.current));
+
+      // Remove from loading set
+      newWeeks.forEach(weekISO => loadingWeeksRef.current.delete(weekISO));
+      setLoadingWeeks(new Set(loadingWeeksRef.current));
+
     } catch (err) {
       console.error('Failed to load calendar weeks:', err);
       setError(err instanceof Error ? err : new Error('Failed to load calendar'));
-      setWeeks([]);
+
+      // Remove from loading set on error
+      newWeeks.forEach(weekISO => loadingWeeksRef.current.delete(weekISO));
+      setLoadingWeeks(new Set(loadingWeeksRef.current));
     } finally {
       setIsLoading(false);
+      setIsFetching(false);
     }
-  }, [athleteId, startDateISO, endDateISO]);
+  }, [athleteId, startDateISO, endDateISO, getWeekStarts]);
 
   useEffect(() => {
     loadWeeks();
@@ -466,10 +700,25 @@ export function useCalendarMonthAPI({
   const scheduledWorkouts = useMemo(() => {
     const result: ScheduledWorkout[] = [];
 
-    for (const week of weeks) {
+    // Get required weeks in order
+    const requiredWeeks = getWeekStarts(startDateISO, endDateISO);
+
+    for (let weekIndex = 0; weekIndex < requiredWeeks.length; weekIndex++) {
+      const weekISO = requiredWeeks[weekIndex];
+      const week = weeksCache.get(weekISO);
+
+      // Skip if week is still loading or not in cache
+      if (!week) continue;
+
       const weekStartDate = new Date(week.weekStart);
 
       for (const sw of week.scheduledWorkouts) {
+        // Calculate actual date from dayIndex (should always be 0-6)
+        const actualDate = addDays(weekStartDate, sw.dayIndex);
+
+        // Calculate absolute day index for multi-week view
+        const absoluteDayIndex = weekIndex * 7 + sw.dayIndex;
+
         result.push({
           id: sw.id,
           workoutId: sw.workout.id,
@@ -482,27 +731,65 @@ export function useCalendarMonthAPI({
               totalTimePlanned: sw.workout.durationSeconds / 3600,
               tssPlanned: sw.workout.tssPlanned || 0,
               ifPlanned: sw.workout.ifPlanned || 0,
+              workoutType: sw.workout.workoutType,
               workoutTypeName: 'Workout',
             },
           },
-          dayIndex: sw.dayIndex,
+          dayIndex: absoluteDayIndex, // Use absolute day index
           sortOrder: sw.sortOrder,
-          completed: false,
+          completed: sw.completed,
+          // Include override fields
+          structureOverride: sw.structureOverride,
+          durationOverride: sw.durationOverride,
+          tssOverride: sw.tssOverride,
+          ifOverride: sw.ifOverride,
+          isModified: sw.isModified,
           // Add the actual date for monthly view
-          date: addDays(weekStartDate, sw.dayIndex),
+          date: actualDate,
         } as ScheduledWorkout & { date: Date });
       }
     }
 
     return result;
-  }, [weeks]);
+  }, [weeksCache, startDateISO, endDateISO, getWeekStarts]);
+
+  // Convert weeks cache to array for backwards compatibility
+  const weeks = useMemo(() => {
+    const requiredWeeks = getWeekStarts(startDateISO, endDateISO);
+    return requiredWeeks
+      .map(weekISO => weeksCache.get(weekISO))
+      .filter((week): week is WeekData => week !== undefined);
+  }, [weeksCache, startDateISO, endDateISO, getWeekStarts]);
+
+  // Create a map of week ISO date -> loading state for the UI
+  const weekLoadingStates = useMemo(() => {
+    const map = new Map<string, boolean>();
+    const requiredWeeks = getWeekStarts(startDateISO, endDateISO);
+    requiredWeeks.forEach(weekISO => {
+      map.set(weekISO, loadingWeeks.has(weekISO));
+    });
+    return map;
+  }, [loadingWeeks, startDateISO, endDateISO, getWeekStarts]);
+
+  // Create a refetch function that clears the cache first
+  const refetch = useCallback(() => {
+    // Clear the cache so we fetch fresh data
+    weeksCacheRef.current.clear();
+    loadingWeeksRef.current.clear();
+    setWeeksCache(new Map());
+    setLoadingWeeks(new Set());
+    // Then reload
+    loadWeeks();
+  }, [loadWeeks]);
 
   return {
     scheduledWorkouts,
     weeks,
+    weekLoadingStates, // Map of weekISO -> isLoading
     isLoading,
+    isFetching,
     error,
-    refetch: loadWeeks,
+    refetch,
   };
 }
 

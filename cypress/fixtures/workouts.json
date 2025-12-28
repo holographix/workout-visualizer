@@ -1,0 +1,36 @@
+{
+  "scheduledWorkouts": [
+    {
+      "id": "sw-1",
+      "date": "2024-01-15",
+      "completed": false,
+      "workout": {
+        "id": "w-1",
+        "title": "Endurance Ride",
+        "description": "Easy zone 2 ride",
+        "attributes": {
+          "totalTimePlanned": 1.5,
+          "tssPlanned": 75,
+          "ifPlanned": 0.65,
+          "workoutType": "ride"
+        }
+      }
+    },
+    {
+      "id": "sw-2",
+      "date": "2024-01-16",
+      "completed": true,
+      "workout": {
+        "id": "w-2",
+        "title": "Threshold Intervals",
+        "description": "4x10 min at threshold",
+        "attributes": {
+          "totalTimePlanned": 1.0,
+          "tssPlanned": 85,
+          "ifPlanned": 0.88,
+          "workoutType": "intervals"
+        }
+      }
+    }
+  ]
+}

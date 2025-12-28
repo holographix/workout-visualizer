@@ -1,15 +1,14 @@
 /**
- * Sprint12Form
- * Form for Sprint + 12min climb assessment protocol
+ * Day2Form
+ * Form for Day 2 of 2-day assessment protocol
  *
- * Sprint: 15-second all-out effort - record PEAK power
- * Climb: 12-minute sustained effort - record AVERAGE power
+ * Day 2: 5" sprint + 12' climb on 6-7% gradient
+ * Sprint: PEAK power, Climb: AVERAGE power
  */
 import {
   VStack,
   FormControl,
   FormLabel,
-  Input,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -27,23 +26,20 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Sprint12MinData } from '../../../types/assessment';
+import type { Day2Data } from '../../../types/assessment';
 
-interface Sprint12FormProps {
-  onSubmit: (data: Sprint12MinData) => Promise<void>;
+interface Day2FormProps {
+  onSubmit: (data: Day2Data) => Promise<void>;
   isLoading: boolean;
-  initialValues?: Sprint12MinData;
+  initialValues?: Day2Data;
 }
 
-export function Sprint12Form({ onSubmit, isLoading, initialValues }: Sprint12FormProps) {
+export function Day2Form({ onSubmit, isLoading, initialValues }: Day2FormProps) {
   const { t } = useTranslation();
-  const [testDate, setTestDate] = useState(
-    initialValues?.testDate?.split('T')[0] || new Date().toISOString().split('T')[0]
-  );
-  const [sprintPeakPower, setSprintPeakPower] = useState<number | undefined>(initialValues?.sprintPeakPower);
-  const [sprintMaxHR, setSprintMaxHR] = useState<number | undefined>(initialValues?.sprintMaxHR);
-  const [climb12AvgPower, setClimb12AvgPower] = useState<number | undefined>(initialValues?.climb12AvgPower);
-  const [climb12MaxHR, setClimb12MaxHR] = useState<number | undefined>(initialValues?.climb12MaxHR);
+  const [sprint5secPeakPower, setSprint5secPeakPower] = useState<number | undefined>(initialValues?.sprint5secPeakPower);
+  const [sprint5secMaxHR, setSprint5secMaxHR] = useState<number | undefined>(initialValues?.sprint5secMaxHR);
+  const [climb12minAvgPower, setClimb12minAvgPower] = useState<number | undefined>(initialValues?.climb12minAvgPower);
+  const [climb12minMaxHR, setClimb12minMaxHR] = useState<number | undefined>(initialValues?.climb12minMaxHR);
   const [notes, setNotes] = useState(initialValues?.notes || '');
 
   const labelColor = useColorModeValue('gray.600', 'gray.400');
@@ -52,44 +48,32 @@ export function Sprint12Form({ onSubmit, isLoading, initialValues }: Sprint12For
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSubmit({
-      testDate,
-      sprintPeakPower,
-      sprintMaxHR,
-      climb12AvgPower,
-      climb12MaxHR,
+      sprint5secPeakPower,
+      sprint5secMaxHR,
+      climb12minAvgPower,
+      climb12minMaxHR,
       notes: notes || undefined,
     });
   };
 
-  const isValid = testDate && (sprintPeakPower || climb12AvgPower);
+  const isValid = sprint5secPeakPower || climb12minAvgPower;
 
   return (
     <form onSubmit={handleSubmit}>
       <VStack spacing={6} align="stretch">
-        {/* Test Date */}
-        <FormControl isRequired>
-          <FormLabel>{t('assessment.testDate')}</FormLabel>
-          <Input
-            type="date"
-            value={testDate}
-            onChange={(e) => setTestDate(e.target.value)}
-            max={new Date().toISOString().split('T')[0]}
-          />
-        </FormControl>
-
-        {/* Sprint Section */}
+        {/* 5" Sprint Section */}
         <Box bg={sectionBg} p={4} borderRadius="lg">
-          <Heading size="sm" mb={1}>15" Sprint</Heading>
+          <Heading size="sm" mb={1}>5" Sprint</Heading>
           <Text fontSize="sm" color={labelColor} mb={4}>
-            {t('assessment.fields.sprintPeakPowerDesc')}
+            All-out maximum effort sprint - record PEAK power
           </Text>
           <HStack spacing={4}>
             <FormControl flex={1}>
-              <FormLabel fontSize="sm">{t('assessment.fields.sprintPeakPower')}</FormLabel>
+              <FormLabel fontSize="sm">Peak Power</FormLabel>
               <InputGroup size="sm">
                 <NumberInput
-                  value={sprintPeakPower || ''}
-                  onChange={(_, val) => setSprintPeakPower(val || undefined)}
+                  value={sprint5secPeakPower || ''}
+                  onChange={(_, val) => setSprint5secPeakPower(val || undefined)}
                   min={0}
                   max={2500}
                   flex={1}
@@ -100,15 +84,15 @@ export function Sprint12Form({ onSubmit, isLoading, initialValues }: Sprint12For
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <InputRightAddon>{t('assessment.units.watts')}</InputRightAddon>
+                <InputRightAddon>W</InputRightAddon>
               </InputGroup>
             </FormControl>
             <FormControl flex={1}>
-              <FormLabel fontSize="sm">{t('assessment.fields.sprintMaxHR')}</FormLabel>
+              <FormLabel fontSize="sm">Max HR</FormLabel>
               <InputGroup size="sm">
                 <NumberInput
-                  value={sprintMaxHR || ''}
-                  onChange={(_, val) => setSprintMaxHR(val || undefined)}
+                  value={sprint5secMaxHR || ''}
+                  onChange={(_, val) => setSprint5secMaxHR(val || undefined)}
                   min={0}
                   max={250}
                   flex={1}
@@ -119,25 +103,25 @@ export function Sprint12Form({ onSubmit, isLoading, initialValues }: Sprint12For
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <InputRightAddon>{t('assessment.units.bpm')}</InputRightAddon>
+                <InputRightAddon>bpm</InputRightAddon>
               </InputGroup>
             </FormControl>
           </HStack>
         </Box>
 
-        {/* 12min Climb Section */}
+        {/* 12' Climb Section */}
         <Box bg={sectionBg} p={4} borderRadius="lg">
           <Heading size="sm" mb={1}>12' Climb</Heading>
           <Text fontSize="sm" color={labelColor} mb={4}>
-            {t('assessment.fields.climb12AvgPowerDesc')}
+            Sustained threshold effort climb - record AVERAGE power
           </Text>
           <HStack spacing={4}>
             <FormControl flex={1}>
-              <FormLabel fontSize="sm">{t('assessment.fields.climb12AvgPower')}</FormLabel>
+              <FormLabel fontSize="sm">Avg Power</FormLabel>
               <InputGroup size="sm">
                 <NumberInput
-                  value={climb12AvgPower || ''}
-                  onChange={(_, val) => setClimb12AvgPower(val || undefined)}
+                  value={climb12minAvgPower || ''}
+                  onChange={(_, val) => setClimb12minAvgPower(val || undefined)}
                   min={0}
                   max={1000}
                   flex={1}
@@ -148,15 +132,15 @@ export function Sprint12Form({ onSubmit, isLoading, initialValues }: Sprint12For
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <InputRightAddon>{t('assessment.units.watts')}</InputRightAddon>
+                <InputRightAddon>W</InputRightAddon>
               </InputGroup>
             </FormControl>
             <FormControl flex={1}>
-              <FormLabel fontSize="sm">{t('assessment.fields.climb12MaxHR')}</FormLabel>
+              <FormLabel fontSize="sm">Max HR</FormLabel>
               <InputGroup size="sm">
                 <NumberInput
-                  value={climb12MaxHR || ''}
-                  onChange={(_, val) => setClimb12MaxHR(val || undefined)}
+                  value={climb12minMaxHR || ''}
+                  onChange={(_, val) => setClimb12minMaxHR(val || undefined)}
                   min={0}
                   max={250}
                   flex={1}
@@ -167,7 +151,7 @@ export function Sprint12Form({ onSubmit, isLoading, initialValues }: Sprint12For
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
-                <InputRightAddon>{t('assessment.units.bpm')}</InputRightAddon>
+                <InputRightAddon>bpm</InputRightAddon>
               </InputGroup>
             </FormControl>
           </HStack>
@@ -175,11 +159,11 @@ export function Sprint12Form({ onSubmit, isLoading, initialValues }: Sprint12For
 
         {/* Notes */}
         <FormControl>
-          <FormLabel>{t('assessment.notes')}</FormLabel>
+          <FormLabel>Notes</FormLabel>
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder={t('assessment.notesPlaceholder')}
+            placeholder="Optional notes about the test..."
             rows={2}
           />
         </FormControl>
@@ -192,7 +176,7 @@ export function Sprint12Form({ onSubmit, isLoading, initialValues }: Sprint12For
           isLoading={isLoading}
           isDisabled={!isValid}
         >
-          {t('assessment.save')}
+          Complete Day 2 & Finish Test
         </Button>
       </VStack>
     </form>

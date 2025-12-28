@@ -1,0 +1,551 @@
+{
+  "stats": {
+    "suites": 7,
+    "tests": 15,
+    "passes": 0,
+    "pending": 0,
+    "failures": 15,
+    "start": "2025-12-21T17:08:25.066Z",
+    "end": "2025-12-21T17:19:42.495Z",
+    "duration": 677429,
+    "testsRegistered": 15,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "f860d61e-d4c7-4889-ace2-9306f20d7eac",
+      "title": "",
+      "fullFile": "cypress/e2e/athlete-training-zones.cy.ts",
+      "file": "cypress/e2e/athlete-training-zones.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "ad94ace7-7512-43bd-bfc2-688c878f6364",
+          "title": "Athlete Training Zones",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "49686231-2afe-4a8b-9e9e-d91b3356f363",
+              "title": "Training Zones on Athlete Stats Page",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should navigate to athlete stats page from coach view",
+                  "fullTitle": "Athlete Training Zones Training Zones on Athlete Stats Page should navigate to athlete stats page from coach view",
+                  "timedOut": null,
+                  "duration": 15870,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "// Look for athlete card and click to view stats\ncy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        // Click on stats link/button\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').then(function ($statsBtn) {\n            if ($statsBtn.length > 0) {\n                cy.wrap($statsBtn).first().click({ force: true });\n                cy.wait(500);\n                // Verify navigation to stats page\n                cy.url().should('include', '/stats');\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:24:9)",
+                    "diff": null
+                  },
+                  "uuid": "bdbbedf2-ee05-4d13-bfe0-a84dd4f46720",
+                  "parentUUID": "49686231-2afe-4a8b-9e9e-d91b3356f363",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should display Training Zones section title",
+                  "fullTitle": "Athlete Training Zones Training Zones on Athlete Stats Page should display Training Zones section title",
+                  "timedOut": null,
+                  "duration": 15821,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "// Navigate to a known athlete stats page\ncy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                // Check for Training Zones section\n                cy.contains(/training zones|zone di allenamento/i).should('exist');\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:42:9)",
+                    "diff": null
+                  },
+                  "uuid": "d12a5076-c7c7-4fc5-b2fc-0afe67b26259",
+                  "parentUUID": "49686231-2afe-4a8b-9e9e-d91b3356f363",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should display Power Zones section",
+                  "fullTitle": "Athlete Training Zones Training Zones on Athlete Stats Page should display Power Zones section",
+                  "timedOut": null,
+                  "duration": 15886,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                // Check for Power Zones heading\n                cy.contains(/power zones|zone potenza/i).should('exist');\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:58:9)",
+                    "diff": null
+                  },
+                  "uuid": "abcc350f-a49b-4d12-bc54-378f4a4d04ae",
+                  "parentUUID": "49686231-2afe-4a8b-9e9e-d91b3356f363",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should display HR Zones section",
+                  "fullTitle": "Athlete Training Zones Training Zones on Athlete Stats Page should display HR Zones section",
+                  "timedOut": null,
+                  "duration": 15866,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                // Check for HR Zones heading\n                cy.contains(/hr zones|zone fc|heart rate/i).should('exist');\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:74:9)",
+                    "diff": null
+                  },
+                  "uuid": "46c5897b-8f68-4337-974f-62fc693b7a26",
+                  "parentUUID": "49686231-2afe-4a8b-9e9e-d91b3356f363",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show FTP badge if athlete has FTP",
+                  "fullTitle": "Athlete Training Zones Training Zones on Athlete Stats Page should show FTP badge if athlete has FTP",
+                  "timedOut": null,
+                  "duration": 15849,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                cy.get('body').then(function ($body) {\n                    // Check for FTP badge or \"no FTP\" message\n                    var hasFTPBadge = $body.text().match(/FTP:\\s*\\d+\\s*W/i);\n                    var hasNoFTPMessage = $body.text().match(/no ftp data|nessun dato ftp/i);\n                    expect(hasFTPBadge || hasNoFTPMessage).to.exist;\n                });\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:90:9)",
+                    "diff": null
+                  },
+                  "uuid": "bdbe0eed-8070-48ff-98bc-f775b3531d9e",
+                  "parentUUID": "49686231-2afe-4a8b-9e9e-d91b3356f363",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show Max HR badge if athlete has Max HR",
+                  "fullTitle": "Athlete Training Zones Training Zones on Athlete Stats Page should show Max HR badge if athlete has Max HR",
+                  "timedOut": null,
+                  "duration": 15866,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                cy.get('body').then(function ($body) {\n                    // Check for Max HR badge or \"no Max HR\" message\n                    var hasMaxHRBadge = $body.text().match(/max hr:\\s*\\d+\\s*bpm/i);\n                    var hasNoMaxHRMessage = $body.text().match(/no max hr data|nessun dato fc max/i);\n                    expect(hasMaxHRBadge || hasNoMaxHRMessage).to.exist;\n                });\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:110:9)",
+                    "diff": null
+                  },
+                  "uuid": "4831ae5c-661b-44a1-8830-2335c3ce8d13",
+                  "parentUUID": "49686231-2afe-4a8b-9e9e-d91b3356f363",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "bdbbedf2-ee05-4d13-bfe0-a84dd4f46720",
+                "d12a5076-c7c7-4fc5-b2fc-0afe67b26259",
+                "abcc350f-a49b-4d12-bc54-378f4a4d04ae",
+                "46c5897b-8f68-4337-974f-62fc693b7a26",
+                "bdbe0eed-8070-48ff-98bc-f775b3531d9e",
+                "4831ae5c-661b-44a1-8830-2335c3ce8d13"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 95158,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "9e73bc82-df31-459a-b44d-4e569e073716",
+              "title": "Power Zones Table Content",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should display zone names in Power Zones table",
+                  "fullTitle": "Athlete Training Zones Power Zones Table Content should display zone names in Power Zones table",
+                  "timedOut": null,
+                  "duration": 15878,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                cy.get('body').then(function ($body) {\n                    // Check for zone names (Italian or English)\n                    var hasRecupero = $body.text().match(/recupero|recovery/i);\n                    var hasResistenza = $body.text().match(/resistenza|endurance/i);\n                    var hasTempo = $body.text().match(/tempo|medio/i);\n                    var hasSoglia = $body.text().match(/soglia|threshold/i);\n                    var hasVO2 = $body.text().match(/vo2max/i);\n                    // At least one zone name should be present, or \"no FTP\" message\n                    var hasNoFTP = $body.text().match(/no ftp|complete an assessment/i);\n                    expect(hasRecupero || hasResistenza || hasTempo || hasSoglia || hasVO2 || hasNoFTP).to.exist;\n                });\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:132:9)",
+                    "diff": null
+                  },
+                  "uuid": "fc3e44fc-adad-4c99-bd7e-f82df3490819",
+                  "parentUUID": "9e73bc82-df31-459a-b44d-4e569e073716",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should display 6 Power zones (Z1-Z6) if FTP is set",
+                  "fullTitle": "Athlete Training Zones Power Zones Table Content should display 6 Power zones (Z1-Z6) if FTP is set",
+                  "timedOut": null,
+                  "duration": 15935,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                cy.get('body').then(function ($body) {\n                    var hasFTP = $body.text().match(/FTP:\\s*\\d+\\s*W/i);\n                    if (hasFTP) {\n                        // If FTP is set, should have zone badges\n                        cy.contains(/Z1|Z2|Z3|Z4|Z5|Z6/i).should('exist');\n                    }\n                });\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:158:9)",
+                    "diff": null
+                  },
+                  "uuid": "0bff8ccd-4f67-4152-8397-803bb3ba147c",
+                  "parentUUID": "9e73bc82-df31-459a-b44d-4e569e073716",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "fc3e44fc-adad-4c99-bd7e-f82df3490819",
+                "0bff8ccd-4f67-4152-8397-803bb3ba147c"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 31813,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "a3436816-7265-4a6c-816e-ef85435ba73e",
+              "title": "HR Zones Table Content",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should display 5 HR zones (Z1-Z5) if Max HR is set",
+                  "fullTitle": "Athlete Training Zones HR Zones Table Content should display 5 HR zones (Z1-Z5) if Max HR is set",
+                  "timedOut": null,
+                  "duration": 15951,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                cy.get('body').then(function ($body) {\n                    var hasMaxHR = $body.text().match(/max hr:\\s*\\d+\\s*bpm/i);\n                    if (hasMaxHR) {\n                        // If Max HR is set, should have zone badges\n                        cy.contains(/Z1|Z2|Z3|Z4|Z5/i).should('exist');\n                    }\n                });\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:181:9)",
+                    "diff": null
+                  },
+                  "uuid": "b216c063-8479-4a87-9fdf-6812d3da7006",
+                  "parentUUID": "a3436816-7265-4a6c-816e-ef85435ba73e",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show BPM ranges in HR zones table",
+                  "fullTitle": "Athlete Training Zones HR Zones Table Content should show BPM ranges in HR zones table",
+                  "timedOut": null,
+                  "duration": 15920,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                cy.get('body').then(function ($body) {\n                    var hasMaxHR = $body.text().match(/max hr:\\s*\\d+\\s*bpm/i);\n                    if (hasMaxHR) {\n                        // Should show BPM values or ranges\n                        var hasBPMValues = $body.text().match(/\\d+-\\d+/);\n                        expect(hasBPMValues).to.exist;\n                    }\n                });\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:202:9)",
+                    "diff": null
+                  },
+                  "uuid": "2966cc8e-881a-4fad-b349-0ca04791596b",
+                  "parentUUID": "a3436816-7265-4a6c-816e-ef85435ba73e",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "b216c063-8479-4a87-9fdf-6812d3da7006",
+                "2966cc8e-881a-4fad-b349-0ca04791596b"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 31871,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "4e2e0329-4e61-471d-8e86-0f1a10d8ee0e",
+              "title": "Empty States",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should show message when no FTP data available",
+                  "fullTitle": "Athlete Training Zones Empty States should show message when no FTP data available",
+                  "timedOut": null,
+                  "duration": 15916,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                cy.get('body').then(function ($body) {\n                    var hasFTP = $body.text().match(/FTP:\\s*\\d+\\s*W/i);\n                    if (!hasFTP) {\n                        // Should show empty state message\n                        cy.contains(/no ftp|complete an assessment|nessun dato/i).should('exist');\n                    }\n                });\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:226:9)",
+                    "diff": null
+                  },
+                  "uuid": "e9d507df-8b14-48ad-b62f-aabad0edc0f0",
+                  "parentUUID": "4e2e0329-4e61-471d-8e86-0f1a10d8ee0e",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should show message when no Max HR data available",
+                  "fullTitle": "Athlete Training Zones Empty States should show message when no Max HR data available",
+                  "timedOut": null,
+                  "duration": 15975,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                cy.get('body').then(function ($body) {\n                    var hasMaxHR = $body.text().match(/max hr:\\s*\\d+\\s*bpm/i);\n                    if (!hasMaxHR) {\n                        // Should show empty state message\n                        cy.contains(/no max hr|complete an assessment|nessun dato/i).should('exist');\n                    }\n                });\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:247:9)",
+                    "diff": null
+                  },
+                  "uuid": "4e9a3136-29d1-426c-bc26-1808cfe55c28",
+                  "parentUUID": "4e2e0329-4e61-471d-8e86-0f1a10d8ee0e",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "e9d507df-8b14-48ad-b62f-aabad0edc0f0",
+                "4e9a3136-29d1-426c-bc26-1808cfe55c28"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 31891,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "b1a594a3-a2b5-4a0f-87a1-2555bd04209b",
+              "title": "Zones Page Mobile View",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should display zones on mobile",
+                  "fullTitle": "Athlete Training Zones Zones Page Mobile View should display zones on mobile",
+                  "timedOut": null,
+                  "duration": 15859,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                // Training Zones should be visible on mobile\n                cy.contains(/training zones|zone di allenamento/i).should('exist');\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:274:9)",
+                    "diff": null
+                  },
+                  "uuid": "ad7cd9ef-1c0b-4060-8a49-48bea203433f",
+                  "parentUUID": "b1a594a3-a2b5-4a0f-87a1-2555bd04209b",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should display both Power and HR zones tables on mobile",
+                  "fullTitle": "Athlete Training Zones Zones Page Mobile View should display both Power and HR zones tables on mobile",
+                  "timedOut": null,
+                  "duration": 15888,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('[data-testid=\"athlete-card\"]').first().then(function ($card) {\n    if ($card.length > 0) {\n        cy.wrap($card).find('a, button').filter(':contains(\"Stats\"), :contains(\"Statistiche\")').first().click({ force: true });\n        cy.wait(500);\n        cy.url().then(function (url) {\n            if (url.includes('/stats')) {\n                // Check for both zone sections\n                cy.contains(/power zones|zone potenza/i).should('exist');\n                cy.contains(/hr zones|zone fc/i).should('exist');\n            }\n        });\n    }\n});",
+                  "err": {
+                    "message": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.",
+                    "estack": "AssertionError: Timed out retrying after 15000ms: Expected to find element: `[data-testid=\"athlete-card\"]`, but never found it.\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:290:9)",
+                    "diff": null
+                  },
+                  "uuid": "b682ffbf-dab9-4198-b180-74d9e1730ec3",
+                  "parentUUID": "b1a594a3-a2b5-4a0f-87a1-2555bd04209b",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "ad7cd9ef-1c0b-4060-8a49-48bea203433f",
+                "b682ffbf-dab9-4198-b180-74d9e1730ec3"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 31747,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "54f86c40-cc80-472e-bf7d-c15f19f5a6f4",
+          "title": "Direct Athlete Stats Page Navigation",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should load athlete stats page with zones section",
+              "fullTitle": "Direct Athlete Stats Page Navigation should load athlete stats page with zones section",
+              "timedOut": null,
+              "duration": 810,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Try to navigate directly to an athlete stats page\n// This is a fallback test that doesn't depend on having athletes in the list\ncy.visit('/athlete/test-athlete-id/stats');\ncy.get('body').then(function ($body) {\n    // Should show either the stats page content or a 404/error\n    var hasStatsPage = $body.text().match(/statistics|statistiche|training zones|zone/i);\n    var hasError = $body.text().match(/not found|404|error/i);\n    expect(hasStatsPage || hasError).to.exist;\n});",
+              "err": {
+                "message": "AssertionError: expected null to exist",
+                "estack": "AssertionError: expected null to exist\n    at Context.eval (webpack://ridepro-fe/./cypress/e2e/athlete-training-zones.cy.ts:318:42)\n    at getRet (http://localhost:5173/__cypress/runner/cypress_runner.js:122460:20)\n    at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)",
+                "diff": null
+              },
+              "uuid": "0111f3c2-c14b-43a7-b9c1-e62d66efa5a2",
+              "parentUUID": "54f86c40-cc80-472e-bf7d-c15f19f5a6f4",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "0111f3c2-c14b-43a7-b9c1-e62d66efa5a2"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 810,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "6.3.2"
+    }
+  }
+}

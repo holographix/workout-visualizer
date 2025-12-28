@@ -394,8 +394,8 @@ export function CoachPage() {
                   flex={1}
                   overflow="hidden"
                 >
-                  <Box px={4} pt={4} pb={2}>
-                    <TabList bg="gray.100" _dark={{ bg: 'gray.700' }} p={1} borderRadius="lg">
+                  <HStack px={4} pt={4} pb={2} justify="space-between" align="center">
+                    <TabList bg="gray.100" _dark={{ bg: 'gray.700' }} p={1} borderRadius="lg" flex={1}>
                       <Tab
                         fontSize="sm"
                         py={2}
@@ -425,7 +425,16 @@ export function CoachPage() {
                         </HStack>
                       </Tab>
                     </TabList>
-                  </Box>
+                    {libraryTabIndex === 0 && (
+                      <IconButton
+                        aria-label={t('coach.createWorkout')}
+                        icon={<Plus size={16} />}
+                        colorScheme="brand"
+                        size="sm"
+                        onClick={handleCreateWorkout}
+                      />
+                    )}
+                  </HStack>
 
                   <TabPanels flex={1} overflow="hidden">
                     {/* My Workouts Tab */}

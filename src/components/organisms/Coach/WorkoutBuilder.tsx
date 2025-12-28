@@ -45,6 +45,7 @@ import {
   Copy,
   GripVertical,
   ChevronDown,
+  ChevronRight,
   Save,
   Repeat,
   Play,
@@ -68,6 +69,12 @@ interface BuilderStep {
   durationUnit: 'second' | 'minute';
   targetMin: number;
   targetMax: number;
+  // Optional cadence and HR targets
+  cadenceMin?: number;
+  cadenceMax?: number;
+  hrMin?: number;
+  hrMax?: number;
+  hrType?: 'bpm' | 'percent';
   // For repetitions
   repeatCount?: number;
   nestedSteps?: BuilderStep[];
@@ -90,6 +97,7 @@ interface WorkoutBuilderProps {
   onCreateCategory?: (name: string) => Promise<WorkoutCategory>;
   coachId?: string;
   onCategoriesChange?: () => void;
+  hideMetadata?: boolean; // Hide title, description, category, workout type inputs
 }
 
 const INTENSITY_COLORS: Record<string, string> = {
@@ -119,7 +127,7 @@ const createDefaultStep = (type: BuilderStep['intensityClass'] = 'active'): Buil
   targetMax: type === 'rest' ? 50 : type === 'warmUp' || type === 'coolDown' ? 75 : 95,
 });
 
-export function WorkoutBuilder({ initialWorkout, onSave, onCancel, onChange, categories = [], isSaving = false, onCreateCategory, coachId, onCategoriesChange }: WorkoutBuilderProps) {
+export function WorkoutBuilder({ initialWorkout, onSave, onCancel, onChange, categories = [], isSaving = false, onCreateCategory, coachId, onCategoriesChange, hideMetadata = false }: WorkoutBuilderProps) {
   const { t } = useTranslation();
   const toast = useToast();
   const { isOpen: isCategoryModalOpen, onOpen: openCategoryModal, onClose: closeCategoryModal } = useDisclosure();
@@ -163,6 +171,12 @@ export function WorkoutBuilder({ initialWorkout, onSave, onCancel, onChange, cat
         durationUnit,
         targetMin: target.minValue || 50,
         targetMax: target.maxValue || 75,
+        // Extract cadence and HR if present
+        cadenceMin: target.cadenceMin,
+        cadenceMax: target.cadenceMax,
+        hrMin: target.hrMin,
+        hrMax: target.hrMax,
+        hrType: target.hrType,
         openDuration: step.openDuration || false,
       };
     });
@@ -369,7 +383,15 @@ export function WorkoutBuilder({ initialWorkout, onSave, onCancel, onChange, cat
         value: step.durationUnit === 'minute' ? step.durationValue : step.durationValue,
         unit: step.durationUnit,
       },
-      targets: [{ minValue: step.targetMin, maxValue: step.targetMax }],
+      targets: [{
+        minValue: step.targetMin,
+        maxValue: step.targetMax,
+        ...(step.cadenceMin !== undefined && { cadenceMin: step.cadenceMin }),
+        ...(step.cadenceMax !== undefined && { cadenceMax: step.cadenceMax }),
+        ...(step.hrMin !== undefined && { hrMin: step.hrMin }),
+        ...(step.hrMax !== undefined && { hrMax: step.hrMax }),
+        ...(step.hrType !== undefined && { hrType: step.hrType }),
+      }],
       intensityClass: step.intensityClass,
       openDuration: false,
     });
@@ -503,159 +525,163 @@ export function WorkoutBuilder({ initialWorkout, onSave, onCancel, onChange, cat
       <Box flex={1} overflowY="auto" p={4}>
         <VStack spacing={6} align="stretch">
           {/* Workout Info */}
-          <VStack spacing={3} align="stretch">
-            <FormControl isRequired>
-              <FormLabel fontSize="sm">{t('builder.workoutTitle')}</FormLabel>
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder={t('builder.titlePlaceholder')}
-              />
-            </FormControl>
+          {!hideMetadata && (
+            <>
+              <VStack spacing={3} align="stretch">
+                <FormControl isRequired>
+                  <FormLabel fontSize="sm">{t('builder.workoutTitle')}</FormLabel>
+                  <Input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder={t('builder.titlePlaceholder')}
+                  />
+                </FormControl>
 
-            {/* Category dropdown */}
-            <FormControl isRequired>
-              <Flex align="center" justify="space-between" mb={1}>
-                <FormLabel fontSize="sm" mb={0}>{t('builder.category')}</FormLabel>
-                {coachId && (
-                  <Link
-                    as="button"
-                    fontSize="xs"
-                    color="brand.500"
-                    _hover={{ textDecoration: 'underline' }}
-                    onClick={openCategoryManageModal}
-                    display="flex"
-                    alignItems="center"
-                    gap={1}
-                  >
-                    <Settings size={12} />
-                    {t('categories.manage')}
-                  </Link>
-                )}
-              </Flex>
-              <Menu matchWidth>
-                <MenuButton
-                  as={Button}
-                  variant="unstyled"
-                  maxW="340px"
-                  w="full"
-                  textAlign="left"
-                  fontWeight="normal"
-                  bg="gray.100"
-                  px={3}
-                  h="40px"
-                  borderRadius="15px"
-                  _dark={{ bg: 'navy.800' }}
-                  _hover={{ bg: 'gray.200', _dark: { bg: 'navy.700' } }}
-                >
-                  <Flex align="center" justify="space-between" w="full">
-                    <HStack spacing={2}>
-                      <Box as={Folder} boxSize={4} color="purple.500" />
-                      <Text>
-                        {categories.find((c) => c.id === categoryId)?.name || t('builder.selectCategory')}
-                      </Text>
-                    </HStack>
-                    <ChevronDown size={14} />
+                {/* Category dropdown */}
+                <FormControl isRequired>
+                  <Flex align="center" justify="space-between" mb={1}>
+                    <FormLabel fontSize="sm" mb={0}>{t('builder.category')}</FormLabel>
+                    {coachId && (
+                      <Link
+                        as="button"
+                        fontSize="xs"
+                        color="brand.500"
+                        _hover={{ textDecoration: 'underline' }}
+                        onClick={openCategoryManageModal}
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                      >
+                        <Settings size={12} />
+                        {t('categories.manage')}
+                      </Link>
+                    )}
                   </Flex>
-                </MenuButton>
-                <MenuList maxH="300px" overflowY="auto" bg={menuBg}>
-                  {categories.map((category) => (
-                    <MenuItem
-                      key={category.id}
-                      icon={<Box as={Folder} boxSize={4} color="purple.500" />}
-                      onClick={() => setCategoryId(category.id)}
-                      bg={categoryId === category.id ? 'gray.100' : undefined}
-                      _dark={{ bg: categoryId === category.id ? 'gray.600' : undefined }}
-                      _hover={{ bg: menuHoverBg }}
+                  <Menu matchWidth>
+                    <MenuButton
+                      as={Button}
+                      variant="unstyled"
+                      maxW="340px"
+                      w="full"
+                      textAlign="left"
+                      fontWeight="normal"
+                      bg="gray.100"
+                      px={3}
+                      h="40px"
+                      borderRadius="15px"
+                      _dark={{ bg: 'navy.800' }}
+                      _hover={{ bg: 'gray.200', _dark: { bg: 'navy.700' } }}
                     >
-                      {category.name}
-                    </MenuItem>
-                  ))}
-                  {onCreateCategory && (
-                    <>
-                      <MenuDivider />
-                      <MenuItem
-                        icon={<Box as={FolderPlus} boxSize={4} color="green.500" />}
-                        onClick={openCategoryModal}
-                        fontWeight="medium"
-                        color="green.600"
-                        _dark={{ color: 'green.300' }}
-                        _hover={{ bg: menuHoverBg }}
-                      >
-                        {t('builder.createCategory')}
-                      </MenuItem>
-                    </>
-                  )}
-                </MenuList>
-              </Menu>
-            </FormControl>
+                      <Flex align="center" justify="space-between" w="full">
+                        <HStack spacing={2}>
+                          <Box as={Folder} boxSize={4} color="purple.500" />
+                          <Text>
+                            {categories.find((c) => c.id === categoryId)?.name || t('builder.selectCategory')}
+                          </Text>
+                        </HStack>
+                        <ChevronDown size={14} />
+                      </Flex>
+                    </MenuButton>
+                    <MenuList maxH="300px" overflowY="auto" bg={menuBg}>
+                      {categories.map((category) => (
+                        <MenuItem
+                          key={category.id}
+                          icon={<Box as={Folder} boxSize={4} color="purple.500" />}
+                          onClick={() => setCategoryId(category.id)}
+                          bg={categoryId === category.id ? 'gray.100' : undefined}
+                          _dark={{ bg: categoryId === category.id ? 'gray.600' : undefined }}
+                          _hover={{ bg: menuHoverBg }}
+                        >
+                          {category.name}
+                        </MenuItem>
+                      ))}
+                      {onCreateCategory && (
+                        <>
+                          <MenuDivider />
+                          <MenuItem
+                            icon={<Box as={FolderPlus} boxSize={4} color="green.500" />}
+                            onClick={openCategoryModal}
+                            fontWeight="medium"
+                            color="green.600"
+                            _dark={{ color: 'green.300' }}
+                            _hover={{ bg: menuHoverBg }}
+                          >
+                            {t('builder.createCategory')}
+                          </MenuItem>
+                        </>
+                      )}
+                    </MenuList>
+                  </Menu>
+                </FormControl>
 
-            {/* Workout Type */}
-            <FormControl isRequired>
-              <FormLabel fontSize="sm">{t('builder.workoutType')}</FormLabel>
-              <Menu matchWidth>
-                <MenuButton
-                  as={Button}
-                  variant="unstyled"
-                  maxW="340px"
-                  w="full"
-                  textAlign="left"
-                  fontWeight="normal"
-                  bg="gray.100"
-                  px={3}
-                  h="40px"
-                  borderRadius="15px"
-                  _dark={{ bg: 'navy.800' }}
-                  _hover={{ bg: 'gray.200', _dark: { bg: 'navy.700' } }}
-                >
-                  <Flex align="center" justify="space-between" w="full">
-                    <HStack spacing={2}>
-                      {(() => {
-                        const config = getWorkoutTypeConfig(workoutType);
-                        const Icon = config.icon;
+                {/* Workout Type */}
+                <FormControl isRequired>
+                  <FormLabel fontSize="sm">{t('builder.workoutType')}</FormLabel>
+                  <Menu matchWidth>
+                    <MenuButton
+                      as={Button}
+                      variant="unstyled"
+                      maxW="340px"
+                      w="full"
+                      textAlign="left"
+                      fontWeight="normal"
+                      bg="gray.100"
+                      px={3}
+                      h="40px"
+                      borderRadius="15px"
+                      _dark={{ bg: 'navy.800' }}
+                      _hover={{ bg: 'gray.200', _dark: { bg: 'navy.700' } }}
+                    >
+                      <Flex align="center" justify="space-between" w="full">
+                        <HStack spacing={2}>
+                          {(() => {
+                            const config = getWorkoutTypeConfig(workoutType);
+                            const Icon = config.icon;
+                            return (
+                              <>
+                                <Box as={Icon} boxSize={4} color={`${config.color}.500`} />
+                                <Text>{t(`builder.${config.label}`)}</Text>
+                              </>
+                            );
+                          })()}
+                        </HStack>
+                        <ChevronDown size={14} />
+                      </Flex>
+                    </MenuButton>
+                    <MenuList bg={menuBg}>
+                      {WORKOUT_TYPES.map((type) => {
+                        const Icon = type.icon;
                         return (
-                          <>
-                            <Box as={Icon} boxSize={4} color={`${config.color}.500`} />
-                            <Text>{t(`builder.${config.label}`)}</Text>
-                          </>
+                          <MenuItem
+                            key={type.value}
+                            icon={<Box as={Icon} boxSize={4} color={`${type.color}.500`} />}
+                            onClick={() => setWorkoutType(type.value as WorkoutType)}
+                            bg={workoutType === type.value ? 'gray.100' : undefined}
+                            _dark={{ bg: workoutType === type.value ? 'gray.600' : undefined }}
+                            _hover={{ bg: menuHoverBg }}
+                          >
+                            {t(`builder.${type.label}`)}
+                          </MenuItem>
                         );
-                      })()}
-                    </HStack>
-                    <ChevronDown size={14} />
-                  </Flex>
-                </MenuButton>
-                <MenuList bg={menuBg}>
-                  {WORKOUT_TYPES.map((type) => {
-                    const Icon = type.icon;
-                    return (
-                      <MenuItem
-                        key={type.value}
-                        icon={<Box as={Icon} boxSize={4} color={`${type.color}.500`} />}
-                        onClick={() => setWorkoutType(type.value as WorkoutType)}
-                        bg={workoutType === type.value ? 'gray.100' : undefined}
-                        _dark={{ bg: workoutType === type.value ? 'gray.600' : undefined }}
-                        _hover={{ bg: menuHoverBg }}
-                      >
-                        {t(`builder.${type.label}`)}
-                      </MenuItem>
-                    );
-                  })}
-                </MenuList>
-              </Menu>
-            </FormControl>
+                      })}
+                    </MenuList>
+                  </Menu>
+                </FormControl>
 
-            <FormControl>
-              <FormLabel fontSize="sm">{t('builder.description')}</FormLabel>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t('builder.descriptionPlaceholder')}
-                rows={2}
-              />
-            </FormControl>
-          </VStack>
+                <FormControl>
+                  <FormLabel fontSize="sm">{t('builder.description')}</FormLabel>
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder={t('builder.descriptionPlaceholder')}
+                    rows={2}
+                  />
+                </FormControl>
+              </VStack>
 
-          <Divider />
+              <Divider />
+            </>
+          )}
 
           {/* Steps */}
           <Box>
@@ -800,6 +826,7 @@ function StepEditor({
   t,
 }: StepEditorProps) {
   const IntensityIcon = INTENSITY_ICONS[step.intensityClass];
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.effectAllowed = 'move';
@@ -818,6 +845,7 @@ function StepEditor({
   };
 
   if (step.type === 'repetition') {
+
     return (
       <Box
         bg={bgColor}
@@ -828,7 +856,20 @@ function StepEditor({
         onDragOver={handleDragOver}
         opacity={isDragOver ? 0.7 : 1}
         transition="all 0.15s"
+        position="relative"
       >
+        {/* Left bracket/border visual indicator */}
+        <Box
+          position="absolute"
+          left={2}
+          top={12}
+          bottom={12}
+          width="3px"
+          bg="purple.400"
+          borderRadius="full"
+          opacity={0.6}
+        />
+
         <Flex justify="space-between" align="center" mb={3}>
           <HStack>
             <Box
@@ -840,6 +881,13 @@ function StepEditor({
             >
               <GripVertical size={14} />
             </Box>
+            <IconButton
+              aria-label={isCollapsed ? "Expand" : "Collapse"}
+              icon={isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+              size="xs"
+              variant="ghost"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+            />
             <Badge colorScheme="purple">
               <HStack spacing={1}>
                 <Repeat size={12} />
@@ -884,26 +932,34 @@ function StepEditor({
           </HStack>
         </Flex>
 
-        <VStack spacing={2} align="stretch" pl={6}>
-          {step.nestedSteps?.map((nested) => (
-            <NestedStepEditor
-              key={nested.id}
-              step={nested}
-              borderColor={borderColor}
-              onUpdate={(updates) => onUpdateNested(nested.id, updates)}
-              onDelete={() => onDeleteNested(nested.id)}
-              t={t}
-            />
-          ))}
-          <Button
-            size="xs"
-            variant="ghost"
-            leftIcon={<Plus size={12} />}
-            onClick={onAddNested}
-          >
-            {t('builder.addIntervalStep')}
-          </Button>
-        </VStack>
+        {!isCollapsed && (
+          <VStack spacing={2} align="stretch" pl={6}>
+            {step.nestedSteps?.map((nested) => (
+              <NestedStepEditor
+                key={nested.id}
+                step={nested}
+                borderColor={borderColor}
+                onUpdate={(updates) => onUpdateNested(nested.id, updates)}
+                onDelete={() => onDeleteNested(nested.id)}
+                t={t}
+              />
+            ))}
+            <Button
+              size="xs"
+              variant="ghost"
+              leftIcon={<Plus size={12} />}
+              onClick={onAddNested}
+            >
+              {t('builder.addIntervalStep')}
+            </Button>
+          </VStack>
+        )}
+
+        {isCollapsed && (
+          <Text fontSize="xs" color="gray.500" pl={6}>
+            {step.nestedSteps?.length || 0} step(s) • Click to expand
+          </Text>
+        )}
       </Box>
     );
   }
@@ -1034,6 +1090,94 @@ function StepEditor({
                 % FTP
               </Text>
             </HStack>
+
+            {/* Optional Cadence range */}
+            <HStack spacing={1} flex="1" minW="160px" opacity={step.cadenceMin || step.cadenceMax ? 1 : 0.5}>
+              <Input
+                size="sm"
+                type="number"
+                placeholder="Min"
+                value={step.cadenceMin || ''}
+                min={30}
+                max={200}
+                w="55px"
+                textAlign="center"
+                onChange={(e) => {
+                  const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+                  if (val === undefined || (!isNaN(val) && val >= 30 && val <= 200)) {
+                    onUpdate({ cadenceMin: val });
+                  }
+                }}
+              />
+              <Text fontSize="xs">-</Text>
+              <Input
+                size="sm"
+                type="number"
+                placeholder="Max"
+                value={step.cadenceMax || ''}
+                min={30}
+                max={200}
+                w="55px"
+                textAlign="center"
+                onChange={(e) => {
+                  const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+                  if (val === undefined || (!isNaN(val) && val >= 30 && val <= 200)) {
+                    onUpdate({ cadenceMax: val });
+                  }
+                }}
+              />
+              <Text fontSize="xs" color="gray.500" whiteSpace="nowrap">
+                RPM
+              </Text>
+            </HStack>
+
+            {/* Optional HR range */}
+            <HStack spacing={1} flex="1" minW="160px" opacity={step.hrMin || step.hrMax ? 1 : 0.5}>
+              <Input
+                size="sm"
+                type="number"
+                placeholder="Min"
+                value={step.hrMin || ''}
+                min={step.hrType === 'percent' ? 50 : 50}
+                max={step.hrType === 'percent' ? 100 : 220}
+                w="55px"
+                textAlign="center"
+                onChange={(e) => {
+                  const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+                  const max = step.hrType === 'percent' ? 100 : 220;
+                  if (val === undefined || (!isNaN(val) && val >= 50 && val <= max)) {
+                    onUpdate({ hrMin: val });
+                  }
+                }}
+              />
+              <Text fontSize="xs">-</Text>
+              <Input
+                size="sm"
+                type="number"
+                placeholder="Max"
+                value={step.hrMax || ''}
+                min={step.hrType === 'percent' ? 50 : 50}
+                max={step.hrType === 'percent' ? 100 : 220}
+                w="55px"
+                textAlign="center"
+                onChange={(e) => {
+                  const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+                  const max = step.hrType === 'percent' ? 100 : 220;
+                  if (val === undefined || (!isNaN(val) && val >= 50 && val <= max)) {
+                    onUpdate({ hrMax: val });
+                  }
+                }}
+              />
+              <Select
+                size="sm"
+                value={step.hrType || 'bpm'}
+                w="60px"
+                onChange={(e) => onUpdate({ hrType: e.target.value as 'bpm' | 'percent' })}
+              >
+                <option value="bpm">BPM</option>
+                <option value="percent">%</option>
+              </Select>
+            </HStack>
           </Flex>
         </VStack>
       </Box>
@@ -1055,7 +1199,7 @@ function StepEditor({
       {/* Grid layout for consistent alignment */}
       <Box
         display="grid"
-        gridTemplateColumns="20px 130px 1fr 160px 210px auto"
+        gridTemplateColumns="20px 130px 180px 160px 210px 210px 210px auto"
         gap={3}
         alignItems="center"
       >
@@ -1087,6 +1231,7 @@ function StepEditor({
           size="sm"
           placeholder={t('builder.stepName')}
           value={step.name}
+          maxW="200px"
           onChange={(e) => onUpdate({ name: e.target.value })}
         />
 
@@ -1149,6 +1294,94 @@ function StepEditor({
           <Text fontSize="xs" color="gray.500" whiteSpace="nowrap">
             % FTP
           </Text>
+        </HStack>
+
+        {/* Optional Cadence range */}
+        <HStack spacing={1} opacity={step.cadenceMin || step.cadenceMax ? 1 : 0.5}>
+          <Input
+            size="sm"
+            type="number"
+            placeholder="Min"
+            value={step.cadenceMin || ''}
+            min={30}
+            max={200}
+            w="65px"
+            textAlign="center"
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+              if (val === undefined || (!isNaN(val) && val >= 30 && val <= 200)) {
+                onUpdate({ cadenceMin: val });
+              }
+            }}
+          />
+          <Text fontSize="xs">-</Text>
+          <Input
+            size="sm"
+            type="number"
+            placeholder="Max"
+            value={step.cadenceMax || ''}
+            min={30}
+            max={200}
+            w="65px"
+            textAlign="center"
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+              if (val === undefined || (!isNaN(val) && val >= 30 && val <= 200)) {
+                onUpdate({ cadenceMax: val });
+              }
+            }}
+          />
+          <Text fontSize="xs" color="gray.500" whiteSpace="nowrap">
+            RPM
+          </Text>
+        </HStack>
+
+        {/* Optional HR range */}
+        <HStack spacing={1} opacity={step.hrMin || step.hrMax ? 1 : 0.5}>
+          <Input
+            size="sm"
+            type="number"
+            placeholder="Min"
+            value={step.hrMin || ''}
+            min={step.hrType === 'percent' ? 50 : 50}
+            max={step.hrType === 'percent' ? 100 : 220}
+            w="65px"
+            textAlign="center"
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+              const max = step.hrType === 'percent' ? 100 : 220;
+              if (val === undefined || (!isNaN(val) && val >= 50 && val <= max)) {
+                onUpdate({ hrMin: val });
+              }
+            }}
+          />
+          <Text fontSize="xs">-</Text>
+          <Input
+            size="sm"
+            type="number"
+            placeholder="Max"
+            value={step.hrMax || ''}
+            min={step.hrType === 'percent' ? 50 : 50}
+            max={step.hrType === 'percent' ? 100 : 220}
+            w="65px"
+            textAlign="center"
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+              const max = step.hrType === 'percent' ? 100 : 220;
+              if (val === undefined || (!isNaN(val) && val >= 50 && val <= max)) {
+                onUpdate({ hrMax: val });
+              }
+            }}
+          />
+          <Select
+            size="sm"
+            value={step.hrType || 'bpm'}
+            w="65px"
+            onChange={(e) => onUpdate({ hrType: e.target.value as 'bpm' | 'percent' })}
+          >
+            <option value="bpm">BPM</option>
+            <option value="percent">%</option>
+          </Select>
         </HStack>
 
         {/* Action buttons */}
@@ -1265,6 +1498,98 @@ function NestedStepEditor({ step, borderColor, onUpdate, onDelete, t }: NestedSt
           %
         </Text>
       </HStack>
+
+      {/* Optional Cadence range (compact) */}
+      {(step.cadenceMin || step.cadenceMax) && (
+        <HStack spacing={1}>
+          <Input
+            size="xs"
+            type="number"
+            placeholder="Min"
+            value={step.cadenceMin || ''}
+            min={30}
+            max={200}
+            w="45px"
+            textAlign="center"
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+              if (val === undefined || (!isNaN(val) && val >= 30 && val <= 200)) {
+                onUpdate({ cadenceMin: val });
+              }
+            }}
+          />
+          <Text fontSize="xs">-</Text>
+          <Input
+            size="xs"
+            type="number"
+            placeholder="Max"
+            value={step.cadenceMax || ''}
+            min={30}
+            max={200}
+            w="45px"
+            textAlign="center"
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+              if (val === undefined || (!isNaN(val) && val >= 30 && val <= 200)) {
+                onUpdate({ cadenceMax: val });
+              }
+            }}
+          />
+          <Text fontSize="2xs" color="gray.500">
+            RPM
+          </Text>
+        </HStack>
+      )}
+
+      {/* Optional HR range (compact) */}
+      {(step.hrMin || step.hrMax) && (
+        <HStack spacing={1}>
+          <Input
+            size="xs"
+            type="number"
+            placeholder="Min"
+            value={step.hrMin || ''}
+            min={step.hrType === 'percent' ? 50 : 50}
+            max={step.hrType === 'percent' ? 100 : 220}
+            w="45px"
+            textAlign="center"
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+              const max = step.hrType === 'percent' ? 100 : 220;
+              if (val === undefined || (!isNaN(val) && val >= 50 && val <= max)) {
+                onUpdate({ hrMin: val });
+              }
+            }}
+          />
+          <Text fontSize="xs">-</Text>
+          <Input
+            size="xs"
+            type="number"
+            placeholder="Max"
+            value={step.hrMax || ''}
+            min={step.hrType === 'percent' ? 50 : 50}
+            max={step.hrType === 'percent' ? 100 : 220}
+            w="45px"
+            textAlign="center"
+            onChange={(e) => {
+              const val = e.target.value ? parseInt(e.target.value, 10) : undefined;
+              const max = step.hrType === 'percent' ? 100 : 220;
+              if (val === undefined || (!isNaN(val) && val >= 50 && val <= max)) {
+                onUpdate({ hrMax: val });
+              }
+            }}
+          />
+          <Select
+            size="xs"
+            value={step.hrType || 'bpm'}
+            w="55px"
+            onChange={(e) => onUpdate({ hrType: e.target.value as 'bpm' | 'percent' })}
+          >
+            <option value="bpm">BPM</option>
+            <option value="percent">%</option>
+          </Select>
+        </HStack>
+      )}
 
       <IconButton
         aria-label={t('common.delete')}

@@ -2,6 +2,7 @@ import { Box, Flex, Text, HStack, VStack, Icon, chakra, useColorModeValue } from
 import { motion, isValidMotionProp } from 'framer-motion';
 import { ChevronRight, Clock, Zap, Bike, Footprints, Dumbbell, Calendar } from 'lucide-react';
 import { format, isToday, isTomorrow } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import type { AthleteScheduledWorkout } from '../../../types/calendar';
 
 const MotionBox = chakra(motion.div, {
@@ -14,10 +15,10 @@ interface UpcomingWorkoutsProps {
   onViewAll?: () => void;
 }
 
-function formatWorkoutDate(dateString: string): string {
+function formatWorkoutDate(dateString: string, t: (key: string) => string): string {
   const date = new Date(dateString);
-  if (isToday(date)) return 'Today';
-  if (isTomorrow(date)) return 'Tomorrow';
+  if (isToday(date)) return t('common.today');
+  if (isTomorrow(date)) return t('common.tomorrow');
   return format(date, 'EEE');
 }
 
@@ -47,6 +48,8 @@ export function UpcomingWorkouts({
   onWorkoutClick,
   onViewAll,
 }: UpcomingWorkoutsProps) {
+  const { t } = useTranslation();
+
   // Light/dark mode colors - clean and minimal
   const cardBg = useColorModeValue('white', 'dark.700');
   const cardBorder = useColorModeValue('gray.100', 'dark.500');
@@ -84,7 +87,7 @@ export function UpcomingWorkouts({
         >
           <Icon as={Calendar} boxSize={10} color={mutedColor} mb={3} />
           <Text color={labelColor} fontSize="sm">
-            No upcoming workouts this week
+            {t('dashboard.noUpcomingWorkouts')}
           </Text>
         </Box>
       </MotionBox>
@@ -116,7 +119,7 @@ export function UpcomingWorkouts({
             letterSpacing="wider"
             color={labelColor}
           >
-            Coming Up
+            {t('dashboard.comingUp')}
           </Text>
           {onViewAll && (
             <Text
@@ -127,7 +130,7 @@ export function UpcomingWorkouts({
               onClick={onViewAll}
               _hover={{ textDecoration: 'underline' }}
             >
-              View all
+              {t('dashboard.viewAll')}
             </Text>
           )}
         </Flex>
@@ -156,6 +159,7 @@ export function UpcomingWorkouts({
               cardBorder={cardBorder}
               titleColor={titleColor}
               labelColor={labelColor}
+              t={t}
             />
           ))}
         </Flex>
@@ -180,6 +184,7 @@ export function UpcomingWorkouts({
               dateBadgeBg={dateBadgeBg}
               dateBadgeText={dateBadgeText}
               dateBadgeDateText={dateBadgeDateText}
+              t={t}
             />
           ))}
         </VStack>
@@ -196,6 +201,7 @@ interface WorkoutCardProps {
   cardBorder?: string;
   titleColor?: string;
   labelColor?: string;
+  t: (key: string) => string;
 }
 
 interface CompactWorkoutCardProps extends WorkoutCardProps {
@@ -219,12 +225,15 @@ function CompactWorkoutCard({
   dateBadgeBg = 'dark.700',
   dateBadgeText = 'gray.400',
   dateBadgeDateText = 'white',
+  t,
 }: CompactWorkoutCardProps) {
   const WorkoutIcon = getWorkoutIcon(workout.workout.attributes.workoutType);
   const duration = workout.workout.attributes.totalTimePlanned || 0;
   const tss = workout.workout.attributes.tssPlanned || 0;
-  const dateLabel = formatWorkoutDate(workout.date);
-  const isHighlight = dateLabel === 'Today' || dateLabel === 'Tomorrow';
+  const dateLabel = formatWorkoutDate(workout.date, t);
+  const today = t('common.today');
+  const tomorrow = t('common.tomorrow');
+  const isHighlight = dateLabel === today || dateLabel === tomorrow;
 
   return (
     <MotionBox
@@ -261,7 +270,7 @@ function CompactWorkoutCard({
             color={isHighlight ? 'dark.800' : dateBadgeText}
             textTransform="uppercase"
           >
-            {dateLabel === 'Today' || dateLabel === 'Tomorrow'
+            {dateLabel === today || dateLabel === tomorrow
               ? dateLabel.slice(0, 3)
               : format(new Date(workout.date), 'EEE')}
           </Text>
@@ -314,12 +323,15 @@ function WorkoutCard({
   cardBorder = 'dark.500',
   titleColor = 'white',
   labelColor = 'gray.400',
+  t,
 }: WorkoutCardProps) {
   const WorkoutIcon = getWorkoutIcon(workout.workout.attributes.workoutType);
   const duration = workout.workout.attributes.totalTimePlanned || 0;
   const tss = workout.workout.attributes.tssPlanned || 0;
-  const dateLabel = formatWorkoutDate(workout.date);
-  const isHighlight = dateLabel === 'Today' || dateLabel === 'Tomorrow';
+  const dateLabel = formatWorkoutDate(workout.date, t);
+  const today = t('common.today');
+  const tomorrow = t('common.tomorrow');
+  const isHighlight = dateLabel === today || dateLabel === tomorrow;
 
   return (
     <MotionBox

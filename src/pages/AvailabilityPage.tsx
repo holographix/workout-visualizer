@@ -26,7 +26,7 @@ import {
   Flex,
   Tooltip,
 } from '@chakra-ui/react';
-import { Save, Settings, Sun, Moon, Monitor, Palette, RefreshCw, Globe, Target, Calendar, User } from 'lucide-react';
+import { Save, Settings, Sun, Moon, Monitor, Palette, RefreshCw, Globe, Target, Calendar, User, Zap } from 'lucide-react';
 import { supportedLanguages } from '../i18n';
 
 // Key for storing color mode preference (light/dark/system)
@@ -36,6 +36,7 @@ type ColorModePreference = 'light' | 'dark' | 'system';
 import { Header } from '../components/organisms';
 import { WeeklyAvailabilityEditor, GoalEditor, UnavailableDatesEditor, AvailabilityNotesEditor } from '../components/organisms/Availability';
 import { ProfileSettings } from '../components/organisms/Settings';
+import { ZonesEditor } from '../components/organisms/Zones';
 import type { WeeklyAvailability, Goal, UnavailableDate } from '../types/availability';
 import { createDefaultAvailability } from '../types/availability';
 import { useUser } from '../contexts/UserContext';
@@ -514,6 +515,20 @@ export function AvailabilityPage() {
                   )}
                 </Tab>
               )}
+              {!isCoach && (
+                <Tab px={{ base: 3, md: 4 }} py={2}>
+                  {isMobile ? (
+                    <Tooltip label={t('settings.tabs.zones')}>
+                      <Icon as={Zap} boxSize={4} />
+                    </Tooltip>
+                  ) : (
+                    <HStack spacing={2}>
+                      <Icon as={Zap} boxSize={4} />
+                      <Text>{t('settings.tabs.zones')}</Text>
+                    </HStack>
+                  )}
+                </Tab>
+              )}
             </TabList>
           </Box>
 
@@ -671,6 +686,13 @@ export function AvailabilityPage() {
                     />
                   </SimpleGrid>
                 </VStack>
+              </TabPanel>
+            )}
+
+            {/* Zones Tab - only shown for athletes */}
+            {!isCoach && (
+              <TabPanel p={0}>
+                {user?.id && <ZonesEditor athleteId={user.id} onSave={loadData} />}
               </TabPanel>
             )}
           </TabPanels>

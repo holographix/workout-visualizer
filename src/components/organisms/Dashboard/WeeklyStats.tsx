@@ -1,5 +1,6 @@
 import { Box, Text, chakra, useColorModeValue } from '@chakra-ui/react';
 import { motion, isValidMotionProp } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ProgressRing } from './ProgressRing';
 
 const MotionBox = chakra(motion.div, {
@@ -23,6 +24,8 @@ export function WeeklyStats({
   completedHours,
   plannedHours,
 }: WeeklyStatsProps) {
+  const { t } = useTranslation();
+
   const workoutProgress = totalWorkouts > 0 ? (completedWorkouts / totalWorkouts) * 100 : 0;
   const tssProgress = plannedTSS > 0 ? (completedTSS / plannedTSS) * 100 : 0;
   const hoursProgress = plannedHours > 0 ? (completedHours / plannedHours) * 100 : 0;
@@ -58,7 +61,7 @@ export function WeeklyStats({
           color={labelColor}
           mb={3}
         >
-          This Week
+          {t('dashboard.thisWeek')}
         </Text>
 
         <Box
@@ -77,7 +80,7 @@ export function WeeklyStats({
             trackColor={trackColor}
             valueColor={valueColor}
             labelColor={labelColor}
-            label="Workouts"
+            label={t('dashboard.workouts')}
             value={`${completedWorkouts}/${totalWorkouts}`}
           />
           <ProgressRing
@@ -100,7 +103,7 @@ export function WeeklyStats({
             trackColor={trackColor}
             valueColor={valueColor}
             labelColor={labelColor}
-            label="Hours"
+            label={t('dashboard.hours')}
             value={completedHours.toFixed(1)}
             subValue={`of ${plannedHours.toFixed(1)}`}
           />
@@ -111,22 +114,12 @@ export function WeeklyStats({
           <Text fontSize="sm" color={labelColor}>
             {workoutProgress >= 100 ? (
               <Text as="span" color="green.400" fontWeight="600">
-                Week complete! Great work!
+                {t('dashboard.weekComplete')}
               </Text>
             ) : workoutProgress >= 50 ? (
-              <>
-                <Text as="span" color="brand.400" fontWeight="600">
-                  {Math.round(workoutProgress)}%
-                </Text>{' '}
-                of your week done
-              </>
+              t('dashboard.weekProgress', { percent: Math.round(workoutProgress) })
             ) : (
-              <>
-                <Text as="span" color="brand.400" fontWeight="600">
-                  {totalWorkouts - completedWorkouts}
-                </Text>{' '}
-                workouts remaining
-              </>
+              t('dashboard.workoutsRemaining', { count: totalWorkouts - completedWorkouts })
             )}
           </Text>
         </Box>

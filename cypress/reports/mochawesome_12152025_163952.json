@@ -1,0 +1,260 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 8,
+    "passes": 8,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-12-15T15:39:25.255Z",
+    "end": "2025-12-15T15:39:52.680Z",
+    "duration": 27425,
+    "testsRegistered": 8,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "da2d0059-aee6-4cc2-96c9-6301e38aaa25",
+      "title": "",
+      "fullFile": "cypress/e2e/navigation.cy.ts",
+      "file": "cypress/e2e/navigation.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "e8d7e137-0f5f-4fcf-9e2a-2a97cdcdbd19",
+          "title": "Navigation",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should display the header with logo and navigation",
+              "fullTitle": "Navigation should display the header with logo and navigation",
+              "timedOut": null,
+              "duration": 12386,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Dismiss any joyride tour overlay if present\ncy.dismissTour();\n// Logo should be visible\ncy.get('header').should('be.visible');\ncy.contains('RidePro').should('be.visible');\n// Navigation items should be visible on desktop (use force: true in case of any overlay)\ncy.getByTour('nav-dashboard').should('exist');\ncy.getByTour('nav-calendar').should('exist');\ncy.getByTour('nav-settings').should('exist');",
+              "err": {},
+              "uuid": "482106c1-3ff2-4010-8571-6e28dbdae0ca",
+              "parentUUID": "e8d7e137-0f5f-4fcf-9e2a-2a97cdcdbd19",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to Dashboard",
+              "fullTitle": "Navigation should navigate to Dashboard",
+              "timedOut": null,
+              "duration": 1775,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.getByTour('nav-dashboard').click();\ncy.url().should('match', /\\/(dashboard)?$/);",
+              "err": {},
+              "uuid": "94e726b2-411e-42cd-bb66-979c996f1f3f",
+              "parentUUID": "e8d7e137-0f5f-4fcf-9e2a-2a97cdcdbd19",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to Calendar",
+              "fullTitle": "Navigation should navigate to Calendar",
+              "timedOut": null,
+              "duration": 2098,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.getByTour('nav-calendar').click();\ncy.url().should('include', '/calendar');",
+              "err": {},
+              "uuid": "1f63df38-8464-46d7-85ce-8e2b21865fb0",
+              "parentUUID": "e8d7e137-0f5f-4fcf-9e2a-2a97cdcdbd19",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to Settings",
+              "fullTitle": "Navigation should navigate to Settings",
+              "timedOut": null,
+              "duration": 1895,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.getByTour('nav-settings').click();\ncy.url().should('include', '/settings');",
+              "err": {},
+              "uuid": "370b609e-4781-4472-b122-d715bcef0117",
+              "parentUUID": "e8d7e137-0f5f-4fcf-9e2a-2a97cdcdbd19",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should toggle color mode",
+              "fullTitle": "Navigation should toggle color mode",
+              "timedOut": null,
+              "duration": 1881,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Find and click the color mode toggle (aria-label contains \"dark mode\" or \"light mode\")\ncy.get('button[aria-label*=\"mode\"]').first().click();\n// Verify the mode changed - Chakra uses class on html or body\ncy.get('html').should('satisfy', function ($html) {\n    var className = $html.attr('class') || '';\n    var style = $html.attr('style') || '';\n    // Chakra toggles between 'chakra-ui-light' and 'chakra-ui-dark' classes\n    // or uses color-scheme in style\n    return className.includes('chakra-ui') || style.includes('color-scheme');\n});",
+              "err": {},
+              "uuid": "e2318136-da05-4a07-b630-2c78ab39f7a1",
+              "parentUUID": "e8d7e137-0f5f-4fcf-9e2a-2a97cdcdbd19",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [
+            {
+              "uuid": "d66ce244-ad54-4b75-a56b-5c9f54abdcd9",
+              "title": "Mobile Navigation",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "should show mobile menu button",
+                  "fullTitle": "Navigation Mobile Navigation should show mobile menu button",
+                  "timedOut": null,
+                  "duration": 1638,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('button[aria-label*=\"menu\"]').should('be.visible');",
+                  "err": {},
+                  "uuid": "28fd9f13-e73e-4dae-ab26-58469f67ae4e",
+                  "parentUUID": "d66ce244-ad54-4b75-a56b-5c9f54abdcd9",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should open and close mobile drawer",
+                  "fullTitle": "Navigation Mobile Navigation should open and close mobile drawer",
+                  "timedOut": null,
+                  "duration": 2657,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "// Open drawer\ncy.get('button[aria-label*=\"menu\"]').click();\ncy.get('[role=\"dialog\"]').should('be.visible');\n// Close drawer\ncy.get('button[aria-label=\"Close\"]').click();\ncy.get('[role=\"dialog\"]').should('not.exist');",
+                  "err": {},
+                  "uuid": "e1219b4d-248f-406a-a425-758cc27faaac",
+                  "parentUUID": "d66ce244-ad54-4b75-a56b-5c9f54abdcd9",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "should navigate from mobile menu",
+                  "fullTitle": "Navigation Mobile Navigation should navigate from mobile menu",
+                  "timedOut": null,
+                  "duration": 2789,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.get('button[aria-label*=\"menu\"]').click();\ncy.contains('Calendar').click();\ncy.url().should('include', '/calendar');",
+                  "err": {},
+                  "uuid": "20041b42-c83a-4879-ba65-c93463c3f8c3",
+                  "parentUUID": "d66ce244-ad54-4b75-a56b-5c9f54abdcd9",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "28fd9f13-e73e-4dae-ab26-58469f67ae4e",
+                "e1219b4d-248f-406a-a425-758cc27faaac",
+                "20041b42-c83a-4879-ba65-c93463c3f8c3"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 7084,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [
+            "482106c1-3ff2-4010-8571-6e28dbdae0ca",
+            "94e726b2-411e-42cd-bb66-979c996f1f3f",
+            "1f63df38-8464-46d7-85ce-8e2b21865fb0",
+            "370b609e-4781-4472-b122-d715bcef0117",
+            "e2318136-da05-4a07-b630-2c78ab39f7a1"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 20035,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "6.3.2"
+    }
+  }
+}

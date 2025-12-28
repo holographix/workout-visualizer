@@ -25,6 +25,12 @@ export interface ScheduledWorkout {
   notes?: string; // Coach notes when scheduling
   completed: boolean;
   completedAt?: string;
+  // Workout structure overrides (coach modifications for specific athlete/day)
+  structureOverride?: any; // Modified workout structure
+  durationOverride?: number; // Modified duration in seconds
+  tssOverride?: number; // Recalculated TSS
+  ifOverride?: number; // Recalculated IF
+  isModified?: boolean; // Flag indicating workout has been customized
   // Actual results (filled by athlete after completion)
   actualDurationSeconds?: number;
   actualDistanceKm?: number;

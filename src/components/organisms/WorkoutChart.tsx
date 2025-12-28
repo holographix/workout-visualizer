@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Group } from '@visx/group';
 import { Bar } from '@visx/shape';
 import { scaleLinear } from '@visx/scale';
@@ -43,6 +44,7 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({
     onSegmentClick,
     selectedIndex
 }) => {
+    const { t } = useTranslation();
     const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
 
     const xMax = width - MARGIN.left - MARGIN.right;
@@ -169,6 +171,37 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({
                 </defs>
 
                 <Group left={MARGIN.left} top={MARGIN.top}>
+                    {/* Group background boxes for repetitions */}
+                    {(() => {
+                        const groups: { [key: number]: { minX: number; maxX: number } } = {};
+                        workout.segments.forEach((seg, i) => {
+                            if (seg.group !== undefined) {
+                                const { x, barWidth } = barPositions[i];
+                                if (!groups[seg.group]) {
+                                    groups[seg.group] = { minX: x, maxX: x + barWidth };
+                                } else {
+                                    groups[seg.group].minX = Math.min(groups[seg.group].minX, x);
+                                    groups[seg.group].maxX = Math.max(groups[seg.group].maxX, x + barWidth);
+                                }
+                            }
+                        });
+                        return Object.entries(groups).map(([groupId, bounds]) => (
+                            <rect
+                                key={`group-${groupId}`}
+                                x={bounds.minX - 2}
+                                y={-5}
+                                width={bounds.maxX - bounds.minX + 4}
+                                height={yMax + 10}
+                                fill="rgba(147, 51, 234, 0.08)"
+                                stroke="rgba(147, 51, 234, 0.3)"
+                                strokeWidth={1}
+                                strokeDasharray="4,2"
+                                rx={4}
+                                style={{ pointerEvents: 'none' }}
+                            />
+                        ));
+                    })()}
+
                     {/* Background grid lines */}
                     {yScale.ticks(5).map((tick, i) => (
                         <line
@@ -346,13 +379,13 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({
                         </div>
                         <div className="text-gray-400 text-xs space-y-0.5">
                             <div className="flex justify-between gap-4">
-                                <span>Duration:</span>
+                                <span>{t('workout.duration')}:</span>
                                 <span className="text-white font-mono">
                                     {formatDuration(tooltipData.segment.duration)}
                                 </span>
                             </div>
                             <div className="flex justify-between gap-4">
-                                <span>Target:</span>
+                                <span>{t('workout.target')}:</span>
                                 <span className="text-white font-mono">
                                     {tooltipData.segment.targetMin === tooltipData.segment.targetMax
                                         ? `${tooltipData.segment.targetMax}%`
@@ -361,12 +394,38 @@ export const WorkoutChart: React.FC<WorkoutChartProps> = ({
                                     <span className="text-gray-500 ml-1">FTP</span>
                                 </span>
                             </div>
+                            {(tooltipData.segment.cadenceMin !== undefined || tooltipData.segment.cadenceMax !== undefined) && (
+                                <div className="flex justify-between gap-4">
+                                    <span>Cadence:</span>
+                                    <span className="text-white font-mono">
+                                        {tooltipData.segment.cadenceMin === tooltipData.segment.cadenceMax
+                                            ? `${tooltipData.segment.cadenceMax}`
+                                            : `${tooltipData.segment.cadenceMin ?? ''}-${tooltipData.segment.cadenceMax ?? ''}`
+                                        }
+                                        <span className="text-gray-500 ml-1">RPM</span>
+                                    </span>
+                                </div>
+                            )}
+                            {(tooltipData.segment.hrMin !== undefined || tooltipData.segment.hrMax !== undefined) && (
+                                <div className="flex justify-between gap-4">
+                                    <span>HR:</span>
+                                    <span className="text-white font-mono">
+                                        {tooltipData.segment.hrMin === tooltipData.segment.hrMax
+                                            ? `${tooltipData.segment.hrMax}`
+                                            : `${tooltipData.segment.hrMin ?? ''}-${tooltipData.segment.hrMax ?? ''}`
+                                        }
+                                        <span className="text-gray-500 ml-1">
+                                            {tooltipData.segment.hrType === 'percent' ? '%' : 'BPM'}
+                                        </span>
+                                    </span>
+                                </div>
+                            )}
                             {tooltipData.segment.openDuration && (
                                 <div className="text-yellow-400 mt-1 flex items-center gap-1">
                                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                                     </svg>
-                                    Open duration
+                                    {t('workout.openDuration')}
                                 </div>
                             )}
                         </div>

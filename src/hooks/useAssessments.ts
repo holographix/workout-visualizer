@@ -1,14 +1,18 @@
 /**
  * useAssessments Hook
- * Manages fitness assessment tests and API calls
+ * Manages 2-day fitness assessment tests and API calls
+ *
+ * Day 1: 1'/2'/5' efforts on 6-7% gradient
+ * Day 2: 5" sprint + 12' climb on 6-7% gradient
+ * Athletes have 15 days to complete Day 2 after Day 1
  */
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../services/api';
 import type {
   Assessment,
-  AssessmentType,
-  Sprint12MinData,
-  Power125MinData,
+  Day1Data,
+  Day2Data,
+  OngoingTest,
 } from '../types/assessment';
 
 interface UseAssessmentsOptions {
@@ -18,11 +22,12 @@ interface UseAssessmentsOptions {
 export function useAssessments({ athleteId }: UseAssessmentsOptions = {}) {
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [latestAssessment, setLatestAssessment] = useState<Assessment | null>(null);
+  const [ongoingTest, setOngoingTest] = useState<OngoingTest | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch all assessments for athlete
+  // Fetch all completed assessments for athlete
   const fetchAssessments = useCallback(async () => {
     if (!athleteId) return;
 
@@ -38,16 +43,15 @@ export function useAssessments({ athleteId }: UseAssessmentsOptions = {}) {
     }
   }, [athleteId]);
 
-  // Fetch latest assessment
-  const fetchLatestAssessment = useCallback(async (testType?: AssessmentType) => {
+  // Fetch latest completed assessment
+  const fetchLatestAssessment = useCallback(async () => {
     if (!athleteId) return;
 
     setIsLoading(true);
     setError(null);
     try {
-      const params = testType ? `?type=${testType}` : '';
       const data = await api.get<Assessment | null>(
-        `/api/assessments/athlete/${athleteId}/latest${params}`
+        `/api/assessments/athlete/${athleteId}/latest`
       );
       setLatestAssessment(data);
     } catch (err) {
@@ -57,117 +61,167 @@ export function useAssessments({ athleteId }: UseAssessmentsOptions = {}) {
     }
   }, [athleteId]);
 
+  // Fetch ongoing test (if any)
+  const fetchOngoingTest = useCallback(async () => {
+    if (!athleteId) return;
+
+    setError(null);
+    try {
+      const data = await api.get<OngoingTest | null>(
+        `/api/assessments/athlete/${athleteId}/ongoing`
+      );
+      setOngoingTest(data);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch ongoing test'));
+    }
+  }, [athleteId]);
+
   // Auto-fetch on mount
   useEffect(() => {
     if (athleteId) {
       fetchAssessments();
       fetchLatestAssessment();
+      fetchOngoingTest();
     }
-  }, [athleteId, fetchAssessments, fetchLatestAssessment]);
+  }, [athleteId, fetchAssessments, fetchLatestAssessment, fetchOngoingTest]);
 
-  // Create Sprint + 12min assessment
-  const createSprint12MinAssessment = useCallback(
-    async (data: Sprint12MinData) => {
+  // ============================================
+  // 2-DAY ASSESSMENT WORKFLOW METHODS
+  // ============================================
+
+  /**
+   * Start a new 2-day assessment test
+   * Creates assessment with status DAY1_PENDING
+   */
+  const startTest = useCallback(
+    async () => {
       if (!athleteId) throw new Error('No athlete ID');
 
       setIsSaving(true);
       try {
-        const result = await api.post<Assessment>('/api/assessments/sprint-12min', {
+        const result = await api.post<Assessment>('/api/assessments/start', {
           athleteId,
-          ...data,
         });
-        await fetchAssessments();
-        await fetchLatestAssessment();
+        await fetchOngoingTest();
         return result;
       } finally {
         setIsSaving(false);
       }
     },
-    [athleteId, fetchAssessments, fetchLatestAssessment]
+    [athleteId, fetchOngoingTest]
   );
 
-  // Create 1/2/5min assessment
-  const createPower125MinAssessment = useCallback(
-    async (data: Power125MinData) => {
-      if (!athleteId) throw new Error('No athlete ID');
-
+  /**
+   * Complete Day 1 of the assessment (1'/2'/5' efforts)
+   * Transitions from DAY1_PENDING → DAY1_COMPLETED
+   * Sets expiration date (15 days from now)
+   */
+  const completeDay1 = useCallback(
+    async (assessmentId: string, data: Day1Data) => {
       setIsSaving(true);
       try {
-        const result = await api.post<Assessment>('/api/assessments/power-125min', {
-          athleteId,
-          ...data,
-        });
-        await fetchAssessments();
-        await fetchLatestAssessment();
+        const result = await api.post<Assessment>(
+          `/api/assessments/${assessmentId}/complete-day1`,
+          data
+        );
+        await fetchOngoingTest();
         return result;
       } finally {
         setIsSaving(false);
       }
     },
-    [athleteId, fetchAssessments, fetchLatestAssessment]
+    [fetchOngoingTest]
   );
 
-  // Update assessment
-  const updateAssessment = useCallback(
-    async (
-      id: string,
-      data: Partial<Sprint12MinData & Power125MinData>
-    ) => {
+  /**
+   * Start Day 2 of the assessment
+   * Validates Day 1 is complete and test hasn't expired
+   * Transitions from DAY1_COMPLETED → DAY2_PENDING
+   */
+  const startDay2 = useCallback(
+    async (assessmentId: string) => {
       setIsSaving(true);
       try {
-        const result = await api.put<Assessment>(`/api/assessments/${id}`, data);
-        await fetchAssessments();
-        await fetchLatestAssessment();
+        const result = await api.post<Assessment>(
+          `/api/assessments/${assessmentId}/start-day2`
+        );
+        await fetchOngoingTest();
         return result;
       } finally {
         setIsSaving(false);
       }
     },
-    [fetchAssessments, fetchLatestAssessment]
+    [fetchOngoingTest]
   );
 
-  // Delete assessment
+  /**
+   * Complete Day 2 of the assessment (5" sprint + 12' climb)
+   * Transitions from DAY2_PENDING → COMPLETED
+   * Calculates FTP and maxHR, auto-updates athlete's profile
+   */
+  const completeDay2 = useCallback(
+    async (assessmentId: string, data: Day2Data) => {
+      setIsSaving(true);
+      try {
+        const result = await api.post<Assessment>(
+          `/api/assessments/${assessmentId}/complete-day2`,
+          data
+        );
+        // Refresh all assessment data after completion
+        await Promise.all([
+          fetchAssessments(),
+          fetchLatestAssessment(),
+          fetchOngoingTest(),
+        ]);
+        return result;
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [fetchAssessments, fetchLatestAssessment, fetchOngoingTest]
+  );
+
+  /**
+   * Delete an assessment
+   * Only allowed for tests in progress (not completed)
+   */
   const deleteAssessment = useCallback(
     async (id: string) => {
       setIsSaving(true);
       try {
         await api.delete(`/api/assessments/${id}`);
-        await fetchAssessments();
-        await fetchLatestAssessment();
+        await Promise.all([
+          fetchAssessments(),
+          fetchLatestAssessment(),
+          fetchOngoingTest(),
+        ]);
       } finally {
         setIsSaving(false);
       }
     },
-    [fetchAssessments, fetchLatestAssessment]
+    [fetchAssessments, fetchLatestAssessment, fetchOngoingTest]
   );
-
-  // Update athlete FTP based on latest assessment
-  const updateAthleteFTP = useCallback(async () => {
-    if (!athleteId) throw new Error('No athlete ID');
-
-    try {
-      await api.post(`/api/assessments/athlete/${athleteId}/update-ftp`);
-    } catch (err) {
-      console.error('Failed to update FTP:', err);
-    }
-  }, [athleteId]);
 
   return {
     // State
     assessments,
     latestAssessment,
+    ongoingTest,
     isLoading,
     isSaving,
     error,
+
     // Data fetch
     fetchAssessments,
     fetchLatestAssessment,
-    // CRUD operations
-    createSprint12MinAssessment,
-    createPower125MinAssessment,
-    updateAssessment,
+    fetchOngoingTest,
+
+    // 2-day workflow
+    startTest,
+    completeDay1,
+    startDay2,
+    completeDay2,
     deleteAssessment,
-    updateAthleteFTP,
   };
 }
 
@@ -193,8 +247,7 @@ export interface AthleteAssessmentStatus {
   isNewAssessment: boolean;
   latestAssessment: {
     id: string;
-    testType: AssessmentType;
-    testDate: string;
+    day2CompletedAt: string;
     estimatedFTP: number | null;
   } | null;
 }
@@ -258,24 +311,21 @@ export interface AthleteStatsData {
     daysSinceTest: number | null;
     latestAssessment: {
       id: string;
-      testType: AssessmentType;
-      testDate: string;
+      day2CompletedAt: string;
       estimatedFTP: number | null;
-      sprintPeakPower: number | null;
-      climb12AvgPower: number | null;
+      sprint5secPeakPower: number | null;
+      climb12minAvgPower: number | null;
       effort5minAvgPower: number | null;
     } | null;
     previousAssessment: {
       id: string;
-      testType: AssessmentType;
-      testDate: string;
+      day2CompletedAt: string;
       estimatedFTP: number | null;
     } | null;
     ftpProgress: number;
     wattsPerKg: number | null;
     assessmentHistory: Array<{
       id: string;
-      testType: AssessmentType;
       testDate: string;
       estimatedFTP: number | null;
     }>;

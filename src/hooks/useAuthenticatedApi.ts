@@ -46,9 +46,14 @@ export function useAuthenticatedApi() {
       const token = await getToken();
 
       const headers: HeadersInit = {
-        'Content-Type': 'application/json',
         ...customHeaders,
       };
+
+      // Only set Content-Type to application/json if not already set and body is not FormData
+      // For FormData, browser will automatically set multipart/form-data with boundary
+      if (!customHeaders?.['Content-Type'] && !(fetchOptions.body instanceof FormData)) {
+        (headers as Record<string, string>)['Content-Type'] = 'application/json';
+      }
 
       if (token) {
         (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
@@ -92,7 +97,7 @@ export function useAuthenticatedApi() {
       return request<T>(endpoint, {
         ...options,
         method: 'POST',
-        body: body ? JSON.stringify(body) : undefined,
+        body: body instanceof FormData ? body : (body ? JSON.stringify(body) : undefined),
       });
     },
     [request]
@@ -103,7 +108,7 @@ export function useAuthenticatedApi() {
       return request<T>(endpoint, {
         ...options,
         method: 'PUT',
-        body: body ? JSON.stringify(body) : undefined,
+        body: body instanceof FormData ? body : (body ? JSON.stringify(body) : undefined),
       });
     },
     [request]

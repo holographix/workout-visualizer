@@ -95,6 +95,23 @@ src/
 - Draggable workout items
 - API props: `apiWorkouts`, `apiCategories`, `onApiWorkoutTap`
 
+### Workout Upload
+
+**WorkoutUploadModal** (`src/components/organisms/WorkoutUpload/WorkoutUploadModal.tsx`)
+- Three-step wizard for importing external workout files
+- Step 1 (Upload): Drag & drop or click to select file (.zwo, .erg, .mrc)
+- Step 2 (Preview): Shows parsed workout name, duration, segments, format, author
+- Step 3 (Customize): Edit name, description, select category before import
+- Uses `useWorkoutUpload` hook for file parsing and conversion
+- Props: `isOpen`, `onClose`, `onImport: (workout: ConvertedWorkout) => Promise<void>`, `categories`
+- Integrated into `WorkoutLibrary` via optional `onImportWorkout` prop
+
+**WorkoutLibrary** (`src/components/organisms/WorkoutLibrary.tsx`)
+- Modal for browsing local workout library
+- Optional Import button (appears when `onImportWorkout` prop is provided)
+- Opens WorkoutUploadModal for external file import
+- Props: `isOpen`, `onClose`, `onSelectWorkout`, `onImportWorkout?`, `categories?`
+
 ### Custom Hooks
 
 **useCalendarAPI** (`src/hooks/useCalendarAPI.ts`)
@@ -198,22 +215,31 @@ const {
 **useAssessments** (`src/hooks/useAssessments.ts`)
 ```typescript
 const {
-  assessments,      // Assessment[]
-  latestAssessment, // Assessment | null (most recent)
+  assessments,        // Assessment[] (completed only)
+  latestAssessment,   // Assessment | null (most recent completed)
+  ongoingTest,        // OngoingTest | null (current in-progress test)
   isLoading,
   isSaving,
-  createSprint12MinAssessment,   // (data) => Promise<Assessment>
-  createPower125MinAssessment,   // (data) => Promise<Assessment>
-  updateAssessment,              // (id, data) => Promise<Assessment>
-  deleteAssessment,              // (id) => Promise<void>
+  // 2-day workflow
+  startTest,          // () => Promise<Assessment>
+  completeDay1,       // (id, data: Day1Data) => Promise<Assessment>
+  startDay2,          // (id) => Promise<Assessment>
+  completeDay2,       // (id, data: Day2Data) => Promise<Assessment>
+  deleteAssessment,   // (id) => Promise<void>
+  // Data refresh
+  fetchAssessments,
+  fetchLatestAssessment,
+  fetchOngoingTest,
 } = useAssessments({ athleteId });
 ```
-- Fetches all assessments from `/api/assessments/athlete/:athleteId`
-- Fetches latest from `/api/assessments/athlete/:athleteId/latest`
-- Two test protocols: SPRINT_12MIN and POWER_1_2_5MIN
-- Sprint protocol: PEAK power for 15" sprint, AVERAGE for 12' climb
-- Power 1/2/5 protocol: AVERAGE power for all durations
-- **Business Rule**: Assessments can only be edited/deleted on the day they were created (uses `isToday()` from date-fns)
+- **2-Day Assessment Protocol**: Day 1 (1'/2'/5' efforts) + Day 2 (5" sprint + 12' climb) on 6-7% gradient
+- Athletes have 15 days to complete Day 2 after Day 1
+- Progressive workflow: Can't skip Day 1, must complete in order
+- Only one ongoing test at a time per athlete
+- Status flow: DAY1_PENDING → DAY1_COMPLETED → DAY2_PENDING → COMPLETED (or EXPIRED)
+- Auto-calculates FTP (climb12min × 0.95) and maxHR when Day 2 completes
+- Auto-updates athlete profile with new FTP/maxHR
+- Tests can be cancelled/deleted only while in progress (not after completion)
 
 **useCoachAssessmentStatus** (`src/hooks/useAssessments.ts`)
 ```typescript
@@ -245,6 +271,26 @@ const {
 - Used in AthleteStatsPage for real athlete/assessment data
 - Calculates FTP progress (current vs previous) and W/kg
 
+**useZones** (`src/hooks/useZones.ts`)
+```typescript
+const {
+  zonesData,        // AthleteZonesResponse | null
+  loading,          // boolean
+  error,            // string | null
+  fetchZones,       // (athleteId: string) => Promise<void>
+  updatePowerZones, // (athleteId: string, data: UpdatePowerZonesInput) => Promise<void>
+  updateHRZones,    // (athleteId: string, data: UpdateHRZonesInput) => Promise<void>
+  updateAthleteData, // (athleteId: string, data: UpdateAthleteZoneDataInput) => Promise<void>
+  calculatePowerZones, // (ftp: number, zoneConfig?) => Promise<CalculatedPowerZone[]>
+  calculateHRZones,    // (maxHR: number, method?, restingHR?, zoneConfig?) => Promise<CalculatedHRZone[]>
+} = useZones();
+```
+- Fetches from `/api/zones/:athleteId` - combined power + HR zones with calculated values
+- Power zones (6 zones, % of FTP): Z1 Recupero 0-55%, Z2 Resistenza 55-75%, Z3 Tempo 75-90%, Z4 Soglia 90-105%, Z5 VO2MAX 105-120%, Z6 Anaerobica 120-150%
+- HR zones (5 zones, % of FC Soglia where FC Soglia = 93% of Max HR): Z1 <68%, Z2 68-83%, Z3 83-94%, Z4 94-105%, Z5 105-120%
+- Used in AthleteStatsPage to display calculated training zones for coach view
+- Zone systems: Power (COGGAN, POLARIZED, CUSTOM), HR (STANDARD, KARVONEN, CUSTOM)
+
 **useTour** (`src/hooks/useTour.ts`)
 ```typescript
 const {
@@ -263,6 +309,58 @@ const {
 - Tracks setup checklist completion (profile, availability, goals, assessment)
 - Auto-fetches on mount by default
 
+**useWorkoutUpload** (`src/hooks/useWorkoutUpload.ts`)
+```typescript
+const {
+  uploadAndParse,       // (file: File) => Promise<ParsedWorkoutResult>
+  uploadAndConvert,     // (file: File, options?) => Promise<ConvertedWorkout>
+  parseContent,         // (content: string, format: SourceFormat) => Promise<ParsedWorkoutResult>
+  convertContent,       // (content: string, format: SourceFormat, options?) => Promise<ConvertedWorkout>
+  getSupportedFormats,  // () => Promise<string[]>
+  reset,                // () => void - Reset all state
+  isUploading,          // boolean
+  isParsing,            // boolean
+  isConverting,         // boolean
+  error,                // Error | null
+  parsedWorkout,        // ParsedWorkoutResult | null
+  convertedWorkout,     // ConvertedWorkout | null
+  supportedFormats,     // string[] (e.g., ['.zwo', '.erg', '.mrc'])
+} = useWorkoutUpload();
+```
+- Upload workout files (.zwo, .erg, .mrc) from Zwift, TrainerRoad, etc.
+- Two-step process: parse (preview) → convert (import)
+- Converts to internal workout format compatible with the system
+- Uses FormData for file uploads with Clerk authentication
+
+### Workout Upload Types (`src/types/workoutUpload.ts`)
+```typescript
+interface ParsedWorkoutResult {
+  name: string;
+  author?: string;
+  description?: string;
+  sportType: 'cycling' | 'running';
+  segments: ParsedSegment[];    // Parsed intervals
+  totalDuration: number;        // Total duration in seconds
+  sourceFormat: 'zwo' | 'erg' | 'mrc' | 'fit';
+  ftp?: number;
+}
+
+interface ConvertedWorkout {
+  name: string;
+  slug: string;
+  description: string;
+  durationSeconds: number;
+  tssPlanned: number;
+  ifPlanned: number;
+  workoutType: string;
+  environment: 'INDOOR' | 'OUTDOOR' | 'ANY';
+  intensity: 'EASY' | 'MODERATE' | 'HARD' | 'VERY_HARD';
+  structure: unknown[];
+  rawJson: Record<string, unknown>;
+  sourceFormat: string;
+}
+```
+
 ## API Integration
 
 Backend: NestJS API at `http://localhost:3001`
@@ -275,6 +373,7 @@ Backend: NestJS API at `http://localhost:3001`
 | POST | `/api/calendar/week` | Create training week |
 | POST | `/api/calendar/scheduled` | Add workout to week |
 | DELETE | `/api/calendar/scheduled/:id` | Remove scheduled workout |
+| PUT | `/api/calendar/scheduled/:id` | Update scheduled workout (dayIndex, notes, completed, sortOrder) |
 | PUT | `/api/calendar/scheduled/:id/complete` | Toggle completion |
 | GET | `/api/calendar/coach/:coachId/dashboard` | Get coach dashboard (aggregated athlete stats) |
 | GET | `/api/workouts` | List all workouts |
@@ -292,18 +391,34 @@ Backend: NestJS API at `http://localhost:3001`
 | POST | `/api/onboarding/:athleteId/step/:stepNumber` | Save onboarding step data |
 | POST | `/api/onboarding/:athleteId/complete` | Mark onboarding as complete |
 | GET | `/api/onboarding/:athleteId/profile` | Get full athlete profile (for coach) |
-| GET | `/api/assessments/athlete/:athleteId` | Get all athlete assessments |
-| GET | `/api/assessments/athlete/:athleteId/latest` | Get latest assessment |
+| POST | `/api/assessments/start` | Start new 2-day assessment test |
+| POST | `/api/assessments/:id/complete-day1` | Complete Day 1 (1'/2'/5' efforts) |
+| POST | `/api/assessments/:id/start-day2` | Start Day 2 |
+| POST | `/api/assessments/:id/complete-day2` | Complete Day 2 (5" sprint + 12' climb) |
+| GET | `/api/assessments/athlete/:athleteId/ongoing` | Get ongoing test (in-progress) |
+| GET | `/api/assessments/athlete/:athleteId` | Get all completed assessments |
+| GET | `/api/assessments/athlete/:athleteId/latest` | Get latest completed assessment |
 | GET | `/api/assessments/athlete/:athleteId/stats` | Get athlete stats with assessment data |
-| GET | `/api/assessments/coach/:coachId/status` | Get assessment status for all athletes of a coach |
-| POST | `/api/assessments/sprint-12min` | Create Sprint + 12min assessment |
-| POST | `/api/assessments/power-125min` | Create Power 1/2/5min assessment |
-| POST | `/api/assessments/athlete/:athleteId/update-ftp` | Update athlete FTP from latest assessment |
-| PUT | `/api/assessments/:id` | Update assessment |
-| DELETE | `/api/assessments/:id` | Delete assessment |
+| GET | `/api/assessments/coach/:coachId/status` | Get assessment status for all athletes |
+| GET | `/api/assessments/:id` | Get assessment by ID |
+| DELETE | `/api/assessments/:id` | Delete assessment (in-progress only) |
+| POST | `/api/assessments/check-expired` | Check and mark expired tests (background job) |
 | GET | `/api/users/me/tour` | Get current user's tour state |
 | PUT | `/api/users/me/tour` | Update tour state (completed/dismissed) |
 | POST | `/api/users/me/tour/checklist/:itemId` | Complete a checklist item |
+| POST | `/api/workout-parsers/upload` | Upload & parse workout file (returns ParsedWorkoutResult) |
+| POST | `/api/workout-parsers/convert` | Upload & convert workout file (returns ConvertedWorkout) |
+| POST | `/api/workout-parsers/parse` | Parse workout content string (body: { content, format }) |
+| POST | `/api/workout-parsers/convert-content` | Convert workout content string (body: { content, format, options? }) |
+| GET | `/api/workout-parsers/formats` | Get list of supported formats (.zwo, .erg, .mrc) |
+| GET | `/api/zones/:athleteId` | Get all zones (power + HR) with calculated values based on FTP/maxHR |
+| GET | `/api/zones/:athleteId/power` | Get power zones configuration |
+| PUT | `/api/zones/:athleteId/power` | Update power zones (zoneSystem, zone1Max..zone6Max) |
+| GET | `/api/zones/:athleteId/hr` | Get HR zones configuration |
+| PUT | `/api/zones/:athleteId/hr` | Update HR zones (zoneSystem, zone1Max..zone5Max) |
+| PUT | `/api/zones/:athleteId/data` | Update athlete's FTP, maxHR, restingHR |
+| POST | `/api/zones/calculate/power` | Calculate power zones from FTP (without saving) |
+| POST | `/api/zones/calculate/hr` | Calculate HR zones from maxHR (without saving) |
 
 ### API Client (`src/services/api.ts`)
 ```typescript
@@ -455,6 +570,8 @@ Key namespaces:
 - `assessment.*` - Assessment tests (protocols, fields, units)
 - `tour.*` - Guided tour and setup checklist
 - `stats.*` - Athlete stats page (FTP, W/kg, assessment history)
+- `workoutUpload.*` - Workout file import modal (upload, preview, customize steps)
+- `zones.*` - Training zones (power zones, HR zones, zone names, calculations)
 
 ## MANDATORY: Documentation Maintenance
 
@@ -521,3 +638,44 @@ When adding "Delete Workout" feature:
 - Responsive layouts using Chakra's useBreakpointValue
 - Mobile calendar uses tabs (Library | Calendar)
 - Tap-to-select workflow instead of drag-drop on mobile
+
+## E2E Testing (Cypress)
+
+### Running Tests
+
+```bash
+npx cypress run                    # Headless mode
+npx cypress run --headed           # With browser window
+npx cypress run --spec "cypress/e2e/user-roles.cy.ts"  # Specific test
+npx cypress open                   # Interactive mode
+```
+
+### Clerk Authentication Setup
+
+**IMPORTANT**: For Cypress E2E tests to work with Clerk authentication, you must configure the Clerk Dashboard:
+
+1. Go to **Clerk Dashboard** → **User & Authentication** → **Password**
+2. Find **"Client Trust"** setting
+3. Set it to **OFF**
+
+This disables the "new device verification" email that would otherwise block automated login.
+
+### Test Credentials
+
+```typescript
+// cypress.config.ts
+env: {
+  testUserEmail: 'aacsyed@gmail.com',
+  testUserPassword: 'RidePro25!',
+}
+```
+
+### Authentication Flow
+
+The tests use `cy.session()` with manual Clerk login:
+- Visits app → enters email → clicks Continue
+- Enters password → clicks Continue
+- Waits for redirect away from sign-in pages
+- Session cached across specs with `cacheAcrossSpecs: true`
+
+See `cypress/support/e2e.ts` for the full login implementation.

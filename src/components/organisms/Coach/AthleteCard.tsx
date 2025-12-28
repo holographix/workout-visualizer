@@ -61,6 +61,7 @@ export const AthleteCard = memo(function AthleteCard({
 
   return (
     <Box
+      data-testid="athlete-card"
       bg={bgColor}
       borderWidth="1px"
       borderColor={borderColor}
