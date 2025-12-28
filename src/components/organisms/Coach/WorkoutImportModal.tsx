@@ -105,9 +105,9 @@ export function WorkoutImportModal({
         },
       });
 
-      setParsedWorkout(response.data);
-      setCustomName(response.data.name);
-      setCustomDescription(response.data.description || '');
+      setParsedWorkout(response);
+      setCustomName(response.name);
+      setCustomDescription(response.description || '');
 
       toast({
         title: t('workoutImport.parsed') || 'Workout parsed successfully',

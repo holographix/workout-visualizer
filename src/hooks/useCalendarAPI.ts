@@ -121,11 +121,11 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
       dayIndex: apiWorkout.dayIndex,
       sortOrder: apiWorkout.sortOrder,
       completed: apiWorkout.completed,
-      completedAt: apiWorkout.completedAt,
+      completedAt: apiWorkout.completedAt || undefined,
       // Skip tracking
       skipped: apiWorkout.skipped,
-      skipReason: apiWorkout.skipReason,
-      skippedAt: apiWorkout.skippedAt,
+      skipReason: apiWorkout.skipReason || undefined,
+      skippedAt: apiWorkout.skippedAt || undefined,
       // Include override fields
       structureOverride: apiWorkout.structureOverride,
       durationOverride: apiWorkout.durationOverride,
@@ -140,7 +140,7 @@ export function useCalendarAPI({ athleteId, weekStart, coachId }: UseCalendarAPI
       avgHeartRate: apiWorkout.avgHeartRate,
       rpe: apiWorkout.rpe,
       feeling: apiWorkout.feeling,
-      resultNotes: apiWorkout.resultNotes,
+      resultNotes: apiWorkout.resultNotes || undefined,
       // Imported activities (FIT files)
       activities: apiWorkout.activities,
     };
@@ -1167,7 +1167,7 @@ export function useAthleteCalendarAPI({
     console.log('[useAthleteCalendarAPI skipWorkout] Called with:', { scheduledId, skipReason });
     try {
       console.log('[useAthleteCalendarAPI skipWorkout] Making API call to skip workout');
-      const response = await api.put(`/api/calendar/scheduled/${scheduledId}/skip`, { skipReason });
+      const response = await api.put<Partial<ScheduledWorkout>>(`/api/calendar/scheduled/${scheduledId}/skip`, { skipReason });
       console.log('[useAthleteCalendarAPI skipWorkout] API call successful:', response);
       console.log('[useAthleteCalendarAPI skipWorkout] Response has skipped?', response.skipped);
       console.log('[useAthleteCalendarAPI skipWorkout] Response has skipReason?', response.skipReason);
@@ -1175,7 +1175,7 @@ export function useAthleteCalendarAPI({
       // Update with response data to ensure we have the correct state
       setScheduledWorkouts(prev =>
         prev.map(sw =>
-          sw.id === scheduledId ? { ...sw, ...response } : sw
+          sw.id === scheduledId ? { ...sw, ...response as Partial<ScheduledWorkout> } : sw
         )
       );
     } catch (err) {

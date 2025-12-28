@@ -150,7 +150,11 @@ export function ActivityImportModal({
         formData.append('autoPairWithScheduled', 'true');
 
         try {
-          const result = await api.post('/api/activity-import/upload', formData);
+          const result = await api.post<{
+            activity: { name: string; durationSeconds: number; avgPower?: number; startTime: string };
+            paired: boolean;
+            pairedWorkoutName?: string;
+          }>('/api/activity-import/upload', formData);
 
           setImportResults([{
             file: file.name,
@@ -202,10 +206,15 @@ export function ActivityImportModal({
         setImportResults(prev => prev.map(r => ({ ...r, status: 'uploading' as const })));
 
         try {
-          const results = await api.post('/api/activity-import/upload-batch', formData);
+          type BatchResult = {
+            activity: { name: string; durationSeconds: number; avgPower?: number; startTime: string };
+            paired: boolean;
+            pairedWorkoutName?: string;
+          };
+          const results = await api.post<BatchResult[]>('/api/activity-import/upload-batch', formData);
 
           // Update with results
-          const newResults: ImportResult[] = results.map((result: any, index: number) => ({
+          const newResults: ImportResult[] = results.map((result, index: number) => ({
             file: selectedFiles[index].name,
             status: 'success' as const,
             activity: {
@@ -220,7 +229,7 @@ export function ActivityImportModal({
 
           setImportResults(newResults);
 
-          const pairedCount = results.filter((r: any) => r.paired).length;
+          const pairedCount = results.filter((r) => r.paired).length;
           const unpairedCount = results.length - pairedCount;
 
           toast({
