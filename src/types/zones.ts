@@ -15,7 +15,7 @@
  * - Z2: Resistenza (68-83% FC Soglia)
  * - Z3: Tempo/Medio (83-94% FC Soglia)
  * - Z4: Soglia Lattacida (94-105% FC Soglia)
- * - Z5: VO2MAX (105-120% FC Soglia)
+ * - Z5: VO2MAX (>105% FC Soglia)
  */
 
 // ============================================
@@ -45,11 +45,11 @@ export interface HRZoneConfig {
   id?: string;
   athleteId: string;
   zoneSystem: HRZoneSystem;
-  zone1Max: number;  // Default: 60
-  zone2Max: number;  // Default: 70
-  zone3Max: number;  // Default: 80
-  zone4Max: number;  // Default: 90
-  zone5Max: number;  // Default: 100
+  zone1Max: number;  // Default: 68 (<68%)
+  zone2Max: number;  // Default: 83 (68-83%)
+  zone3Max: number;  // Default: 94 (83-94%)
+  zone4Max: number;  // Default: 105 (94-105%)
+  zone5Max: number;  // Default: 999 (>105%, open-ended)
 }
 
 // ============================================
@@ -185,5 +185,5 @@ export const DEFAULT_HR_ZONES: Omit<HRZoneConfig, 'athleteId' | 'id'> = {
   zone2Max: 83,   // Z2: 68-83% FC Soglia
   zone3Max: 94,   // Z3: 83-94% FC Soglia
   zone4Max: 105,  // Z4: 94-105% FC Soglia
-  zone5Max: 120,  // Z5: 105-120% FC Soglia
+  zone5Max: 999,  // Z5: >105% FC Soglia (no upper limit)
 };
