@@ -77,6 +77,7 @@ import { IntervalList } from '../IntervalList';
 import { parseWorkout } from '../../../utils/parser';
 import { api } from '../../../services/api';
 import { useAuthenticatedApi } from '../../../hooks/useAuthenticatedApi';
+import { useZones } from '../../../hooks/useZones';
 import { useToast } from '@chakra-ui/react';
 import { ActivityDetailModal } from './ActivityDetailModal';
 
@@ -232,6 +233,7 @@ export function WorkoutViewerModal({
   const { t } = useTranslation();
   const toast = useToast();
   const authenticatedApi = useAuthenticatedApi();
+  const { fetchZones, zonesData } = useZones();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
@@ -334,6 +336,13 @@ export function WorkoutViewerModal({
     fetchWorkoutDetails();
   }, [isOpen, scheduledWorkoutId, fetchWorkoutDetails]);
 
+  // Fetch athlete zones when workout details load
+  useEffect(() => {
+    if (workoutDetails?.trainingWeek.athleteId) {
+      fetchZones(workoutDetails.trainingWeek.athleteId);
+    }
+  }, [workoutDetails, fetchZones]);
+
   // Parse workout for visualization
   const parsedWorkout = useMemo(() => {
     if (!workoutDetails?.workout.structure) return null;
@@ -359,6 +368,41 @@ export function WorkoutViewerModal({
       return null;
     }
   }, [workoutDetails]);
+
+  // Map power % to HR zone and BPM range
+  const getHRZoneForPowerPercent = useMemo(() => {
+    if (!zonesData?.athlete.ftp || !zonesData?.hr.calculatedZones || !zonesData?.power.calculatedZones) {
+      return null;
+    }
+
+    return (powerPercent: number) => {
+      // Calculate watts from percentage
+      const watts = (powerPercent / 100) * zonesData.athlete.ftp!;
+
+      // Find corresponding power zone
+      const powerZone = zonesData.power.calculatedZones!.find(z =>
+        watts >= z.minWatts && (z.maxWatts === null || watts <= z.maxWatts)
+      );
+
+      if (!powerZone) return null;
+
+      // Return corresponding HR zone (same zone number)
+      const hrZone = zonesData.hr.calculatedZones![powerZone.zone - 1];
+
+      if (!hrZone) return null;
+
+      // Format BPM range
+      const bpmRange = hrZone.maxBPM
+        ? `${hrZone.minBPM}-${hrZone.maxBPM}`
+        : `>${hrZone.minBPM}`;
+
+      return {
+        zoneName: hrZone.name,
+        zoneNumber: hrZone.zone,
+        bpmRange,
+      };
+    };
+  }, [zonesData]);
 
   const handleSegmentHover = useCallback((index: number | null) => {
     setHoveredIndex(index);
@@ -662,6 +706,7 @@ export function WorkoutViewerModal({
                               onSegmentHover={handleSegmentHover}
                               onSegmentClick={handleSegmentClick}
                               formatDuration={formatDuration}
+                              getHRZoneForPowerPercent={getHRZoneForPowerPercent}
                             />
                           </CardBody>
                         </Card>

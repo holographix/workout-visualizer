@@ -1,6 +1,12 @@
 import { Box, Flex, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import { getZoneColor, type ZoneType } from '../atoms';
 
+interface HRZoneInfo {
+  zoneName: string;
+  zoneNumber: number;
+  bpmRange: string;
+}
+
 interface IntervalRowProps {
   name: string;
   duration: string;
@@ -10,6 +16,7 @@ interface IntervalRowProps {
   isHovered?: boolean;
   isSelected?: boolean;
   openDuration?: boolean;
+  hrZone?: HRZoneInfo | null;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onClick?: () => void;
@@ -24,6 +31,7 @@ export function IntervalRow({
   isHovered = false,
   isSelected = false,
   openDuration = false,
+  hrZone,
   onMouseEnter,
   onMouseLeave,
   onClick,
@@ -81,6 +89,14 @@ export function IntervalRow({
           }
         </Text>
         <Text fontSize="xs" color={metaColor}>FTP</Text>
+        {hrZone && (
+          <>
+            <Text fontSize="sm" fontFamily="mono" color={targetColor} mt={2}>
+              {hrZone.bpmRange}
+            </Text>
+            <Text fontSize="xs" color={metaColor}>bpm (Z{hrZone.zoneNumber})</Text>
+          </>
+        )}
       </Box>
     </Flex>
   );
